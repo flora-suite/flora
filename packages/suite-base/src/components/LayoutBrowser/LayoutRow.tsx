@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -99,26 +96,26 @@ const StyledMenuItem = muiStyled(MenuItem, {
 
 export type LayoutActionMenuItem =
   | {
-      type: "item";
-      text: string;
-      secondaryText?: string;
-      key: string;
-      onClick?: (event: React.MouseEvent<HTMLLIElement>) => void;
-      disabled?: boolean;
-      debug?: boolean;
-      "data-testid"?: string;
-    }
+    type: "item";
+    text: string;
+    secondaryText?: string;
+    key: string;
+    onClick?: (event: React.MouseEvent<HTMLLIElement>) => void;
+    disabled?: boolean;
+    debug?: boolean;
+    "data-testid"?: string;
+  }
   | {
-      type: "divider";
-      key: string;
-      debug?: boolean;
-    }
+    type: "divider";
+    key: string;
+    debug?: boolean;
+  }
   | {
-      type: "header";
-      key: string;
-      text: string;
-      debug?: boolean;
-    };
+    type: "header";
+    key: string;
+    text: string;
+    debug?: boolean;
+  };
 
 export default React.memo(function LayoutRow({
   layout,
@@ -313,14 +310,14 @@ export default React.memo(function LayoutRow({
       "data-testid": "duplicate-layout",
     },
     layoutManager.supportsSharing &&
-      !layoutIsShared(layout) && {
-        type: "item",
-        key: "share",
-        text: "Share with team…",
-        onClick: shareAction,
-        disabled: !isOnline || multiSelection,
-        secondaryText: !isOnline ? "Offline" : undefined,
-      },
+    !layoutIsShared(layout) && {
+      type: "item",
+      key: "share",
+      text: "Share with team…",
+      onClick: shareAction,
+      disabled: !isOnline || multiSelection,
+      secondaryText: !isOnline ? "Offline" : undefined,
+    },
     {
       type: "item",
       key: "export",

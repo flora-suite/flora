@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -47,8 +44,8 @@ type Props = {
 const useStyles = makeStyles<{ buttonColor?: string }>()((theme, { buttonColor }) => {
   const augmentedButtonColor = buttonColor
     ? theme.palette.augmentColor({
-        color: { main: buttonColor },
-      })
+      color: { main: buttonColor },
+    })
     : undefined;
 
   return {
@@ -163,10 +160,10 @@ function Publish(props: Props) {
 
   const canPublish = Boolean(
     capabilities.includes(PlayerCapabilities.advertise) &&
-      config.value &&
-      config.topicName &&
-      config.datatype &&
-      parsedObject != undefined,
+    config.value &&
+    config.topicName &&
+    config.datatype &&
+    parsedObject != undefined,
   );
 
   const statusMessage = useMemo(() => {

@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -53,7 +50,7 @@ import { makeSubscriptionMemoizer } from "./subscriptions";
 
 const NO_DATATYPES = new Map();
 
-function noop() {}
+function noop() { }
 
 export type MockMessagePipelineProps = {
   name?: string;
@@ -128,19 +125,19 @@ function getPublicState(
         props.noActiveData === true
           ? undefined
           : {
-              messages: props.messages ?? [],
-              topics: props.topics ?? [],
-              topicStats: props.topicStats ?? new Map(),
-              datatypes: props.datatypes ?? NO_DATATYPES,
-              startTime: props.startTime ?? startTime ?? { sec: 100, nsec: 0 },
-              currentTime: currentTime ?? { sec: 100, nsec: 0 },
-              endTime: props.endTime ?? currentTime ?? { sec: 100, nsec: 0 },
-              isPlaying: props.isPlaying ?? false,
-              speed: 0.2,
-              lastSeekTime: 0,
-              totalBytesReceived: 0,
-              ...props.activeData,
-            },
+            messages: props.messages ?? [],
+            topics: props.topics ?? [],
+            topicStats: props.topicStats ?? new Map(),
+            datatypes: props.datatypes ?? NO_DATATYPES,
+            startTime: props.startTime ?? startTime ?? { sec: 100, nsec: 0 },
+            currentTime: currentTime ?? { sec: 100, nsec: 0 },
+            endTime: props.endTime ?? currentTime ?? { sec: 100, nsec: 0 },
+            isPlaying: props.isPlaying ?? false,
+            speed: 0.2,
+            lastSeekTime: 0,
+            totalBytesReceived: 0,
+            ...props.activeData,
+          },
     },
     subscriptions: [],
     sortedTopics:
@@ -168,7 +165,7 @@ function getPublicState(
       }),
     setParameter: props.setParameter ?? noop,
     publish: props.publish ?? noop,
-    callService: props.callService ?? (async () => {}),
+    callService: props.callService ?? (async () => { }),
     fetchAsset:
       props.fetchAsset ??
       (async () => {

@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -123,8 +120,8 @@ function RawMessages(props: Props) {
     () =>
       diffEnabled
         ? (_type: string, data: DiffObject, itemType: React.ReactNode) => (
-            <DiffStats data={data} itemType={itemType} />
-          )
+          <DiffStats data={data} itemType={itemType} />
+        )
         : defaultGetItemString,
     [defaultGetItemString, diffEnabled],
   );
@@ -400,11 +397,11 @@ function RawMessages(props: Props) {
 
     const diff = diffEnabled
       ? getDiff({
-          before: data,
-          after: diffData,
-          idLabel: undefined,
-          showFullMessageForDiff,
-        })
+        before: data,
+        after: diffData,
+        idLabel: undefined,
+        showFullMessageForDiff,
+      })
       : {};
 
     return (
@@ -510,9 +507,9 @@ function RawMessages(props: Props) {
                 ];
                 if (
                   (addedValue != undefined ? 1 : 0) +
-                    (changedValue != undefined ? 1 : 0) +
-                    (deletedValue != undefined ? 1 : 0) ===
-                    1 &&
+                  (changedValue != undefined ? 1 : 0) +
+                  (deletedValue != undefined ? 1 : 0) ===
+                  1 &&
                   idValue == undefined
                 ) {
                   return addedValue ?? changedValue ?? deletedValue;
@@ -541,9 +538,9 @@ function RawMessages(props: Props) {
                     backgroundColor =
                       themePreference === "dark"
                         ? // @ts-expect-error backgroundColor is not a property?
-                          diffLabelsByLabelText[keyPath[0]].invertedBackgroundColor
+                        diffLabelsByLabelText[keyPath[0]].invertedBackgroundColor
                         : // @ts-expect-error backgroundColor is not a property?
-                          diffLabelsByLabelText[keyPath[0]].backgroundColor;
+                        diffLabelsByLabelText[keyPath[0]].backgroundColor;
                     textDecoration =
                       keyPath[0] === diffLabels.DELETED.labelText ? "line-through" : "none";
                   }
@@ -554,9 +551,9 @@ function RawMessages(props: Props) {
                     backgroundColor =
                       themePreference === "dark"
                         ? // @ts-expect-error backgroundColor is not a property?
-                          diffLabelsByLabelText[nestedObjKey].invertedBackgroundColor
+                        diffLabelsByLabelText[nestedObjKey].invertedBackgroundColor
                         : // @ts-expect-error backgroundColor is not a property?
-                          diffLabelsByLabelText[nestedObjKey].backgroundColor;
+                        diffLabelsByLabelText[nestedObjKey].backgroundColor;
                     textDecoration =
                       nestedObjKey === diffLabels.DELETED.labelText ? "line-through" : "none";
                   }
@@ -593,9 +590,9 @@ function RawMessages(props: Props) {
                     backgroundColor =
                       themePreference === "dark"
                         ? // @ts-expect-error backgroundColor is not a property?
-                          diffLabelsByLabelText[nestedObjKey].invertedBackgroundColor
+                        diffLabelsByLabelText[nestedObjKey].invertedBackgroundColor
                         : // @ts-expect-error backgroundColor is not a property?
-                          diffLabelsByLabelText[nestedObjKey].backgroundColor;
+                        diffLabelsByLabelText[nestedObjKey].backgroundColor;
                     textDecoration =
                       nestedObjKey === diffLabels.DELETED.labelText ? "line-through" : "none";
                   }

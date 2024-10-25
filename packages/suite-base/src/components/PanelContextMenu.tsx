@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -17,22 +14,22 @@ import { PANEL_ROOT_CLASS_NAME } from "@lichtblick/suite-base/components/PanelRo
  */
 export type PanelContextMenuItem =
   | {
-      /** Type of selectable menu items. */
-      type: "item";
+    /** Type of selectable menu items. */
+    type: "item";
 
-      /** True if the item should be shown but disabled. */
-      disabled?: boolean;
+    /** True if the item should be shown but disabled. */
+    disabled?: boolean;
 
-      /** Label shown for the menu item. */
-      label: string;
+    /** Label shown for the menu item. */
+    label: string;
 
-      /** Callback triggered by clicking the item. */
-      onclick: () => void;
-    }
+    /** Callback triggered by clicking the item. */
+    onclick: () => void;
+  }
   | {
-      /** Type of item dividers. */
-      type: "divider";
-    };
+    /** Type of item dividers. */
+    type: "divider";
+  };
 
 type PanelContextMenuProps = {
   /** @returns List of menu items */

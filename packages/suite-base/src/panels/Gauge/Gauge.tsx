@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -167,17 +164,16 @@ function getConicGradient(config: Config, width: number, height: number, gaugeAn
       .reverse();
   }
 
-  return `conic-gradient(from ${-Math.PI / 2 + gaugeAngle}rad at 50% ${
-    100 * (width / 2 / height)
-  }%, ${colorStops
-    .map((stop) => `${stop.color} ${stop.location * 2 * (Math.PI / 2 - gaugeAngle)}rad`)
-    .join(",")}, ${colorStops[0]!.color})`;
+  return `conic-gradient(from ${-Math.PI / 2 + gaugeAngle}rad at 50% ${100 * (width / 2 / height)
+    }%, ${colorStops
+      .map((stop) => `${stop.color} ${stop.location * 2 * (Math.PI / 2 - gaugeAngle)}rad`)
+      .join(",")}, ${colorStops[0]!.color})`;
 }
 
 export function Gauge({ context }: Props): JSX.Element {
   // panel extensions must notify when they've completed rendering
   // onRender will setRenderDone to a done callback which we can invoke after we've rendered
-  const [renderDone, setRenderDone] = useState<() => void>(() => () => {});
+  const [renderDone, setRenderDone] = useState<() => void>(() => () => { });
 
   const [config, setConfig] = useState(() => ({
     ...defaultConfig,
@@ -257,7 +253,7 @@ export function Gauge({ context }: Props): JSX.Element {
 
   const rawValue =
     typeof state.latestMatchingQueriedData === "number" ||
-    typeof state.latestMatchingQueriedData === "string"
+      typeof state.latestMatchingQueriedData === "string"
       ? Number(state.latestMatchingQueriedData)
       : NaN;
 
@@ -328,8 +324,7 @@ export function Gauge({ context }: Props): JSX.Element {
               margin: "0 auto",
               transform: [
                 `scaleZ(1)`,
-                `rotate(${
-                  -Math.PI / 2 + gaugeAngle + scaledValue * 2 * (Math.PI / 2 - gaugeAngle)
+                `rotate(${-Math.PI / 2 + gaugeAngle + scaledValue * 2 * (Math.PI / 2 - gaugeAngle)
                 }rad)`,
                 `translateX(${-needleThickness / 2}px)`,
                 `translateY(${needleThickness / 2}px)`,
@@ -343,17 +338,13 @@ export function Gauge({ context }: Props): JSX.Element {
             <path
               transform={`scale(${1 / width}, ${1 / height})`}
               d={[
-                `M ${centerX - radius * Math.cos(gaugeAngle)},${
-                  centerY - radius * Math.sin(gaugeAngle)
+                `M ${centerX - radius * Math.cos(gaugeAngle)},${centerY - radius * Math.sin(gaugeAngle)
                 }`,
-                `A 0.5,0.5 0 ${gaugeAngle < 0 ? 1 : 0} 1 ${
-                  centerX + radius * Math.cos(gaugeAngle)
+                `A 0.5,0.5 0 ${gaugeAngle < 0 ? 1 : 0} 1 ${centerX + radius * Math.cos(gaugeAngle)
                 },${centerY - radius * Math.sin(gaugeAngle)}`,
-                `L ${centerX + innerRadius * Math.cos(gaugeAngle)},${
-                  centerY - innerRadius * Math.sin(gaugeAngle)
+                `L ${centerX + innerRadius * Math.cos(gaugeAngle)},${centerY - innerRadius * Math.sin(gaugeAngle)
                 }`,
-                `A ${innerRadius},${innerRadius} 0 ${gaugeAngle < 0 ? 1 : 0} 0 ${
-                  centerX - innerRadius * Math.cos(gaugeAngle)
+                `A ${innerRadius},${innerRadius} 0 ${gaugeAngle < 0 ? 1 : 0} 0 ${centerX - innerRadius * Math.cos(gaugeAngle)
                 },${centerY - innerRadius * Math.sin(gaugeAngle)}`,
                 `Z`,
               ].join(" ")}

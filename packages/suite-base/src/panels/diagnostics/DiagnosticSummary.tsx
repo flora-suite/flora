@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -262,15 +259,15 @@ function DiagnosticSummary(props: Props): JSX.Element {
     const levels = Array.from(nodesByLevel.keys()).sort().reverse();
     const sortedNodes = sortByLevel
       ? ([] as DiagnosticInfo[]).concat(
-          ...levels.map((level) =>
-            filterAndSortDiagnostics(nodesByLevel.get(level) ?? [], hardwareIdFilter, pinnedIds),
-          ),
-        )
+        ...levels.map((level) =>
+          filterAndSortDiagnostics(nodesByLevel.get(level) ?? [], hardwareIdFilter, pinnedIds),
+        ),
+      )
       : filterAndSortDiagnostics(
-          ([] as DiagnosticInfo[]).concat(...nodesByLevel.values()),
-          hardwareIdFilter,
-          pinnedIds,
-        );
+        ([] as DiagnosticInfo[]).concat(...nodesByLevel.values()),
+        hardwareIdFilter,
+        pinnedIds,
+      );
 
     const nodes: DiagnosticInfo[] = [..._.compact(pinnedNodes), ...sortedNodes].filter(
       ({ status }) => status.level >= minLevel,
