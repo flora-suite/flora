@@ -36,4 +36,5 @@ export const plot = {
   value: "Value",
   xAxis: "X Axis",
   yAxis: "Y Axis",
+  resetView: "Reset view",
 };

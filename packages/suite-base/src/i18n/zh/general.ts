@@ -2,11 +2,13 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
+import { TypeOptions } from "i18next";
+
 // Generic global translation
-export const general = {
+export const general: Partial<TypeOptions["resources"]["general"]> = {
   foxglove: "Foxglove",
-  learnMore: "Learn more",
-  on: "On",
-  off: "Off",
-  auto: "auto",
+  learnMore: "了解更多",
+  on: "开",
+  off: "关",
+  auto: "自动",
 };
