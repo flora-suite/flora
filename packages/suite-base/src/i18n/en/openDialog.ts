@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -12,6 +9,10 @@ export const openDialog = {
     "Use a convenient web interface to tag, search, and retrieve data at lightning speed",
   createAFreeAccount: "Create a free account",
   exploreSampleData: "Explore sample data",
+  joinOurCommunity: "Join our community",
+  joinOurCommunityDescription:
+    "Join us on Slack or GitHub to get help, make feature requests, and report bugs.",
+  joinOurSlack: "Join our Slack",
   learnMore: "Learn more",
   needHelp: "Need help?",
   needHelpDescription: "View our documentation, or check out the tutorials on the Foxglove blog.",
@@ -35,4 +36,5 @@ export const openDialog = {
   startCollaboratingDescription:
     "Make the most of your Foxglove account – whether you want to dive deep on your data or share tools with your teammates.",
   uploadToDataPlatform: "Upload to Data Platform",
+  viewOurDocs: "View our docs",
 };

@@ -18,9 +18,9 @@ plugins:
   - "@lichtblick/eslint-plugin-suite"
 
 extends:
-  - plugin:@lichtblick/base
-  - plugin:@lichtblick/react
-  - plugin:@lichtblick/jest
+  - plugin:@foxglove/base
+  - plugin:@foxglove/react
+  - plugin:@foxglove/jest
   - plugin:storybook/recommended
   - plugin:@lichtblick/suite/all
 
@@ -28,8 +28,8 @@ settings:
   import/internal-regex: "^@lichtblick"
 
 rules:
-  "@lichtblick/license-header": error
-  "@lichtblick/prefer-hash-private": error
+  "@foxglove/license-header": error
+  "@foxglove/prefer-hash-private": error
 
   tss-unused-classes/unused-classes: error
 
@@ -131,7 +131,7 @@ rules:
 overrides:
   - files: ["*.ts", "*.tsx"]
     extends:
-      - plugin:@lichtblick/typescript
+      - plugin:@foxglove/typescript
     parserOptions:
       project: ./tsconfig.eslint.json
     rules:

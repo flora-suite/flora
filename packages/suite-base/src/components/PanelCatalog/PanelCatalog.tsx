@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -135,13 +132,13 @@ export const PanelCatalog = forwardRef<HTMLDivElement, Props>(function PanelCata
     (panels: PanelInfo[]) => {
       return searchQuery.length > 0
         ? fuzzySort
-            .go(searchQuery, panels, {
-              keys: ["title", "description"],
-              // Weigh title matches more heavily than description matches.
-              scoreFn: (a) => Math.max(a[0] ? a[0].score : -1000, a[1] ? a[1].score - 100 : -1000),
-              threshold: -900,
-            })
-            .map((searchResult) => searchResult.obj)
+          .go(searchQuery, panels, {
+            keys: ["title", "description"],
+            // Weigh title matches more heavily than description matches.
+            scoreFn: (a) => Math.max(a[0] ? a[0].score : -1000, a[1] ? a[1].score - 100 : -1000),
+            threshold: -900,
+          })
+          .map((searchResult) => searchResult.obj)
         : panels;
     },
     [searchQuery],

@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -312,9 +309,9 @@ const ImageModeFoxgloveImage = ({
       for (let c = 0; c < width; c++) {
         const val = Math.round(
           65535 *
-            (0.5 +
-              0.25 * Math.sin((2 * Math.PI * r) / height) +
-              0.25 * Math.sin(2 * Math.PI * (c / width))),
+          (0.5 +
+            0.25 * Math.sin((2 * Math.PI * r) / height) +
+            0.25 * Math.sin(2 * Math.PI * (c / width))),
         );
         mono16Data.setUint16((r * width + c) * 2, val, true);
       }

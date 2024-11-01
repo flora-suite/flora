@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -198,12 +195,12 @@ export const PathWithIncorrectlyPrefixedGlobalVariablesVariable: MsgPathInputSto
 };
 
 export const AutocompleteForPathWithGlobalVariablesVariableInSliceSingleIdx: MsgPathInputStoryObj =
-  {
-    render: MessagePathInputStory,
-    args: { path: "/some_topic/state.items[$]" },
-    name: "Autocomplete for path with globalVariables variable in slice (single idx)",
-    play: clickInput,
-  };
+{
+  render: MessagePathInputStory,
+  args: { path: "/some_topic/state.items[$]" },
+  name: "Autocomplete for path with globalVariables variable in slice (single idx)",
+  play: clickInput,
+};
 
 export const AutocompleteForPathWithGlobalVariablesVariableInSliceStartIdx: MsgPathInputStoryObj = {
   render: MessagePathInputStory,
@@ -220,12 +217,12 @@ export const AutocompleteForPathWithGlobalVariablesVariableInSliceEndIdx: MsgPat
 };
 
 export const AutocompleteForPathWithGlobalVariablesVariablesInSliceStartAndEndIdx: MsgPathInputStoryObj =
-  {
-    render: MessagePathInputStory,
-    args: { path: "/some_topic/state.items[$global_var_2:$]" },
-    name: "Autocomplete for path with globalVariables variables in slice (start and end idx)",
-    play: clickInput,
-  };
+{
+  render: MessagePathInputStory,
+  args: { path: "/some_topic/state.items[$global_var_2:$]" },
+  name: "Autocomplete for path with globalVariables variables in slice (start and end idx)",
+  play: clickInput,
+};
 
 export const PathWithInvalidMathModifier: MsgPathInputStoryObj = {
   render: MessagePathInputStory,

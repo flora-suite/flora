@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -101,19 +98,19 @@ type Dataset<T> = Datasets<T>[0];
 // merge `ProviderState`s.
 const makeMerge =
   <T,>(mergeData: (dataA: T, dataB: T) => T) =>
-  (a: State<T>, b: State<T>): State<T> => {
-    return {
-      bounds: mergeBounds(a.bounds, b.bounds),
-      data: {
-        datasets: R.zip(a.data.datasets, b.data.datasets).map(
-          ([aSet, bSet]: [Dataset<T>, Dataset<T>]): Dataset<T> => ({
-            ...aSet,
-            data: mergeData(aSet.data, bSet.data),
-          }),
-        ),
-      },
+    (a: State<T>, b: State<T>): State<T> => {
+      return {
+        bounds: mergeBounds(a.bounds, b.bounds),
+        data: {
+          datasets: R.zip(a.data.datasets, b.data.datasets).map(
+            ([aSet, bSet]: [Dataset<T>, Dataset<T>]): Dataset<T> => ({
+              ...aSet,
+              data: mergeData(aSet.data, bSet.data),
+            }),
+          ),
+        },
+      };
     };
-  };
 
 export const mergeNormal = makeMerge<ObjectData>((a: ObjectData, b: ObjectData) => [...a, ...b]);
 export const mergeTyped = makeMerge<TypedData[]>((a: TypedData[], b: TypedData[]) => a.concat(b));

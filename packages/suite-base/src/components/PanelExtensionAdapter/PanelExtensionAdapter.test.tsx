@@ -1,8 +1,5 @@
 /** @jest-environment jsdom */
 
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -33,7 +30,7 @@ describe("PanelExtensionAdapter", () => {
     };
 
     const config = {};
-    const saveConfig = () => {};
+    const saveConfig = () => { };
 
     const Wrapper = () => {
       return (
@@ -78,7 +75,7 @@ describe("PanelExtensionAdapter", () => {
     });
 
     const config = {};
-    const saveConfig = () => {};
+    const saveConfig = () => { };
 
     const message: MessageEvent = {
       topic: "x",
@@ -171,7 +168,7 @@ describe("PanelExtensionAdapter", () => {
               },
             }}
           >
-            <PanelExtensionAdapter config={{}} saveConfig={() => {}} initPanel={initPanel} />
+            <PanelExtensionAdapter config={{}} saveConfig={() => { }} initPanel={initPanel} />
           </PanelSetup>
         </MockPanelContextProvider>
       </ThemeProvider>,
@@ -237,7 +234,7 @@ describe("PanelExtensionAdapter", () => {
               },
             }}
           >
-            <PanelExtensionAdapter config={{}} saveConfig={() => {}} initPanel={initPanel} />
+            <PanelExtensionAdapter config={{}} saveConfig={() => { }} initPanel={initPanel} />
           </PanelSetup>
         </MockPanelContextProvider>
       </ThemeProvider>,
@@ -294,7 +291,7 @@ describe("PanelExtensionAdapter", () => {
               },
             }}
           >
-            <PanelExtensionAdapter config={{}} saveConfig={() => {}} initPanel={initPanel} />
+            <PanelExtensionAdapter config={{}} saveConfig={() => { }} initPanel={initPanel} />
           </PanelSetup>
         </MockPanelContextProvider>
       </ThemeProvider>,
@@ -376,7 +373,7 @@ describe("PanelExtensionAdapter", () => {
               },
             }}
           >
-            <PanelExtensionAdapter config={{}} saveConfig={() => {}} initPanel={initPanel} />
+            <PanelExtensionAdapter config={{}} saveConfig={() => { }} initPanel={initPanel} />
           </PanelSetup>
         </MockPanelContextProvider>
       </ThemeProvider>,
@@ -426,7 +423,7 @@ describe("PanelExtensionAdapter", () => {
     };
 
     const config = {};
-    const saveConfig = () => {};
+    const saveConfig = () => { };
 
     const Wrapper = ({ mounted = true }: { mounted?: boolean }) => {
       return (
@@ -455,7 +452,7 @@ describe("PanelExtensionAdapter", () => {
 
     const openSiblingPanel = jest.fn();
     const config = {};
-    const saveConfig = () => {};
+    const saveConfig = () => { };
 
     const sig = signal();
 
@@ -531,7 +528,7 @@ describe("PanelExtensionAdapter", () => {
               },
             }}
           >
-            <PanelExtensionAdapter config={{}} saveConfig={() => {}} initPanel={initPanel} />
+            <PanelExtensionAdapter config={{}} saveConfig={() => { }} initPanel={initPanel} />
           </PanelSetup>
         </MockPanelContextProvider>
       </ThemeProvider>,
@@ -569,7 +566,7 @@ describe("PanelExtensionAdapter", () => {
     });
 
     const config = {};
-    const saveConfig = () => {};
+    const saveConfig = () => { };
 
     const Wrapper = () => {
       return (
@@ -628,7 +625,7 @@ describe("PanelExtensionAdapter", () => {
     });
 
     const config = {};
-    const saveConfig = () => {};
+    const saveConfig = () => { };
 
     const pauseFrameCond = new Condvar();
 
@@ -692,7 +689,7 @@ describe("PanelExtensionAdapter", () => {
     });
 
     const config = {};
-    const saveConfig = () => {};
+    const saveConfig = () => { };
 
     const mockSetSubscriptions = jest.fn();
 
@@ -730,7 +727,7 @@ describe("PanelExtensionAdapter", () => {
     expect.assertions(2);
 
     const config = {};
-    const saveConfig = () => {};
+    const saveConfig = () => { };
 
     const sig = signal();
 

@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -68,7 +65,7 @@ import { SavedProps, UserScripts } from "@lichtblick/suite-base/types/panels";
 
 import "react-mosaic-component/react-mosaic-component.css";
 
-function noop() {}
+function noop() { }
 
 type Frame = {
   [topic: string]: MessageEvent[];
@@ -213,9 +210,9 @@ function UnconnectedPanelSetup(props: UnconnectedProps): JSX.Element | ReactNull
     get() {
       return undefined;
     },
-    async set() {},
-    addChangeListener() {},
-    removeChangeListener() {},
+    async set() { },
+    addChangeListener() { },
+    removeChangeListener() { },
   }));
 
   const actions = useCurrentLayoutActions();

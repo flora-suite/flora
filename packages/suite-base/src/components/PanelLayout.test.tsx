@@ -1,7 +1,6 @@
 /** @jest-environment jsdom */
 
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
+
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -27,7 +26,7 @@ import { makeMockAppConfiguration } from "@lichtblick/suite-base/util/makeMockAp
 import { UnconnectedPanelLayout } from "./PanelLayout";
 
 class MockPanelCatalog implements PanelCatalog {
-  public constructor(private allPanels: PanelInfo[]) {}
+  public constructor(private allPanels: PanelInfo[]) { }
   public getPanels(): readonly PanelInfo[] {
     return this.allPanels;
   }
@@ -39,7 +38,7 @@ class MockPanelCatalog implements PanelCatalog {
 describe("UnconnectedPanelLayout", () => {
   beforeEach(() => {
     // jsdom can't parse our @container CSS so we have to silence console.error for this test.
-    jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => { });
   });
 
   afterEach(() => {

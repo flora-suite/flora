@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -145,18 +142,18 @@ export function ThreeDeeRender(props: {
   useEffect(() => {
     const newRenderer = canvas
       ? new Renderer({
-          canvas,
-          config: configRef.current,
-          interfaceMode,
-          fetchAsset,
-          sceneExtensionConfig: _.merge(
-            {},
-            DEFAULT_SCENE_EXTENSION_CONFIG,
-            customSceneExtensions ?? {},
-          ),
-          displayTemporaryError,
-          testOptions,
-        })
+        canvas,
+        config: configRef.current,
+        interfaceMode,
+        fetchAsset,
+        sceneExtensionConfig: _.merge(
+          {},
+          DEFAULT_SCENE_EXTENSION_CONFIG,
+          customSceneExtensions ?? {},
+        ),
+        displayTemporaryError,
+        testOptions,
+      })
       : undefined;
     setRenderer(newRenderer);
     rendererRef.current = newRenderer;
@@ -185,9 +182,9 @@ export function ThreeDeeRender(props: {
     setMessagePathDropConfig(
       renderer
         ? {
-            getDropStatus: renderer.getDropStatus,
-            handleDrop: renderer.handleDrop,
-          }
+          getDropStatus: renderer.getDropStatus,
+          handleDrop: renderer.handleDrop,
+        }
         : undefined,
     );
   }, [setMessagePathDropConfig, renderer]);

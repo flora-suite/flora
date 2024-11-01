@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -82,8 +79,8 @@ function isVersionedPanelConfig(config: unknown): config is VersionedPanelConfig
 type PanelExtensionAdapterProps = {
   /** function that initializes the panel extension */
   initPanel:
-    | ExtensionPanelRegistration["initPanel"]
-    | ((context: BuiltinPanelExtensionContext) => void);
+  | ExtensionPanelRegistration["initPanel"]
+  | ((context: BuiltinPanelExtensionContext) => void);
   /**
    * If defined, the highest supported version of config the panel supports.
    * Used to prevent older implementations of a panel from trying to access
@@ -353,12 +350,12 @@ function PanelExtensionAdapter(
 
       seekPlayback: seekPlayback
         ? (stamp: number | Time) => {
-            if (!isMounted()) {
-              return;
-            }
-            const seekTarget = typeof stamp === "object" ? stamp : fromSec(stamp);
-            seekPlayback(seekTarget);
+          if (!isMounted()) {
+            return;
           }
+          const seekTarget = typeof stamp === "object" ? stamp : fromSec(stamp);
+          seekPlayback(seekTarget);
+        }
         : undefined,
 
       dataSourceProfile,
@@ -451,55 +448,55 @@ function PanelExtensionAdapter(
 
       advertise: capabilities.includes(PlayerCapabilities.advertise)
         ? (topic: string, datatype: string, options) => {
-            if (!isMounted()) {
-              return;
-            }
-            const payload: AdvertiseOptions = {
-              topic,
-              schemaName: datatype,
-              options,
-            };
-            advertisementsRef.current.set(topic, payload);
-
-            getMessagePipelineContext().setPublishers(
-              panelId,
-              Array.from(advertisementsRef.current.values()),
-            );
+          if (!isMounted()) {
+            return;
           }
+          const payload: AdvertiseOptions = {
+            topic,
+            schemaName: datatype,
+            options,
+          };
+          advertisementsRef.current.set(topic, payload);
+
+          getMessagePipelineContext().setPublishers(
+            panelId,
+            Array.from(advertisementsRef.current.values()),
+          );
+        }
         : undefined,
 
       unadvertise: capabilities.includes(PlayerCapabilities.advertise)
         ? (topic: string) => {
-            if (!isMounted()) {
-              return;
-            }
-            advertisementsRef.current.delete(topic);
-            getMessagePipelineContext().setPublishers(
-              panelId,
-              Array.from(advertisementsRef.current.values()),
-            );
+          if (!isMounted()) {
+            return;
           }
+          advertisementsRef.current.delete(topic);
+          getMessagePipelineContext().setPublishers(
+            panelId,
+            Array.from(advertisementsRef.current.values()),
+          );
+        }
         : undefined,
 
       publish: capabilities.includes(PlayerCapabilities.advertise)
         ? (topic, message) => {
-            if (!isMounted()) {
-              return;
-            }
-            getMessagePipelineContext().publish({
-              topic,
-              msg: message as Record<string, unknown>,
-            });
+          if (!isMounted()) {
+            return;
           }
+          getMessagePipelineContext().publish({
+            topic,
+            msg: message as Record<string, unknown>,
+          });
+        }
         : undefined,
 
       callService: capabilities.includes(PlayerCapabilities.callServices)
         ? async (service, request): Promise<unknown> => {
-            if (!isMounted()) {
-              throw new Error("Service call after panel was unmounted");
-            }
-            return await getMessagePipelineContext().callService(service, request);
+          if (!isMounted()) {
+            throw new Error("Service call after panel was unmounted");
           }
+          return await getMessagePipelineContext().callService(service, request);
+        }
         : undefined,
 
       unstable_fetchAsset: async (uri, options) => {

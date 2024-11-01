@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -188,22 +185,22 @@ export function RendererOverlay(props: Props): JSX.Element {
     () =>
       selectedRenderable
         ? {
-            object: {
-              pose: selectedRenderable.renderable.pose,
-              interactionData: {
-                topic: selectedRenderable.renderable.topic,
-                highlighted: true,
-                originalMessage: selectedRenderable.renderable.details(),
-                instanceDetails:
-                  selectedRenderable.instanceIndex != undefined
-                    ? selectedRenderable.renderable.instanceDetails(
-                        selectedRenderable.instanceIndex,
-                      )
-                    : undefined,
-              },
+          object: {
+            pose: selectedRenderable.renderable.pose,
+            interactionData: {
+              topic: selectedRenderable.renderable.topic,
+              highlighted: true,
+              originalMessage: selectedRenderable.renderable.details(),
+              instanceDetails:
+                selectedRenderable.instanceIndex != undefined
+                  ? selectedRenderable.renderable.instanceDetails(
+                    selectedRenderable.instanceIndex,
+                  )
+                  : undefined,
             },
-            instanceIndex: selectedRenderable.instanceIndex,
-          }
+          },
+          instanceIndex: selectedRenderable.instanceIndex,
+        }
         : undefined,
     [selectedRenderable],
   );

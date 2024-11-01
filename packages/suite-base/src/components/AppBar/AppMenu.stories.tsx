@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -60,8 +57,8 @@ export default {
 
 // Connection
 const playerSelection: PlayerSelection = {
-  selectSource: () => {},
-  selectRecent: () => {},
+  selectSource: () => { },
+  selectRecent: () => { },
   recentSources: [
     // prettier-ignore
     { id: "1111", title: "NuScenes-v1.0-mini-scene-0655-reallllllllly-long-name-8829908290831091.bag", },

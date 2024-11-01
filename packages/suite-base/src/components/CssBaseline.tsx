@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -174,11 +171,10 @@ const useStyles = makeStyles()(({ palette, typography }) => ({
           boxShadow: `0 0 0 1px ${palette.divider}`,
         },
         "&:hover .mosaic-split-line": {
-          boxShadow: `0 0 0 1px ${
-            palette.mode === "dark"
+          boxShadow: `0 0 0 1px ${palette.mode === "dark"
               ? tinycolor(palette.divider).lighten().toHexString()
               : tinycolor(palette.divider).darken().toHexString()
-          }`,
+            }`,
         },
       },
       "&.borderless": {
