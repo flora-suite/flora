@@ -9,7 +9,7 @@ import tinycolor from "tinycolor2";
 import { makeStyles } from "tss-react/mui";
 
 import { DataSourceDialogItem } from "@lichtblick/suite-base/components/DataSourceDialog/DataSourceDialog";
-import LichtblickLogoText from "@lichtblick/suite-base/components/LichtblickLogoText";
+import LichtblickLogoText from "@lichtblick/suite-base/components/FloraLogoText";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import TextMiddleTruncate from "@lichtblick/suite-base/components/TextMiddleTruncate";
 import { useAnalytics } from "@lichtblick/suite-base/context/AnalyticsContext";

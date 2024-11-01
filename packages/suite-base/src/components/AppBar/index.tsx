@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import tc from "tinycolor2";
 import { makeStyles } from "tss-react/mui";
 
-import { LichtblickLogo } from "@lichtblick/suite-base/components/LichtblickLogo";
+import { FloraLogo } from "@lichtblick/suite-base/components/FloraLogo";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { useAppContext } from "@lichtblick/suite-base/context/AppContext";
 import {
@@ -208,7 +208,7 @@ export function AppBar(props: AppBarProps): JSX.Element {
                   setAppMenuEl(event.currentTarget);
                 }}
               >
-                <LichtblickLogo fontSize="inherit" color="inherit" />
+                <FloraLogo fontSize="inherit" color="inherit" />
                 <ChevronDown12Regular
                   className={classes.dropDownIcon}
                   primaryFill={theme.palette.common.white}
