@@ -1,6 +1,8 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/
+
 /** @jest-environment jsdom */
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
 
 import { userEvent } from "@storybook/testing-library";
 import { render, screen } from "@testing-library/react";
@@ -16,7 +18,7 @@ jest.mock("react-i18next", () => ({
 
 describe("ActionMenu", () => {
   beforeEach(() => {
-    jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => { });
   });
 
   afterEach(() => {
@@ -72,7 +74,7 @@ describe("ActionMenu", () => {
     await user.click(screen.getByTestId("basic-button"));
     const shareItem = screen.getByText("importOrExportSettingsWithEllipsis");
     // Ignore error if click is not possible
-    await user.click(shareItem).catch(() => {});
+    await user.click(shareItem).catch(() => { });
 
     expect(props.onShare).not.toHaveBeenCalled();
   });
