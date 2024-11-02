@@ -146,7 +146,7 @@ const aboutItems = new Map<
       links: [
         {
           title: "License terms",
-          url: "https://github.com/lichtblick-suite/lichtblick/blob/main/LICENSE",
+          url: "https://github.com/flora-suite/flora/blob/main/LICENSE",
         },
       ],
     },
