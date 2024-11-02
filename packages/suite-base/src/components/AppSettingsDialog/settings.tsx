@@ -41,7 +41,11 @@ import { formatTime } from "@lichtblick/suite-base/util/formatTime";
 import { formatTimeRaw } from "@lichtblick/suite-base/util/time";
 
 const MESSAGE_RATES = [1, 3, 5, 10, 15, 20, 30, 60];
-const LANGUAGE_OPTIONS: { key: Language; value: string }[] = [{ key: "en", value: "English" }];
+const LANGUAGE_OPTIONS: { key: Language; value: string }[] = [
+  { key: "en", value: "English" },
+  { key: "zh", value: "中文" },
+  { key: "ja", value: "日本語" },
+];
 
 const useStyles = makeStyles()((theme) => ({
   autocompleteInput: {
