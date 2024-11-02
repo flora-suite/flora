@@ -105,4 +105,5 @@ Contributions are welcome! Flora is primarily built in TypeScript and ReactJS. A
 
 ## :star: Credits
 
-Flora originally began as a fork of [Foxglove Studio](https://github.com/foxglove/studio), an open-source project developed by [Foxglove](https://foxglove.dev/).
+Flora is based on the [Lichtblick](https://github.com/Lichtblick-Suite/lichtblick) open source code.
+Lichtblick originally began as a fork of [Foxglove Studio](https://github.com/foxglove/studio), an open-source project developed by [Foxglove](https://foxglove.dev/).
