@@ -78,9 +78,9 @@ export const webpackMainConfig =
       plugins: [
         new DefinePlugin({
           MAIN_WINDOW_WEBPACK_ENTRY: rendererEntry,
-          LICHTBLICK_PRODUCT_NAME: JSON.stringify(params.packageJson.productName),
-          LICHTBLICK_PRODUCT_VERSION: JSON.stringify(params.packageJson.version),
-          LICHTBLICK_PRODUCT_HOMEPAGE: JSON.stringify(params.packageJson.homepage),
+          FLORA_PRODUCT_NAME: JSON.stringify(params.packageJson.productName),
+          FLORA_PRODUCT_VERSION: JSON.stringify(params.packageJson.version),
+          FLORA_PRODUCT_HOMEPAGE: JSON.stringify(params.packageJson.homepage),
         }),
       ],
 
