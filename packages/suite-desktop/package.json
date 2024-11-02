@@ -35,7 +35,6 @@
     "electron-updater": "6.3.0-alpha.6",
     "esbuild-loader": "2.21.0",
     "eventemitter3": "5.0.1",
-    "fork-ts-checker-webpack-plugin": "9.0.2",
     "html-webpack-plugin": "5.5.3",
     "i18next": "23.5.1",
     "jszip": "3.10.1",
@@ -52,5 +51,8 @@
     "utif": "3.1.0",
     "webpack": "5.95.0",
     "webpack-dev-server": "5.1.0"
+  },
+  "dependencies": {
+    "fork-ts-checker-webpack-plugin": "9.0.2"
   }
 }

@@ -1,20 +1,20 @@
-<h1 align="center">Lichtblick</h1>
+<h1 align="center">Flora</h1>
 
 <div align="center">
-  <a href="https://github.com/lichtblick-suite/lichtblick/stargazers"><img src="https://img.shields.io/github/stars/lichtblick-suite/lichtblick" alt="Stars Badge"/></a>
-  <a href="https://github.com/lichtblick-suite/lichtblick/network/members"><img src="https://img.shields.io/github/forks/lichtblick-suite/lichtblick" alt="Forks Badge"/></a>
-  <a href="https://github.com/lichtblick-suite/lichtblick/pulls"><img src="https://img.shields.io/github/issues-pr/lichtblick-suite/lichtblick" alt="Pull Requests Badge"/></a>
-  <a href="https://github.com/lichtblick-suite/lichtblick/issues"><img src="https://img.shields.io/github/issues/lichtblick-suite/lichtblick" alt="Issues Badge"/></a>
-  <a href="https://github.com/lichtblick-suite/lichtblick/issues"><img src="https://img.shields.io/github/package-json/v/lichtblick-suite/lichtblick" alt="Versions Badge"/></a>
-  <a href="https://github.com/lichtblick-suite/lichtblick/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/lichtblick-suite/lichtblick?color=2b9348"></a>
- <img alt="GitHub License" src="https://img.shields.io/github/license/lichtblick-suite/lichtblick">
+  <a href="https://github.com/flora-suite/flora/stargazers"><img src="https://img.shields.io/github/stars/flora-suite/flora" alt="Stars Badge"/></a>
+  <a href="https://github.com/flora-suite/flora/network/members"><img src="https://img.shields.io/github/forks/flora-suite/flora" alt="Forks Badge"/></a>
+  <a href="https://github.com/flora-suite/flora/pulls"><img src="https://img.shields.io/github/issues-pr/flora-suite/flora" alt="Pull Requests Badge"/></a>
+  <a href="https://github.com/flora-suite/flora/issues"><img src="https://img.shields.io/github/issues/flora-suite/flora" alt="Issues Badge"/></a>
+  <a href="https://github.com/flora-suite/flora/issues"><img src="https://img.shields.io/github/package-json/v/flora-suite/flora" alt="Versions Badge"/></a>
+  <a href="https://github.com/flora-suite/flora/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/flora-suite/flora?color=2b9348"></a>
+ <img alt="GitHub License" src="https://img.shields.io/github/license/flora-suite/flora">
 
   <br />
 <p  align="center">
-Lichtblick is an integrated visualization and diagnosis tool for robotics, available in your browser or as a desktop app on Linux, Windows, and macOS.
+Flora is an integrated visualization and diagnosis tool for robotics, available in your browser or as a desktop app on Linux, Windows, and macOS.
 </p>
   <p align="center">
-    <img alt="Lichtblick screenshot" src="resources/screenshot.png">
+    <img alt="Flora screenshot" src="resources/screenshot.png">
   </p>
 </div>
 
@@ -30,7 +30,7 @@ Lichtblick is an integrated visualization and diagnosis tool for robotics, avail
 Clone the repository:
 
 ```sh
-$ git clone https://github.com/lichtblick-suite/lichtblick.git
+$ git clone https://github.com/flora-suite/flora.git
 ```
 
 Pull large files with Git LFS:
@@ -64,12 +64,13 @@ $ yarn desktop:start        # launch electron (make sure the desktop:serve finis
 $ yarn run web:serve        # it will be avaiable in http://localhost:8080
 ```
 
-:warning: Ubuntu users: the application may present some issues using GPU. In order to bypass the GPU and process it using directly the CPU (software), please run lichtblick using the variable `LIBGL_ALWAYS_SOFTWARE` set to `1`:
+:warning: Ubuntu users: the application may present some issues using GPU. In order to bypass the GPU and process it using directly the CPU (software), please run flora using the variable `LIBGL_ALWAYS_SOFTWARE` set to `1`:
+
 ```sh
 $ LIBGL_ALWAYS_SOFTWARE=1 yarn desktop:start
 ```
 
-## :hammer_and_wrench: Building Lichtblick
+## :hammer_and_wrench: Building Flora
 
 Build the application for production using these commands:
 
@@ -85,8 +86,8 @@ $ yarn run desktop:build:prod   # compile necessary files
 $ yarn run web:build:prod
 
 # To build and run the web app using docker:
-$ docker build . -t lichtblick
-$ docker run -p 8080:8080 lichtblick
+$ docker build . -t flora
+$ docker run -p 8080:8080 flora
 
 # It is possible to clean up build files using the following command:
 $ yarn run clean
@@ -96,12 +97,12 @@ $ yarn run clean
 
 ## :pencil: License (Open Source)
 
-Lichtblick follows an open core licensing model. Most functionality is available in this repository, and can be reproduced or modified per the terms of the [Mozilla Public License v2.0](/LICENSE).
+Flora follows an open core licensing model. Most functionality is available in this repository, and can be reproduced or modified per the terms of the [Mozilla Public License v2.0](/LICENSE).
 
 ## :handshake: Contributing
 
-Contributions are welcome! Lichtblick is primarily built in TypeScript and ReactJS. All potential contributors must agree to the Contributor License Agreement outlined in [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions are welcome! Flora is primarily built in TypeScript and ReactJS. All potential contributors must agree to the Contributor License Agreement outlined in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## :star: Credits
 
-Lichtblick originally began as a fork of [Foxglove Studio](https://github.com/foxglove/studio), an open-source project developed by [Foxglove](https://foxglove.dev/).
+Flora originally began as a fork of [Foxglove Studio](https://github.com/foxglove/studio), an open-source project developed by [Foxglove](https://foxglove.dev/).

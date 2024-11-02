@@ -12,7 +12,7 @@ const path = require("path");
 function makeElectronBuilderConfig(params) {
   return {
     electronVersion,
-    appId: "dev.lichtblick.suite",
+    appId: "dev.flora.suite",
     npmRebuild: false,
     asar: true,
     directories: {
@@ -24,8 +24,8 @@ function makeElectronBuilderConfig(params) {
     icon: path.join(__dirname, "../resources/icon/icon.icns"),
     protocols: [
       {
-        name: "lichtblick",
-        schemes: ["lichtblick"],
+        name: "flora",
+        schemes: ["flora"],
       },
     ],
     linux: {
@@ -52,7 +52,7 @@ function makeElectronBuilderConfig(params) {
         },
         {
           ext: "foxe",
-          name: "Lichtblick Extension",
+          name: "Flora Extension",
           mimeType: "application/zip",
         },
       ],
@@ -78,7 +78,7 @@ function makeElectronBuilderConfig(params) {
         },
         {
           ext: "foxe",
-          name: "Lichtblick Extension",
+          name: "Flora Extension",
           mimeType: "application/zip",
         },
       ],
@@ -129,7 +129,7 @@ function makeElectronBuilderConfig(params) {
           {
             CFBundleTypeExtensions: ["foxe"],
             CFBundleTypeIconFile: "FoxeIcon",
-            CFBundleTypeName: "Lichtblick Extension File",
+            CFBundleTypeName: "Flora Extension File",
             CFBundleTypeRole: "Viewer",
             LSHandlerRank: "Owner",
             CFBundleTypeIconSystemGenerated: 1,
@@ -173,13 +173,13 @@ function makeElectronBuilderConfig(params) {
       },
     },
     appx: {
-      applicationId: "LichtblickSuite",
+      applicationId: "Flora.Suite",
       backgroundColor: "#f7def6",
-      displayName: "Lichtblick",
-      identityName: "Lichtblick.Suite",
-      publisher: "CN=Lichtblick, O=Lichtblick, L=San Francisco, S=California, C=US",
-      publisherDisplayName: "Lichtblick",
-      languages: ["en-US"],
+      displayName: "Flora",
+      identityName: "Flora.Suite",
+      publisher: "CN=Flora, O=Flora, L=San Francisco, S=California, C=US",
+      publisherDisplayName: "Flora",
+      languages: ["en-US", "zh-CN", "jp-JP"],
       addAutoLaunchExtension: false,
       showNameOnTiles: false,
       setBuildNumber: false,

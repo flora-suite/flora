@@ -9,6 +9,7 @@ import path from "path";
 
 import Logger from "@lichtblick/log";
 import { AppSetting } from "@lichtblick/suite-base/src/AppSetting";
+import { initI18n } from "@lichtblick/suite-base/src/i18n";
 
 import StudioAppUpdater from "./StudioAppUpdater";
 import StudioWindow from "./StudioWindow";
@@ -21,9 +22,9 @@ import {
 } from "./rosPackageResources";
 import { getAppSetting } from "./settings";
 import {
-  LICHTBLICK_PRODUCT_HOMEPAGE,
-  LICHTBLICK_PRODUCT_NAME,
-  LICHTBLICK_PRODUCT_VERSION,
+  FLORA_PRODUCT_HOMEPAGE,
+  FLORA_PRODUCT_NAME,
+  FLORA_PRODUCT_VERSION,
 } from "../common/webpackDefines";
 
 const log = Logger.getLogger(__filename);
@@ -52,13 +53,14 @@ function updateNativeColorScheme() {
 async function updateLanguage() {
   const language = getAppSetting<string>(AppSetting.LANGUAGE);
   log.info(`Loaded language from settings: ${language}`);
-  await i18n.changeLanguage(language);
+  // await i18n.changeLanguage(language);
+  log.info(i18n.languages);
   log.info(`Set language: ${i18n.language}`);
 }
 
 export async function main(): Promise<void> {
-  // await initI18n({ context: "electron-main" });
-  // await updateLanguage();
+  await initI18n({ context: "electron-main" });
+  await updateLanguage();
 
   // Allow integration tests to override the userData directory
   const userDataOverride = process.argv.find((arg) => arg.startsWith("--user-data-dir="));
@@ -70,7 +72,7 @@ export async function main(): Promise<void> {
   app.commandLine.appendSwitch("enable-experimental-web-platform-features");
 
   const start = Date.now();
-  log.info(`${LICHTBLICK_PRODUCT_NAME} ${LICHTBLICK_PRODUCT_VERSION}`);
+  log.info(`${FLORA_PRODUCT_NAME} ${FLORA_PRODUCT_VERSION}`);
 
   const isProduction = process.env.NODE_ENV === "production";
 
@@ -95,7 +97,7 @@ export async function main(): Promise<void> {
   // If another instance of the app is already open, this call triggers the "second-instance" event
   // in the original instance and returns false.
   if (!app.requestSingleInstanceLock()) {
-    log.info(`Another instance of ${LICHTBLICK_PRODUCT_NAME} is already running. Quitting.`);
+    log.info(`Another instance of ${FLORA_PRODUCT_NAME} is already running. Quitting.`);
     app.quit();
     return;
   }
@@ -184,13 +186,13 @@ export async function main(): Promise<void> {
   // tho it is a bit strange since it isn't clear when this runs...
   app.on("open-url", (ev, url) => {
     log.debug("open-url handler", url);
-    if (!url.startsWith("lichtblick://")) {
+    if (!url.startsWith("flora://")) {
       return;
     }
 
     ev.preventDefault();
 
-    if (url.startsWith("lichtblick://signin-complete")) {
+    if (url.startsWith("flora://signin-complete")) {
       // When completing sign in from Console, the browser can launch this URL to re-focus the app.
       app.focus({ steal: true });
     } else if (app.isReady()) {
@@ -211,9 +213,9 @@ export async function main(): Promise<void> {
     updateNativeColorScheme();
   });
 
-  ipcMain.handle("updateLanguage", () => {
-    void updateLanguage();
-  });
+  // ipcMain.handle("updateLanguage", () => {
+  //   void updateLanguage();
+  // });
 
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
@@ -221,7 +223,7 @@ export async function main(): Promise<void> {
   app.on("ready", async () => {
     updateNativeColorScheme();
     const argv = process.argv;
-    const deepLinks = argv.filter((arg) => arg.startsWith("lichtblick://"));
+    const deepLinks = argv.filter((arg) => arg.startsWith("flora://"));
 
     // create the initial window now to display to the user immediately
     // loading the app url happens at the end of ready to ensure we've setup all the handlers, settings, etc
@@ -233,18 +235,18 @@ export async function main(): Promise<void> {
     // Only production builds check for automatic updates
     if (process.env.NODE_ENV !== "production") {
       log.info("Automatic updates disabled (development environment)");
-    } else if (/-(dev|nightly)/.test(LICHTBLICK_PRODUCT_VERSION)) {
+    } else if (/-(dev|nightly)/.test(FLORA_PRODUCT_VERSION)) {
       log.info("Automatic updates disabled (development version)");
     }
 
     StudioAppUpdater.Instance().start();
 
     app.setAboutPanelOptions({
-      applicationName: LICHTBLICK_PRODUCT_NAME,
-      applicationVersion: LICHTBLICK_PRODUCT_VERSION,
+      applicationName: FLORA_PRODUCT_NAME,
+      applicationVersion: FLORA_PRODUCT_VERSION,
       version: process.platform,
       copyright: undefined,
-      website: LICHTBLICK_PRODUCT_HOMEPAGE,
+      website: FLORA_PRODUCT_HOMEPAGE,
       iconPath: undefined,
     });
 

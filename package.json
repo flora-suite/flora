@@ -1,21 +1,21 @@
 {
-  "name": "lichtblick",
-  "version": "1.6.4",
+  "name": "flora",
+  "version": "0.0.1",
   "license": "MPL-2.0",
   "private": true,
-  "productName": "Lichtblick",
-  "description": "Core components of Lichtblick",
-  "productDescription": "Lichtblick Suite",
+  "productName": "Flora",
+  "description": "Core components of Flora",
+  "productDescription": "Flora Suite",
   "packageManager": "yarn@3.6.3",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lichtblick-suite/lichtblick.git"
+    "url": "https://github.com/flora-suite/flora.git"
   },
   "author": {
-    "name": "Lichtblick",
-    "email": "lichtblick@bmwgroup.com"
+    "name": "Flora",
+    "email": "leij59279@gmail.com"
   },
-  "homepage": "https://github.com/lichtblick-suite",
+  "homepage": "https://github.com/flora-suite",
   "engines": {
     "node": ">=16"
   },

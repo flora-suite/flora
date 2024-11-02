@@ -3,7 +3,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import { ESBuildMinifyPlugin } from "esbuild-loader";
-import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import path from "path";
 import { Configuration, DefinePlugin, ResolveOptions } from "webpack";
 
@@ -83,7 +82,6 @@ export const webpackMainConfig =
           LICHTBLICK_PRODUCT_VERSION: JSON.stringify(params.packageJson.version),
           LICHTBLICK_PRODUCT_HOMEPAGE: JSON.stringify(params.packageJson.homepage),
         }),
-        new ForkTsCheckerWebpackPlugin(),
       ],
 
       resolve,

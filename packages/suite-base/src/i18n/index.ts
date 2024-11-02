@@ -16,7 +16,9 @@ export type Language = keyof typeof translations;
 
 export const defaultNS = "general";
 
-export async function initI18n(options?: { context?: "browser" | "electron-main" }): Promise<void> {
+export async function initI18n(options?: {
+  context?: "browser" | "electron-main";
+}): Promise<typeof i18n> {
   const { context = "browser" } = options ?? {};
   if (context === "browser") {
     i18n.use(initReactI18next);
@@ -34,4 +36,5 @@ export async function initI18n(options?: { context?: "browser" | "electron-main"
       escapeValue: false, // not needed for react as it escapes by default
     },
   });
+  return i18n;
 }
