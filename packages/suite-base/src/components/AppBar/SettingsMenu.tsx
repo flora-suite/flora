@@ -2,7 +2,7 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { Menu, MenuItem, PaperProps, PopoverPosition, PopoverReference } from "@mui/material";
+import { Divider, Menu, MenuItem, PaperProps, PopoverPosition, PopoverReference } from "@mui/material";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "tss-react/mui";
@@ -44,6 +44,13 @@ export function SettingsMenu({
     },
     [dialogActions.preferences],
   );
+
+
+
+  const onDocsClick = useCallback(() => {
+    window.open("https://flora.fan/docs", "_blank");
+  }, []);
+
   return (
     <>
       <Menu
@@ -76,6 +83,8 @@ export function SettingsMenu({
         >
           {t("extensions")}
         </MenuItem>
+        <Divider variant="middle" />
+        <MenuItem onClick={onDocsClick}>{t("documentation")}</MenuItem>
       </Menu>
     </>
   );
