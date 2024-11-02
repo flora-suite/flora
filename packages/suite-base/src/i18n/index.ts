@@ -38,3 +38,6 @@ export async function initI18n(options?: {
   });
   return i18n;
 }
+
+export const t = i18n.t;
+export default i18n;

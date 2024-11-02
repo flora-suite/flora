@@ -4,18 +4,17 @@
 
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme, session } from "electron";
 import fs from "fs";
-import i18n from "i18next";
 import path from "path";
 
 import Logger from "@lichtblick/log";
 import { AppSetting } from "@lichtblick/suite-base/src/AppSetting";
-import { initI18n } from "@lichtblick/suite-base/src/i18n";
+import i18n, { initI18n } from "@lichtblick/suite-base/src/i18n";
 
 import StudioAppUpdater from "./StudioAppUpdater";
 import StudioWindow from "./StudioWindow";
 import getDevModeIcon from "./getDevModeIcon";
 import injectFilesToOpen from "./injectFilesToOpen";
-import installChromeExtensions from "./installChromeExtensions";
+// import installChromeExtensions from "./installChromeExtensions";
 import {
   registerRosPackageProtocolHandlers,
   registerRosPackageProtocolSchemes,
@@ -53,8 +52,7 @@ function updateNativeColorScheme() {
 async function updateLanguage() {
   const language = getAppSetting<string>(AppSetting.LANGUAGE);
   log.info(`Loaded language from settings: ${language}`);
-  // await i18n.changeLanguage(language);
-  log.info(i18n.languages);
+  await i18n.changeLanguage(language);
   log.info(`Set language: ${i18n.language}`);
 }
 
@@ -250,9 +248,9 @@ export async function main(): Promise<void> {
       iconPath: undefined,
     });
 
-    if (!isProduction) {
-      await installChromeExtensions();
-    }
+    // if (!isProduction) {
+    //   await installChromeExtensions();
+    // }
 
     // Content Security Policy
     // See: https://www.electronjs.org/docs/tutorial/security

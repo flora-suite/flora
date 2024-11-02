@@ -16,12 +16,12 @@ import {
   shell,
   systemPreferences,
 } from "electron";
-import i18n, { t } from "i18next";
 import path from "path";
 
 import Logger from "@lichtblick/log";
 import { APP_BAR_HEIGHT } from "@lichtblick/suite-base/src/components/AppBar/constants";
 import { NativeAppMenuEvent } from "@lichtblick/suite-base/src/context/NativeAppMenuContext";
+import i18n, { t } from "@lichtblick/suite-base/src/i18n";
 import { palette } from "@lichtblick/theme";
 
 import StudioAppUpdater from "./StudioAppUpdater";
@@ -355,6 +355,7 @@ function buildMenu(browserWindow: BrowserWindow): Menu {
 
   menuTemplate.push({
     role: "help",
+    label: t("desktopWindow:help"),
     submenu: [
       {
         label: t("appBar:about"),
@@ -449,7 +450,7 @@ class StudioWindow {
     const newMenu = buildMenu(browserWindow);
     const id = browserWindow.webContents.id;
 
-    log.info(`New Lichtblick window ${id}`);
+    log.info(`New Flora window ${id}`);
     StudioWindow.#windowsByContentId.set(id, this);
 
     browserWindow.once("closed", () => {
