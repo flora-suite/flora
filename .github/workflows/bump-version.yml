@@ -3,7 +3,7 @@ name: Auto Bump Version
 on:
   push:
     branches:
-      - main  # Trigger on push to main branch
+      - main # Trigger on push to main branch
 
 jobs:
   bump:
@@ -12,13 +12,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.LICHTBLICK_GITHUB_TOKEN }}
+          token: ${{ secrets.FLORA_GITHUB_TOKEN }}
           lfs: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '14'
+          node-version: "14"
 
       - run: corepack enable
 
