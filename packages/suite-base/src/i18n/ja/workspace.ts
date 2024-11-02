@@ -12,4 +12,5 @@ export const workspace: Partial<TypeOptions["resources"]["workspace"]> = {
   studioLogs: "ログ",
   topics: "トピック",
   variables: "変数",
+  layouts: "レイアウト",
 };

@@ -11,7 +11,6 @@
 //   You may not use this file except in compliance with the License.
 
 import { Link, Typography } from "@mui/material";
-import { t } from "i18next";
 import { useSnackbar } from "notistack";
 import { extname } from "path";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -89,6 +88,7 @@ import isDesktopApp from "@lichtblick/suite-base/util/isDesktopApp";
 
 import { useWorkspaceActions } from "./context/Workspace/useWorkspaceActions";
 
+
 const log = Logger.getLogger(__filename);
 
 const useStyles = makeStyles()({
@@ -164,6 +164,7 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
   const rightSidebarOpen = useWorkspaceStore(selectWorkspaceRightSidebarOpen);
   const rightSidebarSize = useWorkspaceStore(selectWorkspaceRightSidebarSize);
   const { AppBarComponent = AppBar } = props;
+  const { t } = useTranslation("workspace");
 
   const { dialogActions, sidebarActions } = useWorkspaceActions();
 
@@ -438,12 +439,12 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
 
   const leftSidebarItems = useMemo(() => {
     const items = new Map<LeftSidebarItemKey, NewSidebarItem>([
-      ["panel-settings", { title: "Panel", component: PanelSettingsSidebar }],
-      ["topics", { title: "Topics", component: TopicList }],
+      ["panel-settings", { title: t("panel"), component: PanelSettingsSidebar }],
+      ["topics", { title: t("topics"), component: TopicList }],
       [
         "problems",
         {
-          title: "Problems",
+          title: t("problems"),
           component: ProblemsList,
           badge:
             playerProblems && playerProblems.length > 0
@@ -454,17 +455,18 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
               : undefined,
         },
       ],
-      ["layouts", { title: "Layouts", component: LayoutBrowser }],
+      ["layouts", { title: t("layouts"), component: LayoutBrowser }],
     ]);
+
     return items;
-  }, [PanelSettingsSidebar, playerProblems]);
+  }, [PanelSettingsSidebar, playerProblems, t]);
 
   const rightSidebarItems = useMemo(() => {
     const items = new Map<RightSidebarItemKey, NewSidebarItem>([
       [
         "variables",
         {
-          title: t("workspace:variables"),
+          title: t("variables"),
           component: VariablesList,
         },
       ],
@@ -472,23 +474,23 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
     if (enableDebugMode) {
       if (PerformanceSidebarComponent) {
         items.set("performance", {
-          title: t("workspace:performance"),
+          title: t("performance"),
           component: PerformanceSidebarComponent,
         });
       }
       items.set("logs-settings", {
-        title: t("workspace:studioLogs"),
+        title: t("studioLogs"),
         component: StudioLogsSettings,
       });
     }
     if (showEventsTab) {
       items.set("events", {
-        title: t("workspace:events"),
+        title: t("events"),
         component: EventsList,
       });
     }
     return items;
-  }, [enableDebugMode, showEventsTab, PerformanceSidebarComponent]);
+  }, [t, enableDebugMode, showEventsTab, PerformanceSidebarComponent]);
 
   const keyboardEventHasModifier = (event: KeyboardEvent) =>
     navigator.userAgent.includes("Mac") ? event.metaKey : event.ctrlKey;
