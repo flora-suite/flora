@@ -1,7 +1,12 @@
 name: Release Web
 
 on:
-  pull_request: {}
+  workflow_dispatch:
+    inputs:
+      pre_release:
+        type: boolean
+        description: "Pre-release"
+        default: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
