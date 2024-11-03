@@ -12,6 +12,7 @@ jobs:
     name: Deploy to Cloudflare Pages
     runs-on: ubuntu-20.04
 
+    if: false
     env:
       # Environment variables that are injected into the build
       ENABLE_EXPERIMENTAL_COREPACK: 1
