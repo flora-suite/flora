@@ -1,4 +1,4 @@
-name: Cloudflare Pages
+name: Release Web
 
 on:
   pull_request: {}
@@ -9,10 +9,9 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy to Cloudflare Pages
+    name: Deploy to Web
     runs-on: ubuntu-20.04
 
-    if: false
     env:
       # Environment variables that are injected into the build
       ENABLE_EXPERIMENTAL_COREPACK: 1
