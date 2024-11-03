@@ -10,7 +10,6 @@ jobs:
     name: Publish to NPM
     runs-on: ubuntu-20.04
 
-    if: false
     steps:
       - name: Checkout ${{ github.event.release.tag_name }}
         uses: actions/checkout@v4.1.1

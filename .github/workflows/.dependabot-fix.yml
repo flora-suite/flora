@@ -16,7 +16,6 @@ jobs:
   fix:
     runs-on: ubuntu-latest
     # if: github.actor == 'dependabot[bot]'
-    if: false
 
     # IMPORTANT: setting YARN_ENABLE_SCRIPTS=false is critical to ensure that untrusted
     # PRs can't add an npm package and then use that to execute untrusted code in
