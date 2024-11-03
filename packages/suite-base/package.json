@@ -2,16 +2,16 @@
   "name": "@lichtblick/suite-base",
   "description": "Core components of Lichtblick Suite",
   "private": true,
-  "productName": "Lichtblick",
-  "productDescription": "Lichtblick Suite",
+  "productName": "Flora",
+  "productDescription": "Flora Suite",
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/lichtblick-suite/lichtblick/tree/main/packages/suite-base"
   },
   "author": {
-    "name": "Lichtblick",
-    "email": "lichtblick@bmwgroup.com"
+    "name": "Flora",
+    "email": "flora@gmail.com"
   },
   "homepage": "https://github.com/lichtblick-suite",
   "main": "src/index",

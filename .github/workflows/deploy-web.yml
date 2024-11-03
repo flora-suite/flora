@@ -33,15 +33,10 @@ jobs:
 
       - run: yarn web:build:prod
 
-      - name: vercel-cloudflare compatibility
-        run: |
-          cp web/.cloudflare/* web/.webpack/
-
-      - uses: cloudflare/pages-action@v1.5.0
+      - uses: NiceLabs/rclone-action@master
         with:
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          gitHubToken: ${{ secrets.LICHTBLICKBOT_GITHUB_TOKEN }}
-          branch: ${{ github.head_ref || github.ref_name }}
-          projectName: lichtblick-suite-oss
-          directory: web/.webpack
+          github-token: ${{ secrets.FLORA_GITHUB_TOKEN }}
+          config: ${{ secrets.RCLONE_CONFIG }}
+          config-secret-name: RCLONE_CONFIG
+      - name: Upload Pre-built images
+        run: rclone copy web/.webpack/ flora-app:/flora-app/

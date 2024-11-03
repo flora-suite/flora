@@ -172,7 +172,7 @@ export const mainConfig =
     </head>
     <script>
       global = globalThis;
-      globalThis.LICHTBLICK_SUITE_DEFAULT_LAYOUT = [/*LICHTBLICK_SUITE_DEFAULT_LAYOUT_PLACEHOLDER*/][0];
+      globalThis.FLORA_SUITE_DEFAULT_LAYOUT = [/*FLORA_SUITE_DEFAULT_LAYOUT_PLACEHOLDER*/][0];
     </script>
     <body>
       <div id="root"></div>
