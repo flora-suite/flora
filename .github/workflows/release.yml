@@ -62,6 +62,7 @@ jobs:
           git add package.json packages/suite/package.json yarn.lock
           git commit -m "Bump version v${{ env.new_version }} [skip actions]"
           git tag "v${{ env.new_version }}"
+          git pull origin main
           git push origin main --tags
 
       - name: Create GitHub Release
