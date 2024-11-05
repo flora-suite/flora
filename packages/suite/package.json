@@ -1,16 +1,16 @@
 {
   "name": "@lichtblick/suite",
-  "version": "1.8.0",
+  "version": "0.0.0",
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lichtblick-suite/lichtblick/tree/main/packages/suite"
+    "url": "https://github.com/flora-suite/flora/tree/main/packages/suite"
   },
   "author": {
-    "name": "Lichtblick",
-    "email": "lichtblick@bmwgroup.com"
+    "name": "flora",
+    "email": "leij59279@gmail.com"
   },
-  "homepage": "https://github.com/lichtblick-suite",
+  "homepage": "https://github.com/flora-suite",
   "main": "./src/index.ts",
   "files": [
     "src"
