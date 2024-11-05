@@ -1,19 +1,19 @@
 {
   "name": "@lichtblick/suite-base",
-  "description": "Core components of Lichtblick Suite",
+  "description": "Core components of Flora Suite",
   "private": true,
   "productName": "Flora",
   "productDescription": "Flora Suite",
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lichtblick-suite/lichtblick/tree/main/packages/suite-base"
+    "url": "https://github.com/flora-suite/flora/tree/main/packages/suite-base"
   },
   "author": {
     "name": "Flora",
     "email": "flora@gmail.com"
   },
-  "homepage": "https://github.com/lichtblick-suite",
+  "homepage": "https://github.com/flora-suite",
   "main": "src/index",
   "devDependencies": {
     "@emotion/cache": "11.13.1",

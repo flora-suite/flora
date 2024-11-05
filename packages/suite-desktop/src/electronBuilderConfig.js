@@ -153,7 +153,7 @@ function makeElectronBuilderConfig(params) {
           },
           {
             UTTypeConformsTo: ["public.data", "public.archive", "public.zip-archive"],
-            UTTypeDescription: "Lichtblick Extension File",
+            UTTypeDescription: "Flora Extension File",
             UTTypeIcons: { UTTypeIconText: "foxe" },
             UTTypeIdentifier: "dev.foxglove.extension",
             UTTypeTagSpecification: { "public.filename-extension": "foxe" },
