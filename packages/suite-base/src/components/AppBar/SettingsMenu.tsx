@@ -50,6 +50,9 @@ export function SettingsMenu({
   const onDocsClick = useCallback(() => {
     window.open("https://flora.fan/docs", "_blank");
   }, []);
+  const onGetDeskAppClick = useCallback(() => {
+    window.open("https://github.com/flora-suite/flora/releases", "_blank");
+  }, []);
 
   return (
     <>
@@ -85,6 +88,7 @@ export function SettingsMenu({
         </MenuItem>
         <Divider variant="middle" />
         <MenuItem onClick={onDocsClick}>{t("documentation")}</MenuItem>
+        <MenuItem onClick={onGetDeskAppClick}>{t("getDesktopApp")}</MenuItem>
       </Menu>
     </>
   );
