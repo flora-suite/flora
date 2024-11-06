@@ -1,3 +1,3 @@
-# Lichtblick Extension API
+# Flora Extension API
 
-This package contains type definitions for writing Lichtblick extensions.
+This package contains type definitions for writing Flora extensions.

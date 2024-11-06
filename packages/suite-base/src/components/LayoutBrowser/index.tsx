@@ -19,6 +19,7 @@ import moment from "moment";
 import { useSnackbar } from "notistack";
 import path from "path";
 import { MouseEvent, useCallback, useEffect, useLayoutEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useMountedState } from "react-use";
 import useAsyncFn from "react-use/lib/useAsyncFn";
 import { makeStyles } from "tss-react/mui";
@@ -81,6 +82,8 @@ export default function LayoutBrowser({
 
   const currentLayoutId = useCurrentLayoutSelector(selectedLayoutIdSelector);
   const { setSelectedLayoutId } = useCurrentLayoutActions();
+
+  const { t } = useTranslation("layoutBrowser");
 
   const [state, dispatch] = useLayoutBrowserReducer({
     lastSelectedId: currentLayoutId,
@@ -559,9 +562,9 @@ export default function LayoutBrowser({
           color="primary"
           key="add-layout"
           onClick={createNewLayout}
-          aria-label="Create new layout"
+          aria-label={t("createNewLayout")}
           data-testid="add-layout"
-          title="Create new layout"
+          title={t("createNewLayout")}
         >
           <AddIcon />
         </IconButton>,
@@ -569,8 +572,8 @@ export default function LayoutBrowser({
           color="primary"
           key="import-layout"
           onClick={importLayout}
-          aria-label="Import layout"
-          title="Import layout"
+          aria-label={t("importLayout")}
+          title={t("importLayout")}
         >
           <FileOpenOutlinedIcon />
         </IconButton>,
@@ -589,12 +592,12 @@ export default function LayoutBrowser({
             <List className={classes.actionList} disablePadding>
               <ListItem disablePadding>
                 <ListItemButton onClick={createNewLayout}>
-                  <ListItemText disableTypography>Create new layout</ListItemText>
+                  <ListItemText disableTypography>{t("createNewLayout")}</ListItemText>
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
                 <ListItemButton onClick={importLayout}>
-                  <ListItemText disableTypography>Import from file…</ListItemText>
+                  <ListItemText disableTypography>{t("importFromFile")}</ListItemText>
                 </ListItemButton>
               </ListItem>
             </List>
@@ -604,7 +607,7 @@ export default function LayoutBrowser({
         <LayoutSection
           disablePadding={enableNewTopNav}
           title={layoutManager.supportsSharing ? "Personal" : undefined}
-          emptyText="Add a new layout to get started with Lichtblick!"
+          emptyText={t("addANewLayoutToGetStartedWithFlora")}
           items={layouts.value?.personal}
           anySelectedModifiedLayouts={anySelectedModifiedLayouts}
           multiSelectedIds={state.selectedIds}

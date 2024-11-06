@@ -34,4 +34,5 @@ export const appBar: Partial<TypeOptions["resources"]["appBar"]> = {
   viewData: "查看数据",
   viewOurDocs: "查看我们的文档",
   profile: "个人资料",
+  getDesktopApp: "获取桌面应用",
 };

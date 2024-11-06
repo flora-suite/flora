@@ -4,13 +4,13 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/lichtblick-suite/lichtblick.git"
+    "url": "https://github.com/flora-suite/flora.git"
   },
   "author": {
-    "name": "Lichtblick",
-    "email": "lichtblick@bmwgroup.com"
+    "name": "Flora",
+    "email": "leij59279@gmail.com"
   },
-  "homepage": "https://github.com/lichtblick-suite",
+  "homepage": "https://github.com/flora-suite",
   "main": "./src/index.ts",
   "files": [
     "dist",

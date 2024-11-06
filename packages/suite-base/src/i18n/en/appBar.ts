@@ -23,7 +23,7 @@ export const appBar = {
   openLocalFile: "Open local file…",
   recentDataSources: "Recent data sources",
   recentlyViewed: "Recently viewed",
-  settings: "settings",
+  settings: "Settings",
   showLeftSidebar: "Show left sidebar",
   showRightSidebar: "Show right sidebar",
   signIn: "Sign in",
@@ -34,4 +34,5 @@ export const appBar = {
   viewData: "View data",
   viewOurDocs: "View our docs",
   profile: "Profile",
+  getDesktopApp: "Get desktop app",
 };

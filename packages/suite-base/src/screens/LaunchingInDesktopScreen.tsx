@@ -22,7 +22,7 @@ export function LaunchingInDesktopScreen(): ReactElement {
   }
 
   useEffect(() => {
-    const desktopURL = new URL("lichtblick://open");
+    const desktopURL = new URL("flora://open");
     cleanWebURL.searchParams.forEach((v, k) => {
       if (k && v) {
         desktopURL.searchParams.set(k, v);
@@ -68,7 +68,7 @@ export function LaunchingInDesktopScreen(): ReactElement {
         style={{ maxWidth: 480 }}
       >
         <Typography align="center" variant="h2" fontWeight={600}>
-          Launching Lichtblick…
+          Launching Flora Studio…
         </Typography>
         <Typography align="center" fontWeight={600}>
           We’ve directed you to the desktop app.
@@ -86,10 +86,10 @@ export function LaunchingInDesktopScreen(): ReactElement {
             <Link
               color="primary"
               underline="hover"
-              href="https://github.com/lichtblick-suite/lichtblick/releases"
+              href="https://github.com/flora-suite/flora/releases"
               target="_blank"
             >
-              Download Lichtblick
+              Download Flora
             </Link>
           </Typography>
         </Stack>

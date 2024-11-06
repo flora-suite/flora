@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import { GlobalStyles } from "@mui/material";
-import { Story, StoryContext } from "@storybook/react";
+import { StoryFn, StoryContext } from "@storybook/react";
 import { useMemo, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -163,7 +163,7 @@ function StudioContextProviders({
   );
 }
 
-function WithContextProviders(Child: Story, ctx: StoryContext): JSX.Element {
+function WithContextProviders(Child: StoryFn, ctx: StoryContext): JSX.Element {
   if (
     (ctx.parameters.fileName as string).includes("/packages/suite-base/") ||
     (ctx.parameters.fileName as string).includes("/packages/theme/")
@@ -186,7 +186,7 @@ function WithI18n({ ctx, children }: React.PropsWithChildren<{ ctx: StoryContext
   return <>{children}</>;
 }
 
-function WithI18nUnlessDisabled(Child: Story, ctx: StoryContext): JSX.Element {
+function WithI18nUnlessDisabled(Child: StoryFn, ctx: StoryContext): JSX.Element {
   const { disableI18n = false }: { disableI18n?: boolean } = ctx.parameters;
   if (disableI18n) {
     return <Child />;

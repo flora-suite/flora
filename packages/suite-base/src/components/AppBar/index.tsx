@@ -10,6 +10,7 @@ import {
   PanelRight24Regular,
   SlideAdd24Regular,
 } from "@fluentui/react-icons";
+import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import { Avatar, IconButton, Tooltip } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -296,7 +297,9 @@ export function AppBar(props: AppBarProps): JSX.Element {
                   }}
                   data-testid="user-button"
                 >
-                  <Avatar className={classes.avatar} variant="rounded" />
+                  <Avatar className={classes.avatar} variant="rounded" >
+                    <SettingsApplicationsIcon />
+                  </Avatar>
                 </IconButton>
               </Tooltip>
               {showCustomWindowControls && (
