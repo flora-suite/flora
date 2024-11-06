@@ -17,6 +17,15 @@ Flora is an integrated visualization and diagnosis tool for robotics, available 
   </p>
 </div>
 
+## How to install
+### macos
+``` shell
+brow tab flora-suite/homebrew-flora
+brew install flora
+```
+### windows and linux
+go to [Download](https://github.com/flora-suite/flora/releases)
+
 **Dependencies:**
 
 - [Node.js](https://nodejs.org/en/) v16.10+
