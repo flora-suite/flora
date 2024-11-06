@@ -9,6 +9,7 @@ export * from "./dataSourceInfo";
 export * from "./desktopWindow";
 export * from "./general";
 export * from "./incompatibleLayoutVersion";
+export * from "./layoutBrowser";
 export * from "./log";
 export * from "./openDialog";
 export * from "./panelConfigVersionGuard";
