@@ -12,10 +12,10 @@ coverage/
 
 # Yarn
 .yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/sdks
-.pnp.*
+# !.yarn/patches
+# !.yarn/plugins
+# !.yarn/sdks
+# .pnp.*
 
 
 # Extensions
