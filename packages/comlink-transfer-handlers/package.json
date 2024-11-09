@@ -1,0 +1,27 @@
+{
+  "name": "@lichtblick/comlink-transfer-handlers",
+  "license": "MPL-2.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flora-suite/flora.git"
+  },
+  "author": {
+    "name": "Flora",
+    "email": "leij59279@gmail.com"
+  },
+  "homepage": "https://github.com/flora-suite",
+  "main": "./src/index.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "prepack": "tsc -b"
+  },
+  "devDependencies": {
+    "@lichtblick/comlink": "1.0.3",
+    "@lichtblick/tsconfig": "1.0.0",
+    "typescript": "5.3.3"
+  }
+}
