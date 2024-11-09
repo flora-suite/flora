@@ -1,0 +1,11 @@
+{
+  "extends": "@lichtblick/tsconfig/base",
+  "include": ["**/*"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ESNext.Disposable"],
+    "module": "commonjs",
+    "noEmit": true,
+    "experimentalDecorators": true
+  }
+}

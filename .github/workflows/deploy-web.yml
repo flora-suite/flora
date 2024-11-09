@@ -1,0 +1,45 @@
+name: Release Web
+
+on:
+  workflow_dispatch:
+    inputs:
+      pre_release:
+        type: boolean
+        description: "Pre-release"
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Web
+    runs-on: ubuntu-20.04
+
+    env:
+      # Environment variables that are injected into the build
+      ENABLE_EXPERIMENTAL_COREPACK: 1
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          submodules: true
+
+      - uses: actions/setup-node@v4.0.3
+        with:
+          node-version: 16.17
+
+      - run: corepack enable
+
+      - run: yarn install --immutable
+
+      - run: yarn web:build:prod
+
+      - uses: NiceLabs/rclone-action@master
+        with:
+          github-token: ${{ secrets.FLORA_GITHUB_TOKEN }}
+          config: ${{ secrets.RCLONE_CONFIG }}
+          config-secret-name: RCLONE_CONFIG
+      - name: Upload Pre-built images
+        run: rclone copy web/.webpack/ flora-app:/flora-app/

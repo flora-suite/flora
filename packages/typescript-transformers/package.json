@@ -1,0 +1,28 @@
+{
+  "name": "@lichtblick/typescript-transformers",
+  "license": "MPL-2.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flora-suite/flora.git"
+  },
+  "author": {
+    "name": "Flora",
+    "email": "leij59279@gmail.com"
+  },
+  "homepage": "https://github.com/flora-suite",
+  "main": "./src/index.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "prepack": "tsc -b"
+  },
+  "dependencies": {
+    "typescript": "5.3.3"
+  },
+  "devDependencies": {
+    "@lichtblick/tsconfig": "1.0.0"
+  }
+}

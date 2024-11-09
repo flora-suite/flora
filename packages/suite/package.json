@@ -1,0 +1,25 @@
+{
+  "name": "@lichtblick/suite",
+  "version": "0.0.0",
+  "license": "MPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flora-suite/flora/tree/main/packages/suite"
+  },
+  "author": {
+    "name": "flora",
+    "email": "leij59279@gmail.com"
+  },
+  "homepage": "https://github.com/flora-suite",
+  "main": "./src/index.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "prepack": "tsc -b tsconfig.json"
+  },
+  "devDependencies": {
+    "@lichtblick/tsconfig": "1.0.0",
+    "typescript": "5.3.3"
+  }
+}
