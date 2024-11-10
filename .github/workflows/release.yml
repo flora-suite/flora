@@ -35,10 +35,12 @@ jobs:
         run: corepack enable yarn
 
       - name: Bump minor version
+        if: ${{ github.event.inputs.version_type == 'minor' }}
         run: |
           yarn version minor
 
       - name: Bump patch version
+        if: ${{ github.event.inputs.version_type == 'patch' }}
         run: |
           yarn version patch
 
