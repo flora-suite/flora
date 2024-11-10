@@ -7,6 +7,14 @@ on:
         type: boolean
         description: "Pre-release"
         default: true
+      version_type:
+        type: choice
+        description: "Version type"
+        options:
+          - minor
+          # - major
+          - patch
+        default: patch
 
 jobs:
   build:
@@ -26,15 +34,22 @@ jobs:
       - name: Enable corepack
         run: corepack enable yarn
 
-      - name: Bump minor version and save it on environment variable
+      - name: Bump minor version
         run: |
           yarn version minor
+
+      - name: Bump patch version
+        run: |
+          yarn version patch
+
+      - name: set on environment variable
+        run: |
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=$NEW_VERSION" >> $GITHUB_ENV
 
-      - name: Bump @lichtblick/suite version
-        run: yarn version minor
-        working-directory: packages/suite
+      # - name: Bump @lichtblick/suite version
+      #   run: yarn version minor
+      #   working-directory: packages/suite
 
       - name: Install dependencies
         run: yarn install --immutable
