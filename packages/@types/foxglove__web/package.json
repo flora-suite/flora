@@ -1,4 +1,5 @@
 {
   "name": "@types/foxglove__web",
+  "version": "0.0.0",
   "types": "index.d.ts"
 }

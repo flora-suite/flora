@@ -1,5 +1,6 @@
 {
   "name": "@lichtblick/suite-base",
+  "version": "0.0.0",
   "description": "Core components of Flora Suite",
   "private": true,
   "productName": "Flora",

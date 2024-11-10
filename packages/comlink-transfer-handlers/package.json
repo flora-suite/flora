@@ -1,6 +1,7 @@
 {
   "name": "@lichtblick/comlink-transfer-handlers",
   "license": "MPL-2.0",
+  "version": "0.0.0",
   "private": true,
   "repository": {
     "type": "git",
