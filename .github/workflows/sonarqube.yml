@@ -19,9 +19,9 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis=
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4.0.3
+        uses: actions/setup-node@v4
         with:
-          node-version: lts
+          node-version: lts/*
 
       - name: Enable corepack
         run: corepack enable yarn
