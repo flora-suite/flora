@@ -11,7 +11,7 @@
   "transformIgnorePatterns": [],
   "globals": {
     "ReactNull": null,
-    "LICHTBLICK_SUITE_VERSION": "TEST"
+    "FLORA_SUITE_VERSION": "TEST"
   },
   "setupFiles": ["<rootDir>/src/test/setup.ts", "jest-canvas-mock", "fake-indexeddb/auto"],
   "setupFilesAfterEnv": ["<rootDir>/src/test/setupTestFramework.ts"],
@@ -24,5 +24,6 @@
     "@lichtblick/suite-base/(.*)": "<rootDir>/src/$1"
   },
   "//": "Native find is slow because it does not exclude files: https://github.com/facebook/jest/pull/11264#issuecomment-825377579",
-  "haste": { "forceNodeFilesystemAPI": true }
+  "haste": { "forceNodeFilesystemAPI": true },
+  "testEnvironment": "jsdom"
 }

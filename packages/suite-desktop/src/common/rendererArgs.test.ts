@@ -7,7 +7,7 @@ import { decodeRendererArg, encodeRendererArg } from "./rendererArgs";
 describe("encodeRendererArg & decodeRendererArg", () => {
   it("encodes and decodes", () => {
     const encoded = encodeRendererArg("deepLinks", ["flora://example"]);
-    expect(encoded).toEqual("--deepLinks=WyJsaWNodGJsaWNrOi8vZXhhbXBsZSJd");
+    expect(encoded).toEqual("--deepLinks=WyJmbG9yYTovL2V4YW1wbGUiXQ==");
     expect(decodeRendererArg("deepLinks", ["arg1", encoded, "arg2"])).toEqual(["flora://example"]);
   });
 });
