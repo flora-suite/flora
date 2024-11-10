@@ -15,7 +15,7 @@ coverage/
 # !.yarn/patches
 # !.yarn/plugins
 # !.yarn/sdks
-# .pnp.*
+.pnp.*
 
 
 # Extensions
