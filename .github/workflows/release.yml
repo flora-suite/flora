@@ -16,10 +16,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.FLORA_GITHUB_TOKEN }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4.0.3
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
@@ -71,7 +71,7 @@ jobs:
           commit: main
           generateReleaseNotes: true
           prerelease: ${{ github.event.inputs.pre_release }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.FLORA_GITHUB_TOKEN }}
           artifacts: |
             dist/flora-${{ env.new_version }}-linux-amd64.deb
             dist/flora-${{ env.new_version }}-linux-x64.tar.gz
