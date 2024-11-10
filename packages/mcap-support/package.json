@@ -1,5 +1,6 @@
 {
   "name": "@lichtblick/mcap-support",
+  "version": "0.0.0",
   "description": "Common schema and message parsing logic for use with MCAP and related protocols",
   "license": "MPL-2.0",
   "private": true,

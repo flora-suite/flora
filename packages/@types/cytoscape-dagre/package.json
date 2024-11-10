@@ -1,4 +1,5 @@
 {
   "name": "@types/cytoscape-dagre",
+  "version": "0.0.0",
   "types": "index.d.ts"
 }

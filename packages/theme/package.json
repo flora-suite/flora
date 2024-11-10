@@ -1,5 +1,6 @@
 {
   "name": "@lichtblick/theme",
+  "version": "0.0.0",
   "description": "Foxglove @mui/material theme",
   "private": true,
   "repository": {
