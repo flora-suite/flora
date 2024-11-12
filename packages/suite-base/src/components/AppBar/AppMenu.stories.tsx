@@ -76,91 +76,36 @@ type Story = StoryObj<StoryArgs>;
 export const Default: Story = {};
 
 export const FileMenuDark: Story = {
-  args: { testId: "app-menu-file" },
+  args: { testId: "menu-item-open-connection" },
   parameters: { colorScheme: "dark" },
 };
 
 export const FileMenuDarkChinese: Story = {
-  args: { testId: "app-menu-file" },
+  args: { testId: "menu-item-open-connection" },
   parameters: { colorScheme: "dark", forceLanguage: "zh" },
 };
 
 export const FileMenuDarkJapanese: Story = {
-  args: { testId: "app-menu-file" },
+  args: { testId: "menu-item-open-connection" },
   parameters: { colorScheme: "dark", forceLanguage: "ja" },
 };
 
 export const FileMenuLight: Story = {
-  args: { testId: "app-menu-file" },
+  args: { testId: "menu-item-open-connection" },
   parameters: { colorScheme: "light" },
 };
 
 export const FileMenuLightChinese: Story = {
-  args: { testId: "app-menu-file" },
+  args: { testId: "menu-item-open-connection" },
   parameters: { colorScheme: "light", forceLanguage: "zh" },
 };
 
 export const FileMenuLightJapanese: Story = {
-  args: { testId: "app-menu-file" },
+  args: { testId: "menu-item-open-connection" },
   parameters: { colorScheme: "light", forceLanguage: "ja" },
 };
 
 export const ViewMenuDark: Story = {
-  args: { testId: "app-menu-view" },
+  args: { testId: "menu-item-open" },
   parameters: { colorScheme: "dark" },
-};
-
-export const ViewMenuDarkChinese: Story = {
-  args: { testId: "app-menu-view" },
-  parameters: { colorScheme: "dark", forceLanguage: "zh" },
-};
-
-export const ViewMenuDarkJapanese: Story = {
-  args: { testId: "app-menu-view" },
-  parameters: { colorScheme: "dark", forceLanguage: "ja" },
-};
-
-export const ViewMenuLight: Story = {
-  args: { testId: "app-menu-view" },
-  parameters: { colorScheme: "light" },
-};
-
-export const ViewMenuLightChinese: Story = {
-  args: { testId: "app-menu-view" },
-  parameters: { colorScheme: "light", forceLanguage: "zh" },
-};
-
-export const ViewMenuLightJapanese: Story = {
-  ...ViewMenuLight,
-  parameters: { colorScheme: "light", forceLanguage: "ja" },
-};
-
-export const HelpMenuDark: Story = {
-  args: { testId: "app-menu-help" },
-  parameters: { colorScheme: "dark" },
-};
-
-export const HelpMenuDarkChinese: Story = {
-  args: { testId: "app-menu-help" },
-  parameters: { colorScheme: "dark", forceLanguage: "zh" },
-};
-
-export const HelpMenuDarkJapanese: Story = {
-  args: { testId: "app-menu-help" },
-  parameters: { colorScheme: "dark", forceLanguage: "ja" },
-};
-
-export const HelpMenuLight: Story = {
-  args: { testId: "app-menu-help" },
-  parameters: { colorScheme: "light" },
-};
-
-export const HelpMenuLightChinese: Story = {
-  args: { testId: "app-menu-help" },
-  parameters: { colorScheme: "light", forceLanguage: "zh" },
-};
-
-export const HelpMenuLightJapanese: Story = {
-  args: { testId: "app-menu-help" },
-  parameters: { colorScheme: "light", forceLanguage: "ja" },
 };
