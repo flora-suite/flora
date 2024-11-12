@@ -5,7 +5,7 @@
 /* eslint-disable filenames/match-exported */
 
 import { StorybookConfig } from "@storybook/react-webpack5";
-import path from "path";
+import path, { dirname, join } from "path";
 import { Configuration } from "webpack";
 
 import { makeConfig } from "@lichtblick/suite-base/webpack";
@@ -14,12 +14,12 @@ const storybookConfig: StorybookConfig = {
   // Workaround for https://github.com/storybookjs/storybook/issues/19446
   stories: ["../packages/**/!(node_modules)**/*.stories.tsx"],
   addons: [
-    "@storybook/addon-essentials",
-    "@storybook/addon-actions",
-    "@storybook/addon-interactions",
+    getAbsolutePath("@storybook/addon-essentials"),
+    getAbsolutePath("@storybook/addon-actions"),
+    // getAbsolutePath("@storybook/addon-interactions"),
   ],
   framework: {
-    name: "@storybook/react-webpack5",
+    name: getAbsolutePath("@storybook/react-webpack5"),
     options: {
       legacyRootApi: true,
     },
@@ -67,3 +67,7 @@ const storybookConfig: StorybookConfig = {
 };
 
 module.exports = storybookConfig;
+
+function getAbsolutePath(value: string): string {
+  return dirname(require.resolve(join(value, "package.json")));
+}
