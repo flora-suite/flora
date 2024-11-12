@@ -20,6 +20,7 @@ export const appBar: Partial<TypeOptions["resources"]["appBar"]> = {
   joinSlackCommunity: "加入 Slack 社区",
   noDataSource: "没有数据源",
   open: "打开……",
+  openDataSources: "打开数据源",
   openConnection: "打开连接……",
   openLocalFile: "打开本地文件……",
   recentDataSources: "最近使用的数据源",
