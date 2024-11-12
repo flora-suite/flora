@@ -55,7 +55,7 @@ export function NestedMenuItem(
                 dense={true}
               >
                 {item.icon != undefined ? <ListItemIcon>{item.icon}</ListItemIcon> : ReactNull}
-                <ListItemText flex-grow-1>{item.label}</ListItemText>
+                <ListItemText>{item.label}</ListItemText>
                 {item.shortcut && <Typography flex-grow-0 variant="body2">
                   <kbd>{item.shortcut}</kbd>
                 </Typography>}
