@@ -9,7 +9,7 @@ import { User } from "@lichtblick/suite-base/context/CurrentUserContext";
 import AccountInfo from "./AccountInfo";
 
 export default {
-  title: "AccountSettingsSidebar/AccountInfo",
+  title: "Base/AccountInfo",
   component: AccountInfo,
 };
 
