@@ -195,6 +195,8 @@ export function AppMenu(props: AppMenuProps): JSX.Element {
         disablePortal={disablePortal}
         id="app-menu"
         open={open}
+        onClose={handleClose}
+        autoFocus={false}
         disableAutoFocusItem
         MenuListProps={{
           "aria-labelledby": "app-menu-button",
