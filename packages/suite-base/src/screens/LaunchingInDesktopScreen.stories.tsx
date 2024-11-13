@@ -8,7 +8,7 @@ import { ReactElement } from "react";
 import { LaunchingInDesktopScreen } from "@lichtblick/suite-base/screens/LaunchingInDesktopScreen";
 
 export default {
-  title: "LaunchingInDesktopScreen",
+  title: "Base/LaunchingInDesktopScreen",
   component: LaunchingInDesktopScreen,
 };
 
