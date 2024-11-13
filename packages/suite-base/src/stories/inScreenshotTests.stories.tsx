@@ -7,7 +7,7 @@ import { StoryObj } from "@storybook/react";
 import inScreenshotTests from "@lichtblick/suite-base/stories/inScreenshotTests";
 
 export default {
-  title: "inScreenshotTests",
+  title: "Base/inScreenshotTests",
 };
 
 export const InScreenshotTests: StoryObj = {
