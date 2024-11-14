@@ -23,7 +23,7 @@ jobs:
 
       - uses: actions/setup-node@v4.0.3
         with:
-          node-version: 16.17
+          node-version: lts/*
 
       - run: corepack enable
 
