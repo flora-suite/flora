@@ -2,11 +2,6 @@ name: Release Web
 
 on:
   workflow_dispatch:
-    inputs:
-      pre_release:
-        type: boolean
-        description: "Pre-release"
-        default: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
