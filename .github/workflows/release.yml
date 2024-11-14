@@ -15,11 +15,15 @@ on:
           # - major
           - patch
         default: patch
+      web:
+        type: boolean
+        description: "Deploy Web"
+        default: false
 
 jobs:
-  build:
+  release_client:
+    name: Build and Release Client
     runs-on: macOS
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -97,3 +101,35 @@ jobs:
             dist/latest-linux.yml
             dist/latest-mac.yml
             dist/latest.yml
+
+  deploy_web:
+    name: Deploy to Web
+    runs-on: ubuntu-20.04
+    if: ${{ github.event.inputs.web }}
+
+    env:
+      # Environment variables that are injected into the build
+      ENABLE_EXPERIMENTAL_COREPACK: 1
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          submodules: true
+
+      - uses: actions/setup-node@v4.0.3
+        with:
+          node-version: lts/*
+
+      - run: corepack enable
+
+      - run: yarn install --immutable
+
+      - run: yarn web:build:prod
+
+      - uses: NiceLabs/rclone-action@master
+        with:
+          github-token: ${{ secrets.FLORA_GITHUB_TOKEN }}
+          config: ${{ secrets.RCLONE_CONFIG }}
+          config-secret-name: RCLONE_CONFIG
+      - name: Upload Pre-built images
+        run: rclone sync web/.webpack/ flora-app:/flora-app/
