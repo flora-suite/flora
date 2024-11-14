@@ -2,29 +2,35 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { StoryObj } from "@storybook/react";
+import { StoryContext, StoryObj } from "@storybook/react";
 import { fireEvent, screen, waitFor } from "@storybook/testing-library";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import MultiProvider from "@lichtblick/suite-base/components/MultiProvider";
 import Panel from "@lichtblick/suite-base/components/Panel";
 import { usePanelContext } from "@lichtblick/suite-base/components/PanelContext";
 import { DraggedMessagePath } from "@lichtblick/suite-base/components/PanelExtensionAdapter";
 import PanelToolbar from "@lichtblick/suite-base/components/PanelToolbar";
-import { LayoutData } from "@lichtblick/suite-base/context/CurrentLayoutContext";
+import { LayoutData, LayoutID } from "@lichtblick/suite-base/context/CurrentLayoutContext";
+import LayoutStorageContext from "@lichtblick/suite-base/context/LayoutStorageContext";
 import PanelCatalogContext, {
   PanelCatalog,
   PanelInfo,
 } from "@lichtblick/suite-base/context/PanelCatalogContext";
 import Tab from "@lichtblick/suite-base/panels/Tab";
 import MockCurrentLayoutProvider from "@lichtblick/suite-base/providers/CurrentLayoutProvider/MockCurrentLayoutProvider";
+import { defaultPlaybackConfig } from "@lichtblick/suite-base/providers/CurrentLayoutProvider/reducers";
 import EventsProvider from "@lichtblick/suite-base/providers/EventsProvider";
+import LayoutManagerProvider from "@lichtblick/suite-base/providers/LayoutManagerProvider";
+import { ISO8601Timestamp, Layout } from "@lichtblick/suite-base/services/ILayoutStorage";
+import LayoutManager from "@lichtblick/suite-base/services/LayoutManager/LayoutManager";
+import MockLayoutStorage from "@lichtblick/suite-base/services/MockLayoutStorage";
 import PanelSetup, { Fixture } from "@lichtblick/suite-base/stories/PanelSetup";
 
 import Workspace from "./Workspace";
 
 export default {
-  title: "Workspace",
+  title: "Base/Workspace",
   component: Workspace,
   parameters: {
     colorScheme: "light",
@@ -101,11 +107,54 @@ class MockPanelCatalog implements PanelCatalog {
   }
 }
 
+const DEFAULT_LAYOUT_FOR_TESTS: LayoutData = {
+  configById: {},
+  globalVariables: {},
+  userNodes: {},
+  playbackConfig: defaultPlaybackConfig,
+};
+
+const exampleCurrentLayout: Layout = {
+  id: "test-id" as LayoutID,
+  name: "Current Layout",
+  baseline: {
+    data: DEFAULT_LAYOUT_FOR_TESTS,
+    savedAt: new Date(10).toISOString() as ISO8601Timestamp,
+  },
+  permission: "CREATOR_WRITE",
+  working: undefined,
+  syncInfo: undefined,
+};
+
+const notCurrentLayout: Layout = {
+  id: "not-current" as LayoutID,
+  name: "Another Layout",
+  baseline: {
+    data: DEFAULT_LAYOUT_FOR_TESTS,
+    savedAt: new Date(10).toISOString() as ISO8601Timestamp,
+  },
+  permission: "CREATOR_WRITE",
+  working: undefined,
+  syncInfo: undefined,
+};
+
+const shortLayout: Layout = {
+  id: "short-id" as LayoutID,
+  name: "Short",
+  baseline: {
+    data: DEFAULT_LAYOUT_FOR_TESTS,
+    savedAt: new Date(10).toISOString() as ISO8601Timestamp,
+  },
+  permission: "CREATOR_WRITE",
+  working: undefined,
+  syncInfo: undefined,
+};
+
 export const Basic: StoryObj<{ initialLayoutState: Partial<LayoutData> }> = {
   args: {
     initialLayoutState: { layout: "Fake" },
   },
-  render: (args) => {
+  render: (args, ctx: StoryContext) => {
     const fixture: Fixture = {
       topics: [{ name: "foo topic", schemaName: "test.Foo" }],
       datatypes: new Map([
@@ -120,8 +169,22 @@ export const Basic: StoryObj<{ initialLayoutState: Partial<LayoutData> }> = {
         ],
       ]),
     };
+    const storage = useMemo(
+      () =>
+        new MockLayoutStorage(
+          LayoutManager.LOCAL_STORAGE_NAMESPACE,
+          (ctx.parameters.mockLayouts as Layout[] | undefined) ?? [
+            notCurrentLayout,
+            exampleCurrentLayout,
+            shortLayout,
+          ],
+        ),
+      [ctx.parameters.mockLayouts],
+    );
     const providers = [
       /* eslint-disable react/jsx-key */
+      <LayoutStorageContext.Provider value={storage} />,
+      <LayoutManagerProvider />,
       <PanelSetup fixture={fixture}>{undefined}</PanelSetup>,
       <EventsProvider />,
       <PanelCatalogContext.Provider value={new MockPanelCatalog()} />,

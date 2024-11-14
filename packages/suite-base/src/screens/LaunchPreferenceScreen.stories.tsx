@@ -8,7 +8,7 @@ import { ReactElement } from "react";
 import { LaunchPreferenceScreen } from "@lichtblick/suite-base/screens/LaunchPreferenceScreen";
 
 export default {
-  title: "LaunchPreferenceScreen",
+  title: "Base/LaunchPreferenceScreen",
   component: LaunchPreferenceScreen,
 };
 
