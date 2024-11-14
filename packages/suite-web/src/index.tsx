@@ -74,6 +74,8 @@ export async function main(getParams: () => Promise<MainParams> = async () => ({
   await waitForFonts();
   await initI18n();
 
+  document.getElementById("splash-screen")?.remove();
+
   const { WebRoot } = await import("./WebRoot");
   const params = await getParams();
   const rootElement = params.rootElement ?? (
