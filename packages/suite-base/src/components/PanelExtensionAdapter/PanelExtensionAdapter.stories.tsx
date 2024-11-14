@@ -21,7 +21,7 @@ import PanelSetup from "@lichtblick/suite-base/stories/PanelSetup";
 import PanelExtensionAdapter, { VERSION_CONFIG_KEY } from "./PanelExtensionAdapter";
 
 export default {
-  title: "PanelExtensionAdapter",
+  title: "Base/PanelExtensionAdapter",
   component: PanelExtensionAdapter,
 };
 
