@@ -7,8 +7,8 @@
   <a href="https://github.com/flora-suite/flora/issues"><img src="https://img.shields.io/github/issues/flora-suite/flora" alt="Issues Badge"/></a>
   <a href="https://github.com/flora-suite/flora/issues"><img src="https://img.shields.io/github/package-json/v/flora-suite/flora" alt="Versions Badge"/></a>
   <a href="https://github.com/flora-suite/flora/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/flora-suite/flora?color=2b9348"></a>
- <img alt="GitHub License" src="https://img.shields.io/github/license/flora-suite/flora">
-  <img src="https://sonarcloud.io/api/project_badges/measure?project=flora-suite_flora2&metric=alert_status" alt="Quality Gate Status"/>
+  <img alt="GitHub License" src="https://img.shields.io/github/license/flora-suite/flora">
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=flora-suite_flora&metric=alert_status" alt="Quality Gate Status"/>
 <br />
 <p align="center">
 Flora is an integrated visualization and diagnosis tool for robotics, available in your browser or as a desktop app on Linux, Windows, and macOS.
