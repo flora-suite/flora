@@ -3,6 +3,14 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
+      client:
+        type: boolean
+        description: "Deploy Web"
+        default: true
+      web:
+        type: boolean
+        description: "Deploy Web"
+        default: false
       pre_release:
         type: boolean
         description: "Pre-release"
@@ -15,15 +23,12 @@ on:
           # - major
           - patch
         default: patch
-      web:
-        type: boolean
-        description: "Deploy Web"
-        default: false
 
 jobs:
   release_client:
     name: Build and Release Client
     runs-on: macOS
+    if: ${{ github.event.inputs.client }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
