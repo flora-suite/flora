@@ -42,4 +42,4 @@ jobs:
           config: ${{ secrets.RCLONE_CONFIG }}
           config-secret-name: RCLONE_CONFIG
       - name: Upload Pre-built images
-        run: rclone copy web/.webpack/ flora-app:/flora-app/
+        run: rclone sync web/.webpack/ flora-app:/flora-app/
