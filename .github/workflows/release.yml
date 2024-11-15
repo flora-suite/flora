@@ -5,7 +5,7 @@ on:
     inputs:
       client:
         type: boolean
-        description: "Deploy Web"
+        description: "Release Client"
         default: true
       web:
         type: boolean
