@@ -445,7 +445,7 @@ export default class LayoutManager implements ILayoutManager {
         working: undefined,
       });
     });
-    this.#notifyChangeListeners({ type: "change", updatedLayout: result });
+    this.#notifyChangeListeners({ type: "revert", updatedLayout: result });
     return result;
   }
 
