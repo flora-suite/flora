@@ -134,7 +134,7 @@ export function App(props: AppProps): JSX.Element {
                 <DocumentTitleAdapter />
                 <SendNotificationToastAdapter />
                 <DndProvider backend={HTML5Backend}>
-                  <Suspense fallback={<></>}>
+                  <Suspense fallback={<>loading...</>}>
                     <PanelCatalogProvider>
                       <Workspace
                         deepLinks={deepLinks}
