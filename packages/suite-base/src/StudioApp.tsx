@@ -5,7 +5,9 @@
 import { Fragment, Suspense, useEffect, useMemo } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { BrowserRouter, Routes, Route } from "react-router";
 
+import { Dashboard } from "@lichtblick/suite-base/Dashboard";
 import { IdbLayoutStorage } from "@lichtblick/suite-base/IdbLayoutStorage";
 import LayoutStorageContext from "@lichtblick/suite-base/context/LayoutStorageContext";
 import NativeAppMenuContext from "@lichtblick/suite-base/context/NativeAppMenuContext";
@@ -109,19 +111,24 @@ export function StudioApp(): JSX.Element {
         <DndProvider backend={HTML5Backend}>
           <Suspense fallback={<></>}>
             <PanelCatalogProvider>
-              <Workspace
-                deepLinks={deepLinks}
-                appBarLeftInset={appBarLeftInset}
-                onAppBarDoubleClick={onAppBarDoubleClick}
-                showCustomWindowControls={customWindowControlProps?.showCustomWindowControls}
-                isMaximized={customWindowControlProps?.isMaximized}
-                initialZoomFactor={customWindowControlProps?.initialZoomFactor}
-                onMinimizeWindow={customWindowControlProps?.onMinimizeWindow}
-                onMaximizeWindow={customWindowControlProps?.onMaximizeWindow}
-                onUnmaximizeWindow={customWindowControlProps?.onUnmaximizeWindow}
-                onCloseWindow={customWindowControlProps?.onCloseWindow}
-                AppBarComponent={AppBarComponent}
-              />
+              <BrowserRouter>
+                <Routes>
+                  <Route index element={<Dashboard />} />
+                  <Route path="/view" element={<Workspace
+                    deepLinks={deepLinks}
+                    appBarLeftInset={appBarLeftInset}
+                    onAppBarDoubleClick={onAppBarDoubleClick}
+                    showCustomWindowControls={customWindowControlProps?.showCustomWindowControls}
+                    isMaximized={customWindowControlProps?.isMaximized}
+                    initialZoomFactor={customWindowControlProps?.initialZoomFactor}
+                    onMinimizeWindow={customWindowControlProps?.onMinimizeWindow}
+                    onMaximizeWindow={customWindowControlProps?.onMaximizeWindow}
+                    onUnmaximizeWindow={customWindowControlProps?.onUnmaximizeWindow}
+                    onCloseWindow={customWindowControlProps?.onCloseWindow}
+                    AppBarComponent={AppBarComponent}
+                  />} />
+                </Routes>
+              </BrowserRouter>
             </PanelCatalogProvider>
           </Suspense>
         </DndProvider>

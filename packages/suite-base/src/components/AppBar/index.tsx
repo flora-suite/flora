@@ -12,7 +12,7 @@ import {
 } from "@fluentui/react-icons";
 import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
 import { Avatar, IconButton, Tooltip } from "@mui/material";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { useTranslation } from "react-i18next";
 import tc from "tinycolor2";
 import { makeStyles } from "tss-react/mui";
@@ -338,4 +338,23 @@ export function AppBar(props: AppBarProps): JSX.Element {
       />
     </>
   );
+}
+
+export function DashboardAppBar({ children }: { children?: ReactElement }): JSX.Element {
+  const { classes } = useStyles({});
+  return (<>
+    <AppBarContainer onDoubleClick={() => { }} leftInset={0}>
+      <div className={classes.toolbar}>
+        <div className={classes.start}>
+        </div>
+
+        <div className={classes.middle}>
+          {children}
+        </div>
+
+        <div className={classes.end}>
+        </div>
+      </div>
+    </AppBarContainer>
+  </>);
 }
