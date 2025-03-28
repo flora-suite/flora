@@ -78,7 +78,7 @@
     "@babel/preset-env": "7.25.3",
     "@babel/preset-react": "7.25.9",
     "@babel/preset-typescript": "7.24.7",
-    "@foxglove/eslint-plugin": "1.0.1",
+    "@foxglove/eslint-plugin": "2.0.0",
     "@foxglove/tsconfig": "1.0.0",
     "@lichtblick/eslint-plugin-suite": "workspace:*",
     "@octokit/rest": "20.0.2",
