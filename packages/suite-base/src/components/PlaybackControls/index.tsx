@@ -59,7 +59,7 @@ const useStyles = makeStyles()((theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
-    padding: theme.spacing(0.5, 1, 1, 1),
+    padding: theme.spacing(0.5, 1, 0.5, 1),
     position: "relative",
     backgroundColor: theme.palette.background.paper,
     borderTop: `1px solid ${theme.palette.divider}`,
