@@ -3355,7 +3355,7 @@ __metadata:
     moment: "npm:2.29.4"
     moment-duration-format: "npm:2.3.2"
     moment-timezone: "npm:0.5.43"
-    monaco-editor: "npm:0.40.0"
+    monaco-editor: "npm:0.52.2"
     monaco-editor-webpack-plugin: "npm:7.1.0"
     natsort: "npm:2.0.3"
     nearley: "npm:2.20.1"
@@ -3374,7 +3374,7 @@ __metadata:
     react-i18next: "npm:14.0.1"
     react-json-tree: "patch:react-json-tree@npm:0.15.1#../../patches/react-json-tree.patch"
     react-markdown: "npm:8.0.7"
-    react-monaco-editor: "npm:0.54.0"
+    react-monaco-editor: "npm:0.58.0"
     react-mosaic-component: "npm:6.1.0"
     react-refresh-typescript: "npm:2.0.9"
     react-resizable-panels: "npm:0.0.55"
@@ -15903,10 +15903,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.40.0":
-  version: 0.40.0
-  resolution: "monaco-editor@npm:0.40.0"
-  checksum: 10c0/0d8844a13b6f663366ba07fa65e1d363c945d0518c899d657b74c36a8293ee813703444956aeb7fb714fcbef017a3bb83c605bafb7c298c6c6e5484951647451
+"monaco-editor@npm:0.52.2":
+  version: 0.52.2
+  resolution: "monaco-editor@npm:0.52.2"
+  checksum: 10c0/5a92da64f1e2ab375c0ce99364137f794d057c97bed10ecc65a08d6e6846804b8ecbd377eacf01e498f7dfbe1b21e8be64f728256681448f0484df90e767b435
   languageName: node
   linkType: hard
 
@@ -17677,16 +17677,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-monaco-editor@npm:0.54.0":
-  version: 0.54.0
-  resolution: "react-monaco-editor@npm:0.54.0"
-  dependencies:
-    prop-types: "npm:^15.8.1"
+"react-monaco-editor@npm:0.58.0":
+  version: 0.58.0
+  resolution: "react-monaco-editor@npm:0.58.0"
   peerDependencies:
-    "@types/react": ">=16 <= 18"
-    monaco-editor: ^0.39.0
-    react: ">=16 <= 18"
-  checksum: 10c0/cd08ee09507597fa983a2968786f1d3276f340d4fe941cfdb5fd9870188701076908f811faaf751cd307195009805050121473c36f21d091f224ba1e1e3133a4
+    monaco-editor: ^0.52.0
+    react: ">=16.8.0 <20.0.0"
+    react-dom: ">=16.8.0 <20.0.0"
+  checksum: 10c0/b82ba4bfa5bbec98ed171878f6463b0f213ff7a43e4ecfe5008693b4e06cbed7447d728e55a51538741d951711946d218000b6074b75447ddb9c147a913973d7
   languageName: node
   linkType: hard
 
