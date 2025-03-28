@@ -73,7 +73,7 @@ const useStyles = makeStyles<Omit<PanelRootProps, "fullscreenState" | "selected"
       top: APP_BAR_HEIGHT, // offset by app bar height
       left: 0,
       right: 0,
-      bottom: 77, // match PlaybackBar height
+      bottom: 86, // match PlaybackBar height
       zIndex: 10000,
       transition: transitions.create(["border-width", "top", "right", "bottom", "left"], {
         duration, // match to timeout duration inside Panel component
