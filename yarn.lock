@@ -3011,7 +3011,7 @@ __metadata:
   dependencies:
     "@lichtblick/comlink": "npm:1.0.3"
     "@lichtblick/tsconfig": "npm:1.0.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
 
@@ -3073,7 +3073,7 @@ __metadata:
     "@types/lodash-es": "npm:^4"
     lodash-es: "npm:4.17.21"
     shallowequal: "npm:1.1.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.8.2"
   peerDependencies:
     react: ^18.2.0
   languageName: unknown
@@ -3084,7 +3084,7 @@ __metadata:
   resolution: "@lichtblick/log@workspace:packages/log"
   dependencies:
     "@lichtblick/tsconfig": "npm:1.0.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
 
@@ -3110,7 +3110,7 @@ __metadata:
     flatbuffers: "npm:23.5.26"
     flatbuffers_reflection: "npm:0.0.7"
     protobufjs: "patch:protobufjs@7.2.5#../../patches/protobufjs.patch"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
 
@@ -3129,7 +3129,7 @@ __metadata:
     "@types/nearley": "npm:2.11.5"
     babel-jest: "npm:29.7.0"
     nearley: "npm:2.20.1"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
 
@@ -3431,7 +3431,7 @@ __metadata:
     ts-key-enum: "npm:2.0.12"
     ts-loader: "npm:9.5.1"
     tss-react: "npm:4.8.6"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.8.2"
     use-debounce: "npm:10.0.0"
     use-immer: "npm:0.10.0"
     uuid: "npm:9.0.1"
@@ -3525,7 +3525,7 @@ __metadata:
   resolution: "@lichtblick/suite@workspace:packages/suite"
   dependencies:
     "@lichtblick/tsconfig": "npm:1.0.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
 
@@ -3573,7 +3573,7 @@ __metadata:
   resolution: "@lichtblick/typescript-transformers@workspace:packages/typescript-transformers"
   dependencies:
     "@lichtblick/tsconfig": "npm:1.0.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
 
@@ -12011,7 +12011,7 @@ __metadata:
     ts-node: "npm:10.9.2"
     ts-unused-exports: "npm:11.0.1"
     tslib: "npm:2.6.2"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.8.2"
     vm-browserify: "npm:1.1.2"
     webpack: "npm:5.97.1"
     webpack-cli: "npm:6.0.1"
@@ -20548,13 +20548,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.3.3":
-  version: 5.3.3
-  resolution: "typescript@npm:5.3.3"
+"typescript@npm:5.8.2":
+  version: 5.8.2
+  resolution: "typescript@npm:5.8.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/e33cef99d82573624fc0f854a2980322714986bc35b9cb4d1ce736ed182aeab78e2cb32b385efa493b2a976ef52c53e20d6c6918312353a91850e2b76f1ea44f
+  checksum: 10c0/5c4f6fbf1c6389b6928fe7b8fcd5dc73bb2d58cd4e3883f1d774ed5bd83b151cbac6b7ecf11723de56d4676daeba8713894b1e9af56174f2f9780ae7848ec3c6
   languageName: node
   linkType: hard
 
@@ -20568,13 +20568,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>":
-  version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
+"typescript@patch:typescript@npm%3A5.8.2#optional!builtin<compat/typescript>":
+  version: 5.8.2
+  resolution: "typescript@patch:typescript@npm%3A5.8.2#optional!builtin<compat/typescript>::version=5.8.2&hash=cef18b"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/1d0a5f4ce496c42caa9a30e659c467c5686eae15d54b027ee7866744952547f1be1262f2d40de911618c242b510029d51d43ff605dba8fb740ec85ca2d3f9500
+  checksum: 10c0/8a6cd29dfb59bd5a978407b93ae0edb530ee9376a5b95a42ad057a6f80ffb0c410489ccd6fe48d1d0dfad6e8adf5d62d3874bbd251f488ae30e11a1ce6dabd28
   languageName: node
   linkType: hard
 
