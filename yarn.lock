@@ -22,7 +22,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/core@npm:^1.2.6":
+"@actions/core@npm:^1.11.1":
   version: 1.11.1
   resolution: "@actions/core@npm:1.11.1"
   dependencies:
@@ -58,17 +58,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/tool-cache@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@actions/tool-cache@npm:2.0.1"
+"@actions/tool-cache@npm:2.0.2":
+  version: 2.0.2
+  resolution: "@actions/tool-cache@npm:2.0.2"
   dependencies:
-    "@actions/core": "npm:^1.2.6"
+    "@actions/core": "npm:^1.11.1"
     "@actions/exec": "npm:^1.0.0"
     "@actions/http-client": "npm:^2.0.1"
     "@actions/io": "npm:^1.1.1"
     semver: "npm:^6.1.0"
-    uuid: "npm:^3.3.2"
-  checksum: 10c0/8b3e438842ea7b26a826efe46a0eb839f4e9d9f12c7be10d75fe56826004bd24cb643955332b7e011de5da223cfca1628672aa4ccde5a0df126ebf8329eda044
+  checksum: 10c0/bc04870b59b969717bdc4966fa1fca8263d5e968bfb73e5dfac02018e6180ae5752d6d209a2a1e483219325389aaf62e9f8ebb80f04d77686e386a630481adfd
   languageName: node
   linkType: hard
 
@@ -3447,7 +3446,7 @@ __metadata:
   resolution: "@lichtblick/suite-desktop@workspace:packages/suite-desktop"
   dependencies:
     "@actions/exec": "npm:1.1.1"
-    "@actions/tool-cache": "npm:2.0.1"
+    "@actions/tool-cache": "npm:2.0.2"
     "@lichtblick/den": "workspace:*"
     "@lichtblick/electron-socket": "npm:1.0.0"
     "@lichtblick/log": "workspace:*"
@@ -11948,7 +11947,7 @@ __metadata:
   dependencies:
     "@actions/core": "npm:1.10.1"
     "@actions/exec": "npm:1.1.1"
-    "@actions/tool-cache": "npm:2.0.1"
+    "@actions/tool-cache": "npm:2.0.2"
     "@babel/core": "npm:7.25.2"
     "@babel/plugin-proposal-decorators": "npm:7.24.7"
     "@babel/plugin-proposal-explicit-resource-management": "npm:7.24.7"
@@ -21030,15 +21029,6 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 10c0/1607dd32ac7fc22f2d8f77051e6a64845c9bce5cd3dd8aa0070c074ec73e666a1f63c7b4e0f4bf2bc8b9d59dc85a15e17807446d9d2b17c8485fbc2147b27f9b
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^3.3.2":
-  version: 3.4.0
-  resolution: "uuid@npm:3.4.0"
-  bin:
-    uuid: ./bin/uuid
-  checksum: 10c0/1c13950df865c4f506ebfe0a24023571fa80edf2e62364297a537c80af09c618299797bbf2dbac6b1f8ae5ad182ba474b89db61e0e85839683991f7e08795347
   languageName: node
   linkType: hard
 
