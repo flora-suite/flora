@@ -22,7 +22,7 @@
     "@emotion/styled": "11.14.0",
     "@fluentui/react-icons": "2.0.224",
     "@foxglove/schemas": "1.6.3",
-    "@foxglove/ws-protocol": "0.7.2",
+    "@foxglove/ws-protocol": "0.8.0",
     "@lichtblick/avl": "1.0.0",
     "@lichtblick/chartjs-plugin-zoom": "1.0.0",
     "@lichtblick/comlink": "1.0.3",

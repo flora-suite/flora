@@ -2810,25 +2810,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@foxglove/ws-protocol@npm:0.7.2":
-  version: 0.7.2
-  resolution: "@foxglove/ws-protocol@npm:0.7.2"
+"@foxglove/ws-protocol@npm:0.8.0":
+  version: 0.8.0
+  resolution: "@foxglove/ws-protocol@npm:0.8.0"
   dependencies:
     debug: "npm:^4"
     eventemitter3: "npm:^5.0.1"
-    tslib: "npm:^2.6.2"
-  checksum: 10c0/7dc6e9cec4a7441c083bc03f70b88fb54fb0578fc46d3f00d21caaf4531dc99131dafda9debab407628e202590457bacfcb6e99876a5e0cd865516d4d96ad841
-  languageName: node
-  linkType: hard
-
-"@foxglove/ws-protocol@npm:0.7.4":
-  version: 0.7.4
-  resolution: "@foxglove/ws-protocol@npm:0.7.4"
-  dependencies:
-    debug: "npm:^4"
-    eventemitter3: "npm:^5.0.1"
-    tslib: "npm:^2.6.3"
-  checksum: 10c0/8dc68dc0a7013dc91b9cd6200b71ad58a728434d08ba21363786369fc01cd9afe869a14eddbe921cc8f1c073f0182d7bd67682b8910dc417a4d59659f4247fc4
+    tslib: "npm:^2.8.1"
+  checksum: 10c0/7d2e3dc1d881de86f7cebbb61e6e00798bbe509e488f13a2b298238735fb59b173632f4f33486018e45829079c49e7ca3e968a1c78d7cfba6abe3f1cb6f536c9
   languageName: node
   linkType: hard
 
@@ -3587,7 +3576,7 @@ __metadata:
     "@emotion/styled": "npm:11.14.0"
     "@fluentui/react-icons": "npm:2.0.224"
     "@foxglove/schemas": "npm:1.6.3"
-    "@foxglove/ws-protocol": "npm:0.7.2"
+    "@foxglove/ws-protocol": "npm:0.8.0"
     "@lichtblick/avl": "npm:1.0.0"
     "@lichtblick/chartjs-plugin-zoom": "npm:1.0.0"
     "@lichtblick/comlink": "npm:1.0.3"
@@ -10228,7 +10217,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "desktop@workspace:desktop"
   dependencies:
-    "@foxglove/ws-protocol": "npm:0.7.4"
+    "@foxglove/ws-protocol": "npm:0.8.0"
     "@lichtblick/den": "workspace:*"
     "@lichtblick/log": "workspace:*"
     "@lichtblick/suite-base": "workspace:*"
@@ -20922,10 +20911,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.5.0, tslib@npm:^2.6.2, tslib@npm:^2.6.3":
+"tslib@npm:^2, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.5.0, tslib@npm:^2.6.2":
   version: 2.8.0
   resolution: "tslib@npm:2.8.0"
   checksum: 10c0/31e4d14dc1355e9b89e4d3c893a18abb7f90b6886b089c2da91224d0a7752c79f3ddc41bc1aa0a588ac895bd97bb99c5bc2bfdb2f86de849f31caeb3ba79bbe5
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.8.1":
+  version: 2.8.1
+  resolution: "tslib@npm:2.8.1"
+  checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
   languageName: node
   linkType: hard
 
