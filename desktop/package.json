@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "devDependencies": {
-    "@foxglove/ws-protocol": "0.7.4",
+    "@foxglove/ws-protocol": "0.8.0",
     "@lichtblick/den": "workspace:*",
     "@lichtblick/log": "workspace:*",
     "@lichtblick/suite-base": "workspace:*",
