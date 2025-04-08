@@ -54,7 +54,7 @@
     "@lichtblick/wasm-bz2": "1.0.0",
     "@lichtblick/wasm-lz4": "1.0.0",
     "@lichtblick/xmlrpc": "1.0.0",
-    "@mcap/core": "2.0.2",
+    "@mcap/core": "2.1.6",
     "@mui/icons-material": "6.1.6",
     "@mui/material": "6.1.6",
     "@popperjs/core": "^2.11.8",
