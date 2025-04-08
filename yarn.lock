@@ -3736,7 +3736,7 @@ __metadata:
     shallowequal: "npm:1.1.0"
     string-hash: "npm:1.1.3"
     string-replace-loader: "npm:3.1.0"
-    style-loader: "npm:3.3.3"
+    style-loader: "npm:4.0.0"
     text-metrics: "npm:3.0.0"
     three: "patch:three@0.156.1#../../patches/three.patch"
     tinycolor2: "npm:1.6.0"
@@ -20322,12 +20322,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"style-loader@npm:3.3.3":
-  version: 3.3.3
-  resolution: "style-loader@npm:3.3.3"
+"style-loader@npm:4.0.0":
+  version: 4.0.0
+  resolution: "style-loader@npm:4.0.0"
   peerDependencies:
-    webpack: ^5.0.0
-  checksum: 10c0/104bae8abd0627579dc14f3917cf65f1117e8098e3529872f09c26b5eee07933567b7be5c8ebf94d16e322b6e726dc569c5787111bf3786915850db4e351ef33
+    webpack: ^5.27.0
+  checksum: 10c0/214bc0f3b018f8c374f79b9fa16da43df78c7fef2261e9a99e36c2f8387601fad10ac75a171aa8edba75903db214bc46952ae08b94a1f8544bd146c2c8d07d27
   languageName: node
   linkType: hard
 
