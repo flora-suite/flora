@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@lichtblick/tsconfig": "1.0.0",
-    "@testing-library/react": "16.0.0",
+    "@testing-library/react": "16.2.0",
     "@types/foxglove__web": "workspace:*",
     "@types/lodash-es": "^4",
     "typescript": "5.8.2"

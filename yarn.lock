@@ -3381,7 +3381,7 @@ __metadata:
   dependencies:
     "@lichtblick/log": "workspace:*"
     "@lichtblick/tsconfig": "npm:1.0.0"
-    "@testing-library/react": "npm:16.0.0"
+    "@testing-library/react": "npm:16.2.0"
     "@types/foxglove__web": "workspace:*"
     "@types/lodash-es": "npm:^4"
     lodash-es: "npm:4.17.21"
@@ -3631,7 +3631,7 @@ __metadata:
     "@svgr/webpack": "npm:8.1.0"
     "@tanstack/react-table": "npm:8.11.7"
     "@testing-library/jest-dom": "npm:6.6.2"
-    "@testing-library/react": "npm:16.0.0"
+    "@testing-library/react": "npm:16.2.0"
     "@types/base16": "npm:^1.0.5"
     "@types/cytoscape": "npm:^3.19.16"
     "@types/geojson": "npm:7946.0.11"
@@ -5531,23 +5531,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react@npm:16.0.0":
-  version: 16.0.0
-  resolution: "@testing-library/react@npm:16.0.0"
+"@testing-library/react@npm:16.2.0":
+  version: 16.2.0
+  resolution: "@testing-library/react@npm:16.2.0"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
   peerDependencies:
     "@testing-library/dom": ^10.0.0
-    "@types/react": ^18.0.0
-    "@types/react-dom": ^18.0.0
-    react: ^18.0.0
-    react-dom: ^18.0.0
+    "@types/react": ^18.0.0 || ^19.0.0
+    "@types/react-dom": ^18.0.0 || ^19.0.0
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
     "@types/react-dom":
       optional: true
-  checksum: 10c0/297f97bf4722dad05f11d9cafd47d387dbdb096fea4b79b876c7466460f0f2e345b55b81b3e37fc81ed8185c528cb53dd8455ca1b6b019b229edf6c796f11c9f
+  checksum: 10c0/7adaedaf237002b42e04a6261d2756074a19cbca0f0c79ba375660f618e123c0ee56256ced00aeb0bb7225ba1a8a81b92b692cca053521a21bb92a8cace1e4c6
   languageName: node
   linkType: hard
 
