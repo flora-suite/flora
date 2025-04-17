@@ -89,7 +89,8 @@ function useIndexedDbRecents(): IRecentsStore {
         if (
           savedRecent.type === "file" &&
           newRecent.type === savedRecent.type &&
-          (await savedRecent.handle.isSameEntry(newRecent.handle))
+          newRecent.sourceId === savedRecent.sourceId &&
+          newRecent.title === savedRecent.title
         ) {
           exists = true;
         }
