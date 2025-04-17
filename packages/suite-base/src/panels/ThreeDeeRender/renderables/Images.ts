@@ -308,7 +308,7 @@ export class Images extends SceneExtension<ImageRenderable> {
     const renderable = this.#getImageRenderable(imageTopic, receiveTime, image, frameId);
 
     renderable.userData.receiveTime = receiveTime;
-    renderable.setImage(image, DEFAULT_BITMAP_WIDTH);
+    renderable.setImage(image);
     // Auto-select settings.cameraInfoTopic if it's not already set
     const settings = renderable.userData.settings;
     if (settings.cameraInfoTopic == undefined) {
@@ -455,6 +455,8 @@ export class Images extends SceneExtension<ImageRenderable> {
     return renderable;
   }
   protected initRenderable(topicName: string, userData: ImageUserData): ImageRenderable {
-    return new ImageRenderable(topicName, this.renderer, userData);
+    return new ImageRenderable(topicName, this.renderer, userData, {
+      isImageMode: true,
+    });
   }
 }

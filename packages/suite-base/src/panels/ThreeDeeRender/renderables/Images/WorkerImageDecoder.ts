@@ -9,6 +9,7 @@ import { ComlinkWrap } from "@lichtblick/den/worker";
 
 import type { RawImageOptions } from "./decodeImage";
 import { Image as RosImage } from "../../ros";
+import { TransparencyImage } from "@lichtblick/suite-base/panels/ThreeDeeRender/renderables/Images/ImageTypes";
 
 /**
  * Provides a worker that can process RawImages on a background thread.
@@ -39,10 +40,11 @@ export class WorkerImageDecoder {
    * Copies `image` to the worker, and transfers the decoded result back to the main thread.
    */
   public async decode(
+    transparency: TransparencyImage,
     image: RosImage | RawImage,
     options: Partial<RawImageOptions>,
-  ): Promise<ImageData> {
-    return await this.#remote.decode(image, options);
+  ): Promise<TransparencyImage> {
+    return await this.#remote.decode(transparency, image, options);
   }
 
   public terminate(): void {
