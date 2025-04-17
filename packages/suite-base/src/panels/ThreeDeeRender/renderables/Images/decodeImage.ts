@@ -21,16 +21,19 @@ import {
   decodeYUYV,
 } from "@lichtblick/den/image";
 
-import { CompressedImageTypes } from "./ImageTypes";
+import { CompressedImageTypes, TransparencyImage } from "./ImageTypes";
 import { Image as RosImage } from "../../ros";
 import { ColorModeSettings, getColorConverter } from "../colorMode";
 
 export async function decodeCompressedImageToBitmap(
+  transparency: TransparencyImage<ImageBitmap>,
   image: CompressedImageTypes,
   resizeWidth?: number,
-): Promise<ImageBitmap> {
+): Promise<TransparencyImage<ImageBitmap>> {
   const bitmapData = new Blob([image.data], { type: `image/${image.format}` });
-  return await createImageBitmap(bitmapData, { resizeWidth });
+  transparency.usesTransparency = false;
+  transparency.imageData = await createImageBitmap(bitmapData, { resizeWidth });
+  return transparency;
 }
 
 export const IMAGE_DEFAULT_COLOR_MODE_SETTINGS: Required<

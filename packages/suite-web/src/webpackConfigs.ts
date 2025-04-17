@@ -151,7 +151,7 @@ export const mainConfig =
   <html>
     <head>
       <meta charset="utf-8">
-      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="mobile-web-app-capable" content="yes">
       ${htmlWebpackPlugin.options.foxgloveExtraHeadTags}
       <style type="text/css" id="loading-styles">
         body {

@@ -2,7 +2,7 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { CompressedImage, RawImage } from "@foxglove/schemas";
+import { CompressedImage, CompressedVideo, RawImage } from "@foxglove/schemas";
 
 import { Time } from "@lichtblick/rostime";
 import { CAMERA_CALIBRATION_DATATYPES } from "@lichtblick/suite-base/panels/ThreeDeeRender/foxglove";
@@ -20,7 +20,12 @@ export const ALL_CAMERA_INFO_SCHEMAS = new Set([
 
 export type CompressedImageTypes = RosCompressedImage | CompressedImage;
 
-export type AnyImage = RosImage | RosCompressedImage | RawImage | CompressedImage;
+export type AnyImage = RosImage | RosCompressedImage | RawImage | CompressedImage | CompressedVideo;
+
+export type TransparencyImage<T = ImageBitmap | ImageData> = {
+  usesTransparency: boolean;
+  imageData: T;
+};
 
 export function getFrameIdFromImage(image: AnyImage): string {
   if ("header" in image) {
