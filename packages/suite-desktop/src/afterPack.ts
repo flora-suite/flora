@@ -4,7 +4,7 @@
 
 import { exec } from "@actions/exec";
 import { downloadTool, extractZip } from "@actions/tool-cache";
-import type MacPackager from "app-builder-lib/out/macPackager";
+import type { MacPackager } from "app-builder-lib/out/macPackager";
 import { log, Arch } from "builder-util";
 import crypto from "crypto";
 import { AfterPackContext } from "electron-builder";
