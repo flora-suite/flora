@@ -16,6 +16,7 @@ import {
   Ros2LocalBagDataSourceFactory,
   RosbridgeDataSourceFactory,
   SampleNuscenesDataSourceFactory,
+  ServerExtensionLoader,
   SharedRoot,
   UlogLocalDataSourceFactory,
 } from "@lichtblick/suite-base";
@@ -23,6 +24,8 @@ import {
 import LocalStorageAppConfiguration from "./services/LocalStorageAppConfiguration";
 
 const isDevelopment = process.env.NODE_ENV === "development";
+// Configure the URL where server-hosted extensions are located
+const SERVER_EXTENSIONS_URL = "http://f:8000/flora/";
 
 export function WebRoot(props: {
   extraProviders: JSX.Element[] | undefined;
@@ -41,6 +44,7 @@ export function WebRoot(props: {
   );
 
   const [extensionLoaders] = useState(() => [
+    new ServerExtensionLoader("org", SERVER_EXTENSIONS_URL),
     new IdbExtensionLoader("org"),
     new IdbExtensionLoader("local"),
   ]);
