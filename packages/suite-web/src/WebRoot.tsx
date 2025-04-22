@@ -17,6 +17,7 @@ import {
   RosbridgeDataSourceFactory,
   SampleNuscenesDataSourceFactory,
   ServerExtensionLoader,
+  ServerLayoutLoader,
   SharedRoot,
   UlogLocalDataSourceFactory,
 } from "@lichtblick/suite-base";
@@ -49,6 +50,10 @@ export function WebRoot(props: {
     new IdbExtensionLoader("local"),
   ]);
 
+  const [layoutLoaders] = useState(() => [
+    new ServerLayoutLoader(SERVER_EXTENSIONS_URL),
+  ]);
+
   const dataSources = useMemo(() => {
     const sources = [
       new Ros1LocalBagDataSourceFactory(),
@@ -71,6 +76,7 @@ export function WebRoot(props: {
       dataSources={dataSources}
       appConfiguration={appConfiguration}
       extensionLoaders={extensionLoaders}
+      layoutLoaders={layoutLoaders}
       enableGlobalCss
       extraProviders={props.extraProviders}
       AppBarComponent={props.AppBarComponent}

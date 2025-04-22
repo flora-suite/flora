@@ -50,4 +50,5 @@ export { makeWorkspaceContextInitialState } from "./providers/WorkspaceContextPr
 export type { AppBarProps } from "./components/AppBar";
 export { IdbExtensionLoader } from "./services/IdbExtensionLoader";
 export { ServerExtensionLoader } from "./services/ServerExtensionLoader";
+export { ServerLayoutLoader } from "./services/ServerLayoutLoader";
 export { default as BasicBuilder } from "./testing/builders/BasicBuilder";

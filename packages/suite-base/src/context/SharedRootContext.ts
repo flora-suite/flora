@@ -11,12 +11,14 @@ import { INativeAppMenu } from "@lichtblick/suite-base/context/NativeAppMenuCont
 import { INativeWindow } from "@lichtblick/suite-base/context/NativeWindowContext";
 import { IDataSourceFactory } from "@lichtblick/suite-base/context/PlayerSelectionContext";
 import { ExtensionLoader } from "@lichtblick/suite-base/services/ExtensionLoader";
+import { LayoutLoader } from "@lichtblick/suite-base/services/ILayoutLoader";
 
 interface ISharedRootContext {
   deepLinks: readonly string[];
   appConfiguration?: IAppConfiguration;
   dataSources: IDataSourceFactory[];
   extensionLoaders: readonly ExtensionLoader[];
+  layoutLoaders?: readonly LayoutLoader[];
   nativeAppMenu?: INativeAppMenu;
   nativeWindow?: INativeWindow;
   enableLaunchPreferenceScreen?: boolean;
@@ -32,6 +34,7 @@ const SharedRootContext = createContext<ISharedRootContext>({
   deepLinks: [],
   dataSources: [],
   extensionLoaders: [],
+  layoutLoaders: [],
 });
 SharedRootContext.displayName = "SharedRootContext";
 

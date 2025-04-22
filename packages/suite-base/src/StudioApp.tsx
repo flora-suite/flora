@@ -45,6 +45,7 @@ export function StudioApp(): JSX.Element {
   const {
     dataSources,
     extensionLoaders,
+    layoutLoaders,
     nativeAppMenu,
     nativeWindow,
     deepLinks,
@@ -85,7 +86,7 @@ export function StudioApp(): JSX.Element {
 
   // Problems provider also must come before other, dependent contexts.
   providers.unshift(<ProblemsContextProvider />);
-  providers.unshift(<CurrentLayoutProvider />);
+  providers.unshift(<CurrentLayoutProvider loaders={layoutLoaders} />);
   providers.unshift(<UserProfileLocalStorageProvider />);
   providers.unshift(<LayoutManagerProvider />);
 

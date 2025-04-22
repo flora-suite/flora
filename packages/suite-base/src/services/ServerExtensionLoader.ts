@@ -30,8 +30,6 @@ export class ServerExtensionLoader implements ExtensionLoader {
    * Get a list of all available extensions from the server
    */
   public async getExtensions(): Promise<ExtensionInfo[]> {
-    log.debug("Fetching extensions from server", this.#serverUrl);
-
     try {
       const response = await fetch(`${this.#serverUrl}extensions/index.json`);
 
@@ -53,18 +51,18 @@ export class ServerExtensionLoader implements ExtensionLoader {
    * Load the source code for a specific extension from the server
    */
   public async loadExtension(id: string): Promise<string> {
-    log.debug("Loading extension from server", id);
-
     try {
       // Look for extensions with version suffixes like id-x.y.z
       const extensions = await this.getExtensions();
-      const extensionInfo = extensions.find(ext => ext.id === id);
-      
+      const extensionInfo = extensions.find((ext) => ext.id === id);
+
       if (!extensionInfo?.version) {
         throw new Error(`Extension ${id} not found in index.json or missing version information`);
       }
-      
-      const response = await fetch(`${this.#serverUrl}extensions/${id}-${extensionInfo.version}/dist/extension.js`);
+
+      const response = await fetch(
+        `${this.#serverUrl}extensions/${id}-${extensionInfo.version}/dist/extension.js`,
+      );
 
       if (!response.ok) {
         throw new Error(
