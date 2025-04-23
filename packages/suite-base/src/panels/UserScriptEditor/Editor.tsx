@@ -194,6 +194,8 @@ const Editor = ({
         enabled: false,
       },
       readOnly: script?.readOnly,
+      occurrencesHighlight: "off",
+      selectionHighlight: false,
     };
   }, [script]);
 
