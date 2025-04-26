@@ -26,7 +26,7 @@ import LocalStorageAppConfiguration from "./services/LocalStorageAppConfiguratio
 
 const isDevelopment = process.env.NODE_ENV === "development";
 // Configure the URL where server-hosted extensions are located
-const SERVER_EXTENSIONS_URL = "http://f:8000/flora/";
+const SERVER_EXTENSIONS_URL: string = "http://comino1:8000/flora/";
 
 export function WebRoot(props: {
   extraProviders: JSX.Element[] | undefined;
@@ -50,9 +50,7 @@ export function WebRoot(props: {
     new IdbExtensionLoader("local"),
   ]);
 
-  const [layoutLoaders] = useState(() => [
-    new ServerLayoutLoader(SERVER_EXTENSIONS_URL),
-  ]);
+  const [layoutLoaders] = useState(() => [new ServerLayoutLoader(SERVER_EXTENSIONS_URL)]);
 
   const dataSources = useMemo(() => {
     const sources = [
