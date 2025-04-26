@@ -42,6 +42,7 @@ import {
   useSetHoverValue,
 } from "@lichtblick/suite-base/context/TimelineInteractionStateContext";
 import useGlobalVariables from "@lichtblick/suite-base/hooks/useGlobalVariables";
+import { windowAppURLState } from "@lichtblick/suite-base/util/appURLState";
 import {
   AdvertiseOptions,
   PlayerCapabilities,
@@ -299,6 +300,8 @@ function PanelExtensionAdapter(
 
   type PartialPanelExtensionContext = Omit<BuiltinPanelExtensionContext, "panelElement">;
 
+  const dsUrl = windowAppURLState()?.dsParams?.url;
+
   const partialExtensionContext = useMemo<PartialPanelExtensionContext>(() => {
     const layout: PanelExtensionContext["layout"] = {
       addPanel({ position, type, updateIfExists, getState }) {
@@ -542,6 +545,8 @@ function PanelExtensionAdapter(
       unstable_setMessagePathDropConfig(dropConfig) {
         setMessagePathDropConfig(dropConfig);
       },
+
+      dsUrl,
     };
     // Disable this rule because the metadata function. If used, it will break.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -565,6 +570,7 @@ function PanelExtensionAdapter(
     updatePanelSettingsTree,
     setDefaultPanelTitle,
     setMessagePathDropConfig,
+    dsUrl,
   ]);
 
   const panelContainerRef = useRef<HTMLDivElement>(ReactNull);

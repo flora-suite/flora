@@ -288,6 +288,9 @@ export type PanelExtensionContext = {
    */
   readonly metadata?: ReadonlyArray<Readonly<Metadata>>;
 
+  /** The data-source URL from the `ds.url` query parameter, if present */
+  dsUrl?: string;
+
   /**
    * Subscribe to updates on this field within the render state. Render will only be invoked when
    * this field changes.
