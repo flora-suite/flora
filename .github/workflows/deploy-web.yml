@@ -10,7 +10,7 @@ concurrency:
 jobs:
   deploy:
     name: Deploy to Web
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     env:
       # Environment variables that are injected into the build
