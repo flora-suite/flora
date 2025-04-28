@@ -2,11 +2,12 @@
 <div align="center">
   <a href="https://github.com/flora-suite/flora/stargazers"><img src="https://img.shields.io/github/stars/flora-suite/flora" alt="Stars Badge"/></a>
   <a href="https://github.com/flora-suite/flora/network/members"><img src="https://img.shields.io/github/forks/flora-suite/flora" alt="Forks Badge"/></a>
-  <a href="https://github.com/flora-suite/flora/pulls"><img src="https://img.shields.io/github/issues-pr/flora-suite/flora" alt="Pull Requests Badge"/></a>
+  <br />
+  <a href="https://github.com/flora-suite/flora/pulls"><img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues-pr/flora-suite/flora?color=brightgreen"/></a>
   <a href="https://github.com/flora-suite/flora/issues"><img src="https://img.shields.io/github/issues/flora-suite/flora" alt="Issues Badge"/></a>
-  <a href="https://github.com/flora-suite/flora/issues"><img src="https://img.shields.io/github/package-json/v/flora-suite/flora" alt="Versions Badge"/></a>
-  <a href="https://github.com/flora-suite/flora/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/flora-suite/flora?color=2b9348"></a>
-  <img alt="GitHub License" src="https://img.shields.io/github/license/flora-suite/flora">
+  <a href="https://github.com/flora-suite/flora/issues"><img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/flora-suite/flora?color=brightgreen"/></a>
+  <a href="https://github.com/flora-suite/flora/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/flora-suite/flora?color=2b9348"/></a>
+  <img alt="GitHub License" src="https://img.shields.io/github/license/flora-suite/flora?color=brightgreen"/>
   <img src="https://sonarcloud.io/api/project_badges/measure?project=flora-suite_flora&metric=code_smells" alt="Quality Gate Status"/>
 <br />
 <p align="center">
