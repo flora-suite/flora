@@ -72,18 +72,27 @@ export function CurrentLayoutLocalStorageSyncAdapter(): JSX.Element {
   // Send new layoudData to layoutManager to be saved
   useAsync(async () => {
     const layoutState = getCurrentLayoutState();
-
-    if (!layoutState.selectedLayout) {
+    const selected = layoutState.selectedLayout;
+    if (!selected) return;
+    // Skip if layout not yet stored
+    const existing = await layoutManager.getLayout(selected.id);
+    if (!existing) {
+      log.debug(`Skipping updateLayout: layout ${selected.id} not found in storage`);
       return;
     }
     try {
       await layoutManager.updateLayout({
-        id: layoutState.selectedLayout.id,
-        name: layoutState.selectedLayout.name,
+        id: selected.id,
+        name: selected.name,
         data: debouncedLayoutData,
       });
     } catch (error) {
-      log.error(error);
+      // Ignore updateLayout errors for missing layouts (initial sync)
+      if (error instanceof Error && error.message.includes('does not exist')) {
+        log.debug(`Skipping updateLayout: ${error.message}`);
+      } else {
+        log.error(error);
+      }
     }
   }, [debouncedLayoutData, getCurrentLayoutState, layoutManager]);
 
