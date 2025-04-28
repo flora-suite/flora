@@ -27,7 +27,7 @@ on:
 jobs:
   release_client:
     name: Build and Release Client
-    runs-on: macOS
+    runs-on: macos-latest
     if: ${{ github.event.inputs.client }}
     steps:
       - name: Checkout Repository
