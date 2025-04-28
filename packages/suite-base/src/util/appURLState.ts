@@ -8,9 +8,9 @@ import { Time, fromRFC3339String, toRFC3339String } from "@lichtblick/rostime";
 import { LayoutID } from "@lichtblick/suite-base/context/CurrentLayoutContext";
 
 export type AppURLState = {
+  layoutId?: LayoutID;
   ds?: string;
   dsParams?: Record<string, string>;
-  layoutId?: LayoutID;
   time?: Time;
 };
 
@@ -52,6 +52,10 @@ export function updateAppURLState(url: URL, urlState: AppURLState): URL {
     });
   }
 
+  if (urlState.layoutId) {
+    newURL.searchParams.set("layoutId", urlState.layoutId);
+  }
+
   newURL.searchParams.sort();
 
   return newURL;
@@ -76,11 +80,14 @@ export function parseAppURLState(url: URL): AppURLState | undefined {
     }
   });
 
+  const layoutId = url.searchParams.get("layoutId") || undefined;
+
   const state: AppURLState = _.omitBy(
     {
       time,
       ds,
       dsParams: _.isEmpty(dsParams) ? undefined : dsParams,
+      layoutId,
     },
     _.isEmpty,
   );
@@ -97,7 +104,8 @@ export function windowAppURLState(): AppURLState | undefined {
   }
 
   try {
-    return parseAppURLState(new URL(window.location.href));
+    const state = parseAppURLState(new URL(window.location.href));
+    return state;
   } catch {
     return undefined;
   }

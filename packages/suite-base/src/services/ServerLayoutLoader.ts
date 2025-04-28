@@ -9,10 +9,11 @@ import { LayoutInfo } from "@lichtblick/suite-base/types/layouts";
 
 const log = Log.getLogger(__filename);
 
-// Define the structure of the layout entry in the index.json file
+// Define the structure of the layout entry in the index.json file (includes stable uuid)
 interface LayoutEntry {
   name: string;
   filename: string;
+  uuid: string;
 }
 
 /**
@@ -50,7 +51,7 @@ export class ServerLayoutLoader implements LayoutLoader {
 
       // Fetch and process each layout file
       const layoutPromises = layoutEntries.map(async (entry) => {
-        const { name, filename } = entry;
+        const { name, filename, uuid } = entry;
 
         if (!filename) {
           return null;
@@ -86,6 +87,7 @@ export class ServerLayoutLoader implements LayoutLoader {
           };
 
           return {
+            uuid: uuid,
             name: name,
             from: `server-layout:${filename}`,
             data: processedData,

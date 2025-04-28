@@ -44,6 +44,7 @@ import { LayoutManagerEventTypes } from "@lichtblick/suite-base/services/ILayout
 import { PanelConfig, PlaybackConfig, UserScripts } from "@lichtblick/suite-base/types/panels";
 import { windowAppURLState } from "@lichtblick/suite-base/util/appURLState";
 import { getPanelTypeFromId } from "@lichtblick/suite-base/util/layout";
+import { LayoutInfo } from "@lichtblick/suite-base/types/layouts";
 
 import { IncompatibleLayoutVersionAlert } from "./IncompatibleLayoutVersionAlert";
 
@@ -263,9 +264,28 @@ export default function CurrentLayoutProvider({
 
   // Load initial state by re-selecting the last selected layout from the UserProfile.
   useAsync(async () => {
-    // Don't restore the layout if there's one specified in the app state url.
-    if (windowAppURLState()?.layoutId) {
-      return;
+    // 1) fetch and save remote defaults
+    await loadDefaultLayouts(layoutManager, loaders);
+
+    // 2) if URL has a layoutId, try remote first
+    const layoutId = windowAppURLState()?.layoutId;
+    if (layoutId) {
+      let found: LayoutInfo | undefined;
+      for (const loader of loaders) {
+        found = (await loader.fetchLayouts().catch(() => [])).find((l) => l.uuid === layoutId);
+        if (found) {
+          setLayoutState({ selectedLayout: { id: found.uuid as LayoutID, data: found.data, name: found.name } });
+          return;
+        }
+      }
+      // 3) fallback to local store
+      try {
+        await setSelectedLayoutId(layoutId, { saveToProfile: false });
+        return;
+      } catch {
+        enqueueSnackbar(`Layout ${layoutId} not found`, { variant: "error" });
+        alert(`Layout ${layoutId} not found`);
+      }
     }
 
     // Try to load default layouts, before checking to add the fallback "Default".

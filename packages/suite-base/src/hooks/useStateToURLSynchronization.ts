@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import * as _ from "lodash-es";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDebounce } from "use-debounce";
 
 import { useDeepMemo } from "@lichtblick/hooks";
@@ -13,13 +13,17 @@ import {
 } from "@lichtblick/suite-base/components/MessagePipeline";
 import { EventsStore, useEvents } from "@lichtblick/suite-base/context/EventsContext";
 import { PlayerCapabilities } from "@lichtblick/suite-base/players/types";
-import { AppURLState, updateAppURLState } from "@lichtblick/suite-base/util/appURLState";
+import { AppURLState, updateAppURLState, windowAppURLState } from "@lichtblick/suite-base/util/appURLState";
+import { useCurrentLayoutSelector, LayoutState } from "@lichtblick/suite-base/context/CurrentLayoutContext";
 
 const selectCanSeek = (ctx: MessagePipelineContext) =>
   ctx.playerState.capabilities.includes(PlayerCapabilities.playbackControl);
 const selectCurrentTime = (ctx: MessagePipelineContext) => ctx.playerState.activeData?.currentTime;
 const selectUrlState = (ctx: MessagePipelineContext) => ctx.playerState.urlState;
 const selectSelectedEventId = (store: EventsStore) => store.selectedEventId;
+
+// Stable selector for layoutId
+const selectLayoutId = (state: LayoutState) => state.selectedLayout?.id;
 
 function updateUrl(newState: AppURLState) {
   const newStateUrl = updateAppURLState(new URL(window.location.href), newState);
@@ -36,6 +40,8 @@ export function useStateToURLSynchronization(): void {
   const currentTime = useMessagePipeline(selectCurrentTime);
   const [debouncedCurrentTime] = useDebounce(currentTime, 500, { maxWait: 500 });
   const selectedEventId = useEvents(selectSelectedEventId);
+  const layoutId = useCurrentLayoutSelector(selectLayoutId);
+  const initialLayoutId = useMemo(() => windowAppURLState()?.layoutId, []);
 
   // Sync current time with the url.
   useEffect(() => {
@@ -61,4 +67,11 @@ export function useStateToURLSynchronization(): void {
       ),
     });
   }, [selectedEventId, stablePlayerUrlState]);
+
+  // Sync layoutId into URL whenever it changes
+  useEffect(() => {
+    if (layoutId && layoutId !== initialLayoutId) {
+      updateUrl({ layoutId });
+    }
+  }, [layoutId, initialLayoutId]);
 }

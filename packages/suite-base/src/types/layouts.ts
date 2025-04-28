@@ -31,6 +31,8 @@ export type TabLocation = {
  * Metadata describing a layout.
  */
 export type LayoutInfo = {
+  /** stable server-provided identifier */
+  uuid: string;
   name: string;
   from: string;
   data: LayoutData;
