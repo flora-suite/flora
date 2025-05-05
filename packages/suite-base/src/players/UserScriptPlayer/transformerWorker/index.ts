@@ -69,7 +69,7 @@ if (!inSharedWorker()) {
   rpc.receive("close", () => {
     global.close();
   });
-  rpc.receive("transform", enforceFetchIsBlocked(transform));
+  rpc.receive("transform", transform);
   rpc.receive("generateRosLib", generateRosLib);
   port.start();
 };

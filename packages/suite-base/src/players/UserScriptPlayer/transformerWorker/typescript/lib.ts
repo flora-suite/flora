@@ -61,6 +61,8 @@ import lib_es2022_regexp from "typescript/lib/lib.es2022.regexp.d.ts?raw";
 import lib_es2022_sharedmemory from "typescript/lib/lib.es2022.sharedmemory.d.ts?raw";
 import lib_es2022_string from "typescript/lib/lib.es2022.string.d.ts?raw";
 import lib_es5_dts from "typescript/lib/lib.es5.d.ts?raw";
+import lib_dom_dts from "typescript/lib/lib.dom.d.ts?raw";
+import lib_dom_iterable_dts from "typescript/lib/lib.dom.iterable.d.ts?raw";
 
 export const lib_filename = "lib.d.ts";
 
@@ -147,5 +149,7 @@ function resolveReferences(originalSrc: string): string {
   });
 }
 
-const resolvedDts = resolveReferences(lib_es2022_dts);
-export const lib_dts = `${resolvedDts}\n\n${lib_logger}`;
+const resolvedEsDts = resolveReferences(lib_es2022_dts);
+const resolvedDomDts = resolveReferences(lib_dom_dts);
+const resolvedDomIterableDts = resolveReferences(lib_dom_iterable_dts);
+export const lib_dts = `${resolvedEsDts}\n\n${resolvedDomDts}\n\n${resolvedDomIterableDts}\n\n${lib_logger}`;
