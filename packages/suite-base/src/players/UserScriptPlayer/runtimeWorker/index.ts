@@ -57,8 +57,8 @@ if (!inSharedWorker()) {
     );
   };
 
-  // Just check fetch is blocked on registration, don't slow down message processing.
-  rpc.receive("registerScript", enforceFetchIsBlocked(registerScript));
+  // Allow fetch in user scripts at runtime by removing the CSP wrapper:
+  rpc.receive("registerScript", registerScript);
   rpc.receive("processMessage", processMessage);
 
   port.start();

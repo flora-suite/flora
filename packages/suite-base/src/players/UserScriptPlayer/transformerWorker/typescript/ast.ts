@@ -200,8 +200,12 @@ export const findReturnType = (
     throw new DatatypeExtractionError(nonFuncError);
   }
 
+  // Determine the actual return type, unwrapping Promise<T> if needed
   const fullReturnType = typeChecker.getReturnTypeOfSignature(signature);
-  const nonNullable = fullReturnType.getNonNullableType();
+  // If it's a Promise, get the promised inner type; otherwise use as-is
+  const unwrappedType =
+    typeChecker.getPromisedTypeOfPromise(fullReturnType) ?? fullReturnType;
+  const nonNullable = unwrappedType.getNonNullableType();
 
   // In some future we could support intersection types where all the fields are known
   if (nonNullable.isIntersection()) {

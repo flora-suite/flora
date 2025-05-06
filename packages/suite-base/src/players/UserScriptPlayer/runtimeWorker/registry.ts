@@ -135,13 +135,13 @@ export const registerScript = ({
   }
 };
 
-export const processMessage = ({
+export const processMessage = async ({
   message,
   globalVariables,
 }: {
   message: unknown;
   globalVariables: GlobalVariables;
-}): ProcessMessageOutput => {
+}): Promise<ProcessMessageOutput> => {
   const userScriptLogs: UserScriptLog[] = [];
   const userScriptDiagnostics: Diagnostic[] = [];
   (self as { log?: unknown }).log = function (...args: unknown[]) {
@@ -157,8 +157,12 @@ export const processMessage = ({
     userScriptLogs.push(...args.map((value) => ({ source: "processMessage" as const, value })));
   };
   try {
-    const newMessage = nodeCallback(message, globalVariables);
-    return { message: newMessage, error: undefined, userScriptLogs, userScriptDiagnostics };
+    // Invoke the user script; if it's async, await its completion
+    const result = await (async () => {
+      const r = nodeCallback(message, globalVariables);
+      return Promise.resolve(r);
+    })();
+    return { message: result, error: undefined, userScriptLogs, userScriptDiagnostics };
   } catch (err) {
     const error: string = err.toString();
     const diagnostic: Diagnostic = {
