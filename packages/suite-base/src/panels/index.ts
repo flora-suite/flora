@@ -28,6 +28,9 @@ import variableSliderThumbnail from "./VariableSlider/thumbnail.png";
 import diagnosticStatusThumbnail from "./diagnostics/thumbnails/diagnostic-status.png";
 import diagnosticSummaryThumbnail from "./diagnostics/thumbnails/diagnostic-summary.png";
 
+// HACK: Using DataSourceInfo thumbnail for HelloWorld panel for now
+import videoPlayerClientThumbnail from "./DataSourceInfo/thumbnail.png";
+
 export const getBuiltin: (t: TFunction<"panels">) => PanelInfo[] = (t) => [
   {
     title: t("3D"),
@@ -186,5 +189,12 @@ export const getBuiltin: (t: TFunction<"panels">) => PanelInfo[] = (t) => [
     type: "PlaybackPerformance",
     description: t("studioPlaybackPerformanceDescription"),
     module: async () => await import("./PlaybackPerformance"),
+  },
+  {
+    title: "Video Player [client]",
+    type: "VideoPlayerClient",
+    description: "Plays synchronized video based on log data.",
+    thumbnail: videoPlayerClientThumbnail,
+    module: async () => await import("./VideoPlayerClient"),
   },
 ];
