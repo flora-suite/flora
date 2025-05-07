@@ -12,7 +12,7 @@
     "@types/ws": "^8",
     "electron": "35.1.2",
     "playwright": "1.37.1",
-    "webpack": "5.98.0",
+    "webpack": "5.99.7",
     "ws": "8.18.0"
   }
 }
