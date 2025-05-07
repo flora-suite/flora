@@ -137,7 +137,7 @@ function buildSettingsTree(config: Config): SettingsTreeNodes {
         },
         runOnPause: {
           input: "boolean",
-          label: "Run user script only when paused",
+          label: "Run on Pause",
           value: config.runOnPause,
         },
       },
