@@ -22,7 +22,7 @@
     "@mui/lab": "5.0.0-alpha.176",
     "@mui/material": "6.1.6",
     "@mui/x-data-grid": "6.18.7",
-    "@storybook/react": "8.6.11",
+    "@storybook/react": "8.6.12",
     "@types/react": "18.2.56",
     "i18next": "23.11.2",
     "i18next-browser-languagedetector": "7.2.1",
