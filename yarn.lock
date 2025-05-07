@@ -4536,7 +4536,7 @@ __metadata:
     async-mutex: "npm:0.4.0"
     builder-util: "npm:*"
     clean-webpack-plugin: "npm:4.0.0"
-    electron: "npm:35.1.2"
+    electron: "npm:36.0.1"
     electron-builder: "npm:26.0.12"
     electron-devtools-installer: "npm:4.0.0"
     electron-squirrel-startup: "npm:1.0.1"
@@ -11008,7 +11008,7 @@ __metadata:
     "@lichtblick/suite-desktop": "workspace:*"
     "@lichtblick/tsconfig": "npm:1.0.0"
     "@types/ws": "npm:^8"
-    electron: "npm:35.1.2"
+    electron: "npm:36.0.1"
     playwright: "npm:1.37.1"
     webpack: "npm:5.99.7"
     ws: "npm:8.18.0"
@@ -11473,16 +11473,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:35.1.2":
-  version: 35.1.2
-  resolution: "electron@npm:35.1.2"
+"electron@npm:36.0.1":
+  version: 36.0.1
+  resolution: "electron@npm:36.0.1"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^22.7.7"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/2cd8adb70f669d28fbb1c7dddeb2cbe32b970950f13310b518cfa6aa926eaa6647514ed44fda4af95577c648353a4dd3a3a398bfb8a5f31fcbe48054241c2d14
+  checksum: 10c0/be0dddedf67632ca2cedd2d037106ecabe617a59cb6f65d5fcf5b68455a82c753637441bec3cec2cf91625c36ad3fbf3251e466c1be15093e00ba1fe517eca47
   languageName: node
   linkType: hard
 
@@ -13134,7 +13134,7 @@ __metadata:
     babel-plugin-transform-import-meta: "npm:2.2.1"
     cross-env: "npm:7.0.3"
     depcheck: "npm:1.4.7"
-    electron: "npm:35.1.2"
+    electron: "npm:36.0.1"
     electron-builder: "npm:26.0.12"
     eslint: "npm:8.50.0"
     eslint-config-prettier: "npm:9.1.0"
