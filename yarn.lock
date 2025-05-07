@@ -4437,7 +4437,7 @@ __metadata:
     hammerjs: "npm:2.0.8"
     i18next: "npm:23.7.18"
     i18next-browser-languagedetector: "npm:7.1.0"
-    idb: "npm:7.1.1"
+    idb: "npm:8.0.2"
     idb-keyval: "npm:6.2.1"
     immer: "npm:10.0.2"
     intervals-fn: "npm:3.0.3"
@@ -14473,10 +14473,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"idb@npm:7.1.1":
-  version: 7.1.1
-  resolution: "idb@npm:7.1.1"
-  checksum: 10c0/72418e4397638797ee2089f97b45fc29f937b830bc0eb4126f4a9889ecf10320ceacf3a177fe5d7ffaf6b4fe38b20bbd210151549bfdc881db8081eed41c870d
+"idb@npm:8.0.2":
+  version: 8.0.2
+  resolution: "idb@npm:8.0.2"
+  checksum: 10c0/ffb0f0c82d36a250801e023eee11a2740b44c58d3506d480a2d9082d0ca8a16c44f4f8201712236ca22488a0c6ae6e93b9b061a291fd238dbe70c1ee16e18e96
   languageName: node
   linkType: hard
 
