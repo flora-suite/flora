@@ -84,6 +84,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull origin main --rebase
           git add package.json packages/suite/package.json yarn.lock
           git commit -m "Bump version v${{ env.new_version }} [skip actions]"
           git tag "v${{ env.new_version }}"

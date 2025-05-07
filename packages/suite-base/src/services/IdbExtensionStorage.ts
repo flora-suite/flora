@@ -2,7 +2,7 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import * as IDB from "idb/with-async-ittr";
+import { openDB, IDBPDatabase, DBSchema } from "idb";
 
 import Log from "@lichtblick/log";
 import {
@@ -17,7 +17,7 @@ const DATABASE_BASE_NAME = "foxglove-extensions";
 const METADATA_STORE_NAME = "metadata";
 const EXTENSION_STORE_NAME = "extensions";
 
-interface ExtensionsDB extends IDB.DBSchema {
+interface ExtensionsDB extends DBSchema {
   metadata: {
     key: string;
     value: ExtensionInfo;
@@ -29,12 +29,12 @@ interface ExtensionsDB extends IDB.DBSchema {
 }
 
 export class IdbExtensionStorage implements IExtensionStorage {
-  #db: Promise<IDB.IDBPDatabase<ExtensionsDB>>;
+  #db: Promise<IDBPDatabase<ExtensionsDB>>;
   public namespace: string;
 
   public constructor(namespace: string) {
     this.namespace = namespace;
-    this.#db = IDB.openDB<ExtensionsDB>([DATABASE_BASE_NAME, namespace].join("-"), 1, {
+    this.#db = openDB<ExtensionsDB>([DATABASE_BASE_NAME, namespace].join("-"), 1, {
       upgrade: (db) => {
         log.debug("Creating extension object stores");
 
