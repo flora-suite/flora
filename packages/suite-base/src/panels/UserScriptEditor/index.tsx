@@ -135,6 +135,11 @@ function buildSettingsTree(config: Config): SettingsTreeNodes {
           label: "Auto-format on save",
           value: config.autoFormatOnSave,
         },
+        runOnPause: {
+          input: "boolean",
+          label: "Run on Pause",
+          value: config.runOnPause,
+        },
       },
     },
   };
@@ -228,8 +233,12 @@ function UserScriptEditor(props: Props) {
       }
 
       const { input, value, path } = action.payload;
-      if (input === "boolean" && path[1] === "autoFormatOnSave") {
-        saveConfig({ autoFormatOnSave: value });
+      if (input === "boolean") {
+        if (path[1] === "autoFormatOnSave") {
+          saveConfig({ autoFormatOnSave: value });
+        } else if (path[1] === "runOnPause") {
+          saveConfig({ runOnPause: value });
+        }
       }
     },
     [saveConfig],
@@ -462,6 +471,7 @@ function UserScriptEditor(props: Props) {
 const defaultConfig: Config = {
   selectedNodeId: undefined,
   autoFormatOnSave: true,
+  runOnPause: false,
 };
 export default Panel(
   Object.assign(UserScriptEditor, {

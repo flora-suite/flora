@@ -11,6 +11,8 @@ type Config = {
   // Used only for storybook screenshot testing.
   additionalBackStackItems?: Script[];
   autoFormatOnSave?: boolean;
+  // Only run user scripts when the player is paused if enabled.
+  runOnPause?: boolean;
 };
 
 export default Config;

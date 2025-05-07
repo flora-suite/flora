@@ -138,6 +138,8 @@ export default class UserScriptPlayer implements Player {
   // keep track of last message on all topics to recompute output topic messages when user scripts change
   #lastMessageByInputTopic = new Map<string, MessageEvent>();
   #userScriptIdsNeedUpdate = new Set<string>();
+  // when true, only run user scripts when playback is paused
+  #runOnPause = false;
 
   #protectedState = new MutexLocked<ProtectedState>({
     userScripts: {},
@@ -853,6 +855,12 @@ export default class UserScriptPlayer implements Player {
         return;
       }
 
+      // If configured to only run scripts on pause, skip running when playing
+      if (this.#runOnPause && activeData.isPlaying) {
+        this.#playerState = playerState;
+        return;
+      }
+
       if (this.#totalTimeMetric == undefined) {
         this.#totalTimeMetric = this.#perfRegistry?.registerMetric({
           name: "User scripts (total)",
@@ -1124,5 +1132,12 @@ export default class UserScriptPlayer implements Player {
 
   public seekPlayback(time: Time): void {
     this.#player.seekPlayback?.(time);
+  }
+
+  /**
+   * Sets whether to only run user scripts when the player is paused.
+   */
+  public setRunOnPause(runOnPause: boolean): void {
+    this.#runOnPause = !!runOnPause;
   }
 }
