@@ -55,6 +55,7 @@ import {
 import UserScriptPlayer from "@lichtblick/suite-base/players/UserScriptPlayer";
 import { Player } from "@lichtblick/suite-base/players/types";
 import { UserScripts } from "@lichtblick/suite-base/types/panels";
+import { getPanelTypeFromId } from "@lichtblick/suite-base/util/layout";
 
 const log = Logger.getLogger(__filename);
 
@@ -72,8 +73,16 @@ const globalVariablesSelector = (state: LayoutState) =>
 
 const selectUserScriptActions = (store: UserScriptStore) => store.actions;
 
+// Stable empty fallback for panel configurations
+const EMPTY_PANEL_CONFIGS: Record<string, unknown> = Object.freeze({});
+
 export default function PlayerManager(props: PropsWithChildren<PlayerManagerProps>): JSX.Element {
   const { children, playerSources } = props;
+
+  // Read panel configurations to propagate runOnPause setting
+  const panelConfigs = useCurrentLayoutSelector(
+    state => state.selectedLayout?.data?.configById ?? EMPTY_PANEL_CONFIGS,
+  );
 
   const perfRegistry = usePerformance();
 
@@ -137,6 +146,20 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
 
     return userScriptPlayer;
   }, [globalVariablesRef, topicAliasPlayer, userScriptActions, perfRegistry]);
+
+  // Propagate the runOnPause setting from any User Script panels to the player
+  useEffect(() => {
+    if (!player) {
+      return;
+    }
+    // Panel IDs encode panelType before the '!' delimiter
+    const runOnPause = Object.entries(panelConfigs).some(
+      ([panelId, cfg]) =>
+        getPanelTypeFromId(panelId) === "NodePlayground" &&
+        (cfg as { runOnPause?: boolean }).runOnPause === true,
+    );
+    player.setRunOnPause(runOnPause);
+  }, [player, panelConfigs]);
 
   useLayoutEffect(() => void player?.setUserScripts(userScripts), [player, userScripts]);
 
