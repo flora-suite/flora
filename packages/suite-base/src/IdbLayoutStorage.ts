@@ -2,7 +2,7 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import * as IDB from "idb/with-async-ittr";
+import { DBSchema, openDB } from "idb";
 
 import Log from "@lichtblick/log";
 import { LayoutID } from "@lichtblick/suite-base/context/CurrentLayoutContext";
@@ -14,7 +14,7 @@ const log = Log.getLogger(__filename);
 const DATABASE_NAME = "foxglove-layouts";
 const OBJECT_STORE_NAME = "layouts";
 
-interface LayoutsDB extends IDB.DBSchema {
+interface LayoutsDB extends DBSchema {
   layouts: {
     key: [namespace: string, id: LayoutID];
     value: {
@@ -32,7 +32,7 @@ interface LayoutsDB extends IDB.DBSchema {
  * being the tuple of [namespace, id].
  */
 export class IdbLayoutStorage implements ILayoutStorage {
-  #db = IDB.openDB<LayoutsDB>(DATABASE_NAME, 1, {
+  #db = openDB<LayoutsDB>(DATABASE_NAME, 1, {
     upgrade(db) {
       const store = db.createObjectStore(OBJECT_STORE_NAME, {
         keyPath: ["namespace", "layout.id"],
