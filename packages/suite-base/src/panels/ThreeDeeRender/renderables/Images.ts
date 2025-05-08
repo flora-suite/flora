@@ -57,7 +57,7 @@ export type LayerSettingsImage = BaseSettings & {
   color: string;
 };
 
-const DEFAULT_BITMAP_WIDTH = 512;
+// const DEFAULT_BITMAP_WIDTH = 512;
 const NO_CAMERA_INFO_ERR = "NoCameraInfo";
 const CAMERA_MODEL = "CameraModel";
 
