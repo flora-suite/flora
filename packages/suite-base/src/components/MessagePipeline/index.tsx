@@ -22,6 +22,7 @@ import CurrentLayoutContext, {
 } from "@lichtblick/suite-base/context/CurrentLayoutContext";
 import { useAppConfigurationValue } from "@lichtblick/suite-base/hooks/useAppConfigurationValue";
 import { GlobalVariables } from "@lichtblick/suite-base/hooks/useGlobalVariables";
+import { useLogName } from "@lichtblick/suite-base/hooks/useLogName";
 import {
   Player,
   PlayerProblem,
@@ -151,6 +152,7 @@ export function MessagePipelineProvider({ children, player }: ProviderProps): Re
   // We don't need to re-render because there's no react state update in our component that needs
   // to render with this update.
   const currentLayoutContext = useContext(CurrentLayoutContext);
+  const logName = useLogName();
 
   useEffect(() => {
     // Track the last global variables we've received in the layout selector so we can avoid setting
@@ -160,13 +162,13 @@ export function MessagePipelineProvider({ children, player }: ProviderProps): Re
       currentLayoutContext?.actions.getCurrentLayoutState().selectedLayout?.data?.globalVariables ??
       EMPTY_GLOBAL_VARIABLES;
 
-    player?.setGlobalVariables(lastGlobalVariablesInstance);
+    player?.setGlobalVariables({ ...lastGlobalVariablesInstance, log_name: logName });
 
     const onLayoutStateUpdate = (state: LayoutState) => {
       const globalVariables = state.selectedLayout?.data?.globalVariables ?? EMPTY_GLOBAL_VARIABLES;
       if (globalVariables !== lastGlobalVariablesInstance) {
         lastGlobalVariablesInstance = globalVariables;
-        player?.setGlobalVariables(globalVariables);
+        player?.setGlobalVariables({ ...globalVariables, log_name: logName });
       }
     };
 
@@ -174,7 +176,7 @@ export function MessagePipelineProvider({ children, player }: ProviderProps): Re
     return () => {
       currentLayoutContext?.removeLayoutStateListener(onLayoutStateUpdate);
     };
-  }, [currentLayoutContext, player]);
+  }, [currentLayoutContext, player, logName]);
 
   useEffect(() => {
     const dispatch = store.getState().dispatch;
