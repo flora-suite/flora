@@ -22,13 +22,13 @@ on:
           - minor
           # - major
           - patch
-        default: patch
+          - none
+        default: none
 
 jobs:
-  release_client:
-    name: Build and Release Client
+  release:
+    name: Build and Release
     runs-on: macos-latest
-    if: ${{ github.event.inputs.client }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -65,32 +65,37 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Build prod files
-        run: |
-          yarn run desktop:build:prod
-
-      - name: Build windows version
-        run: yarn run package:win
-
-      - name: Build linux version
-        run: yarn run package:linux
-
-      - name: Build macOS version
-        run: yarn run package:darwin
-
       # Important to use [skip actions] to avoid triggering other verisoning workflows
       # https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/skipping-workflow-runs
       - name: Commit and tag the new version
+        if: ${{ github.event.inputs.version_type != 'none' }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git pull origin main --rebase
           git add package.json packages/suite/package.json yarn.lock
           git commit -m "Bump version v${{ env.new_version }} [skip actions]"
           git tag "v${{ env.new_version }}"
           git push origin main --tags
 
+      - name: Build prod files
+        if: ${{ github.event.inputs.client }}
+        run: |
+          yarn run desktop:build:prod
+
+      - name: Build windows version
+        if: ${{ github.event.inputs.client }}
+        run: yarn run package:win
+
+      - name: Build linux version
+        if: ${{ github.event.inputs.client }}
+        run: yarn run package:linux
+
+      - name: Build macOS version
+        if: ${{ github.event.inputs.client }}
+        run: yarn run package:darwin
+
       - name: Create GitHub Release
+        if: ${{ github.event.inputs.client }}
         uses: ncipollo/release-action@v1
         with:
           tag: "v${{ env.new_version }}"
@@ -108,34 +113,17 @@ jobs:
             dist/latest-mac.yml
             dist/latest.yml
 
-  deploy_web:
-    name: Deploy to Web
-    runs-on: ubuntu-24.04
-    if: ${{ github.event.inputs.web }}
-
-    env:
-      # Environment variables that are injected into the build
-      ENABLE_EXPERIMENTAL_COREPACK: 1
-
-    steps:
-      - uses: actions/checkout@v4.1.1
-        with:
-          submodules: true
-
-      - uses: actions/setup-node@v4.0.3
-        with:
-          node-version: lts/*
-
-      - run: corepack enable
-
-      - run: yarn install --immutable
-
-      - run: yarn web:build:prod
+      - name: build web
+        if: ${{ github.event.inputs.web }}
+        run: |
+          yarn web:build:prod
 
       - uses: NiceLabs/rclone-action@master
+        if: ${{ github.event.inputs.web }}
         with:
           github-token: ${{ secrets.FLORA_GITHUB_TOKEN }}
           config: ${{ secrets.RCLONE_CONFIG }}
           config-secret-name: RCLONE_CONFIG
       - name: Upload Pre-built images
+        if: ${{ github.event.inputs.web }}
         run: rclone sync web/.webpack/ flora-app:/flora-app/
