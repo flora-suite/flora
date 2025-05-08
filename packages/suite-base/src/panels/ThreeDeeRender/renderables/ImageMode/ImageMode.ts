@@ -4,7 +4,7 @@
 
 import * as _ from "lodash-es";
 import * as THREE from "three";
-import { Writable } from "ts-essentials";
+import { Writable, assert } from "ts-essentials";
 
 import { filterMap } from "@lichtblick/den/collection";
 import { PinholeCameraModel } from "@lichtblick/den/image";
@@ -64,6 +64,7 @@ import { SettingsTreeEntry } from "../../SettingsManager";
 import {
   CAMERA_CALIBRATION_DATATYPES,
   COMPRESSED_IMAGE_DATATYPES,
+  COMPRESSED_VIDEO_DATATYPES,
   RAW_IMAGE_DATATYPES,
 } from "../../foxglove";
 import {
@@ -74,8 +75,10 @@ import {
 } from "../../ros";
 import { topicIsConvertibleToSchema } from "../../topicIsConvertibleToSchema";
 import { ICameraHandler } from "../ICameraHandler";
+import { ImageVideoRenderable } from "../Images/ImageVideoRenderable";
 import { getTopicMatchPrefix, sortPrefixMatchesToFront } from "../Images/topicPrefixMatching";
 import { colorModeSettingsFields } from "../colorMode";
+import { isVideoFrame } from "@lichtblick/den/video";
 
 const log = Logger.getLogger(__filename);
 
@@ -108,6 +111,7 @@ export const ALL_SUPPORTED_IMAGE_SCHEMAS = new Set([
   ...ROS_COMPRESSED_IMAGE_DATATYPES,
   ...RAW_IMAGE_DATATYPES,
   ...COMPRESSED_IMAGE_DATATYPES,
+  ...COMPRESSED_VIDEO_DATATYPES,
 ]);
 
 const SUPPORTED_RAW_IMAGE_SCHEMAS = new Set([...RAW_IMAGE_DATATYPES, ...ROS_IMAGE_DATATYPES]);
@@ -141,7 +145,7 @@ export class ImageMode
 
   readonly #annotations: ImageAnnotations;
 
-  protected imageRenderable: ImageRenderable | undefined;
+  #imageRenderable: ImageRenderable | undefined;
   #removeImageTimeout: ReturnType<typeof setTimeout> | undefined;
 
   protected readonly messageHandler: IMessageHandler;
@@ -291,6 +295,14 @@ export class ImageMode
           filterQueue: this.#filterMessageQueue.bind(this),
         },
       },
+      {
+        type: "schema",
+        schemaNames: COMPRESSED_VIDEO_DATATYPES,
+        subscription: {
+          handler: this.messageHandler.handleCompressedVideo,
+          shouldSubscribe: this.imageShouldSubscribe,
+        },
+      },
     ];
     return subscriptions.concat(this.#annotations.getSubscriptions());
   }
@@ -309,7 +321,7 @@ export class ImageMode
     this.renderer.settings.errors.off("remove", this.#handleErrorChange);
     this.renderer.off("topicsChanged", this.#handleTopicsChanged);
     this.#annotations.dispose();
-    this.imageRenderable?.dispose();
+    this.#imageRenderable?.dispose();
     super.dispose();
   }
 
@@ -330,13 +342,16 @@ export class ImageMode
     }
     this.#annotations.removeAllRenderables();
     this.messageHandler.clear();
+    if (this.#imageRenderable instanceof ImageVideoRenderable) {
+      this.#imageRenderable.handleSeek();
+    }
     super.removeAllRenderables();
   }
 
   #removeImageRenderable(): void {
-    this.imageRenderable?.dispose();
-    this.imageRenderable?.removeFromParent();
-    this.imageRenderable = undefined;
+    this.#imageRenderable?.dispose();
+    this.#imageRenderable?.removeFromParent();
+    this.#imageRenderable = undefined;
   }
 
   /**
@@ -584,8 +599,8 @@ export class ImageMode
       const changingToUnselectedCalibration = config.calibrationTopic == undefined;
       if (changingToUnselectedCalibration) {
         this.renderer.enableImageOnlySubscriptionMode();
-        if (this.imageRenderable) {
-          this.#updateFallbackCameraModel(this.imageRenderable);
+        if (this.#imageRenderable) {
+          this.#updateFallbackCameraModel(this.#imageRenderable);
         }
       }
 
@@ -612,8 +627,8 @@ export class ImageMode
     if (config.flipVertical !== prevImageModeConfig.flipVertical) {
       this.#camera.setFlipVertical(config.flipVertical);
     }
-    this.imageRenderable?.setSettings({
-      ...this.imageRenderable.userData.settings,
+    this.#imageRenderable?.setSettings({
+      ...this.#imageRenderable.userData.settings,
       colorMode: config.colorMode,
       flatColor: config.flatColor,
       gradient: config.gradient as [string, string],
@@ -715,12 +730,7 @@ export class ImageMode
     }
 
     renderable.userData.receiveTime = receiveTime;
-    renderable.setImage(image, /*resizeWidth=*/ undefined, () => {
-      if (this.#fallbackCameraModelActive()) {
-        this.#updateFallbackCameraModel(renderable);
-        this.#updateViewAndRenderables();
-      }
-    });
+    renderable.setImage(image);
   };
 
   /** Creates a fallback camera model based off of the renderable with a decoded image and updates the camera.
@@ -734,7 +744,12 @@ export class ImageMode
     // otherwise we would need to wait for the next image
     if (decodedImage && lastImageMessage) {
       const frameId = getFrameIdFromImage(lastImageMessage);
-      const { width, height } = decodedImage;
+      const width = isVideoFrame(decodedImage)
+        ? (decodedImage as VideoFrame).codedWidth
+        : (decodedImage as ImageData).width;
+      const height = isVideoFrame(decodedImage)
+        ? (decodedImage as VideoFrame).codedHeight
+        : (decodedImage as ImageData).height;
       const cameraInfo = createFallbackCameraInfoForImage({
         frameId,
         height,
@@ -762,7 +777,7 @@ export class ImageMode
     image: AnyImage | undefined,
     frameId: string,
   ): ImageRenderable {
-    let renderable = this.imageRenderable;
+    let renderable = this.#imageRenderable;
     if (renderable) {
       return renderable;
     }
@@ -795,15 +810,30 @@ export class ImageMode
       mesh: undefined,
     });
 
+    renderable.setOnImageDecode(() => {
+      if (this.#fallbackCameraModelActive()) {
+        this.#updateFallbackCameraModel(renderable!);
+        this.#updateViewAndRenderables();
+      }
+    });
+    renderable.setImageScale(this.#camera.getEffectiveScale(), this.renderer.getPixelRatio());
     this.add(renderable);
-    this.imageRenderable = renderable;
+    this.#imageRenderable = renderable;
     renderable.setRenderBehindScene();
     renderable.visible = true;
     return renderable;
   }
 
-  protected initRenderable(topicName: string, userData: ImageUserData): ImageRenderable {
-    return new ImageRenderable(topicName, this.renderer, userData);
+  protected initRenderable(topicName: string, userData: ImageUserData): ImageVideoRenderable {
+    const topic = this.renderer.topics?.find((t) => t.name === topicName);
+    assert(topic != undefined, `Unable to find topic ${topicName} from message in topics list`);
+    const isVideoTopic =
+      COMPRESSED_VIDEO_DATATYPES.has(topic?.schemaName ?? "") ||
+      (topic?.convertibleTo?.some((t) => COMPRESSED_VIDEO_DATATYPES.has(t)) ?? false);
+    return new ImageVideoRenderable(topicName, this.renderer, userData, {
+      isVideoTopic,
+      isImageMode: true,
+    });
   }
 
   /** Gets frame from active info or image message if info does not have one*/
@@ -816,7 +846,7 @@ export class ImageMode
     }
 
     const selectedCameraInfo = this.#cameraModel?.info;
-    const selectedImage = this.imageRenderable?.userData.image;
+    const selectedImage = this.#imageRenderable?.userData.image;
 
     const cameraInfoFrameId = selectedCameraInfo?.header.frame_id;
 
@@ -871,7 +901,7 @@ export class ImageMode
     if (this.#cameraModel?.model) {
       this.#camera.updateCamera(this.#cameraModel.model);
       this.#updateAnnotationsScale();
-      const imageRenderable = this.imageRenderable;
+      const imageRenderable = this.#imageRenderable;
       if (imageRenderable) {
         imageRenderable.userData.cameraInfo = this.#cameraModel.info;
         imageRenderable.setCameraModel(this.#cameraModel.model);
@@ -951,15 +981,15 @@ export class ImageMode
 
   #getDownloadImageCallback = (): (() => Promise<void>) => {
     return async () => {
-      if (!this.imageRenderable) {
+      if (!this.#imageRenderable) {
         return;
       }
-      const currentImage = this.imageRenderable.getDecodedImage();
+      const currentImage = this.#imageRenderable.getDecodedImage();
       if (!currentImage) {
         return;
       }
 
-      const { topic, image: imageMessage } = this.imageRenderable.userData;
+      const { topic, image: imageMessage } = this.#imageRenderable.userData;
       if (!imageMessage) {
         return;
       }
@@ -967,10 +997,15 @@ export class ImageMode
       const { rotation, flipHorizontal, flipVertical } = settings;
       const stamp = "header" in imageMessage ? imageMessage.header.stamp : imageMessage.timestamp;
       try {
-        const width =
-          rotation === 90 || rotation === 270 ? currentImage.height : currentImage.width;
-        const height =
-          rotation === 90 || rotation === 270 ? currentImage.width : currentImage.height;
+        const imgWidth = isVideoFrame(currentImage)
+          ? (currentImage as VideoFrame).codedWidth
+          : (currentImage as ImageData).width;
+        const imgHeight = isVideoFrame(currentImage)
+          ? (currentImage as VideoFrame).codedHeight
+          : (currentImage as ImageData).height;
+
+        const width = rotation === 90 || rotation === 270 ? imgHeight : imgWidth;
+        const height = rotation === 90 || rotation === 270 ? imgWidth : imgHeight;
 
         // re-render the image onto a new canvas to download the original image
         const canvas = document.createElement("canvas");
@@ -988,7 +1023,7 @@ export class ImageMode
         ctx.translate(width / 2, height / 2);
         ctx.scale(flipHorizontal ? -1 : 1, flipVertical ? -1 : 1);
         ctx.rotate((rotation / 180) * Math.PI);
-        ctx.translate(-currentImage.width / 2, -currentImage.height / 2);
+        ctx.translate(-imgWidth / 2, -imgHeight / 2);
         ctx.drawImage(bitmap, 0, 0);
 
         // read the canvas data as an image (png)
@@ -997,7 +1032,7 @@ export class ImageMode
             if (result) {
               resolve(result);
             } else {
-              reject(`Failed to create an image from ${width}x${height} canvas`);
+              reject(new Error(`Failed to create an image from ${width}x${height} canvas`));
             }
           }, "image/png");
         });
@@ -1027,7 +1062,7 @@ export class ImageMode
         type: "item",
         label: "Download image",
         onclick: this.#getDownloadImageCallback(),
-        disabled: this.imageRenderable?.getDecodedImage() == undefined,
+        disabled: this.#imageRenderable?.getDecodedImage() == undefined,
       },
     ];
   }
