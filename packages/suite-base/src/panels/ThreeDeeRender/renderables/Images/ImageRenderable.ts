@@ -16,11 +16,12 @@ import { WorkerImageDecoder } from "@lichtblick/suite-base/panels/ThreeDeeRender
 import { projectPixel } from "@lichtblick/suite-base/panels/ThreeDeeRender/renderables/projections";
 import { RosValue } from "@lichtblick/suite-base/players/types";
 
-import { AnyImage } from "./ImageTypes";
+import { AnyImage, TransparencyImage } from "./ImageTypes";
 import { decodeCompressedImageToBitmap } from "./decodeImage";
 import { CameraInfo } from "../../ros";
 import { DECODE_IMAGE_ERR_KEY, IMAGE_TOPIC_PATH } from "../ImageMode/constants";
 import { ColorModeSettings } from "../colorMode";
+import { isVideoFrame } from "@lichtblick/den/video";
 
 const log = Logger.getLogger(__filename);
 export interface ImageRenderableSettings extends Partial<ColorModeSettings> {
@@ -56,6 +57,7 @@ export type ImageUserData = BaseUserData & {
 };
 
 export class ImageRenderable extends Renderable<ImageUserData> {
+  public readonly isImageMode: boolean;
   // Make sure that everything is build the first time we render
   // set when camera info or image changes
   #geometryNeedsUpdate = true;
@@ -70,23 +72,53 @@ export class ImageRenderable extends Renderable<ImageUserData> {
 
   #isUpdating = false;
 
+  #transparencyImage: TransparencyImage = {
+    usesTransparency: false,
+    imageData: new ImageData(1, 1),
+  };
+
   #decodedImage?: ImageBitmap | ImageData;
   protected decoder?: WorkerImageDecoder;
+  public resizeWidth: number | undefined;
+  public onDecode?: () => void;
   #receivedImageSequenceNumber = 0;
   #displayedImageSequenceNumber = 0;
-  #showingErrorImage = false;
+  protected showingErrorImage = false;
+
+  #scale = 1;
 
   #disposed = false;
 
-  public constructor(topicName: string, renderer: IRenderer, userData: ImageUserData) {
+  public constructor(
+    topicName: string,
+    renderer: IRenderer,
+    userData: ImageUserData,
+    { isImageMode = false }: { isImageMode?: boolean },
+  ) {
     super(topicName, renderer, userData);
+    this.isImageMode = isImageMode;
+  }
+
+  public setResizeWidth(resizeWidth: number): void {
+    this.resizeWidth = resizeWidth;
+  }
+
+  public setOnImageDecode(onDecode: () => void): void {
+    this.onDecode = onDecode;
   }
 
   protected isDisposed(): boolean {
     return this.#disposed;
   }
 
-  public getDecodedImage(): ImageBitmap | ImageData | undefined {
+  public setImageScale(scale: number, pixelRatio: number) {
+    if (this.#scale !== scale * pixelRatio) {
+      this.#scale = scale * pixelRatio;
+      this.#meshNeedsUpdate = true;
+    }
+  }
+
+  public getDecodedImage(): ImageBitmap | ImageData | VideoFrame | undefined {
     return this.#decodedImage;
   }
 
@@ -172,69 +204,74 @@ export class ImageRenderable extends Renderable<ImageUserData> {
     this.userData.settings = newSettings;
   }
 
-  public setImage(image: AnyImage, resizeWidth?: number, onDecoded?: () => void): void {
+  public setImage(image: AnyImage): void {
     this.userData.image = image;
 
     const seq = ++this.#receivedImageSequenceNumber;
-    const decodePromise = this.decodeImage(image, resizeWidth);
+    const decodePromise = this.decodeImage(image, this.resizeWidth);
 
     decodePromise
       .then((result) => {
-        if (this.isDisposed()) {
-          return;
-        }
-        // prevent displaying an image older than the one currently displayed
-        if (this.#displayedImageSequenceNumber > seq) {
-          return;
-        }
-        this.#displayedImageSequenceNumber = seq;
-        this.#decodedImage = result;
-        this.#textureNeedsUpdate = true;
-        this.update();
-        this.#showingErrorImage = false;
-
-        onDecoded?.();
-        this.removeError(DECODE_IMAGE_ERR_KEY);
-        this.renderer.queueAnimationFrame();
+        this.handleDecodedImage(result, seq);
       })
-      .catch((err) => {
-        log.error(err);
-        if (this.isDisposed()) {
-          return;
-        }
-        // avoid needing to recreate error image if it already shown
-        if (!this.#showingErrorImage) {
-          void this.#setErrorImage(seq, onDecoded);
-        }
-        this.addError(DECODE_IMAGE_ERR_KEY, `Error decoding image: ${err.message}`);
+      .catch((err: unknown) => {
+        this.handleDecodeError(err, seq);
       });
-  }
-
-  async #setErrorImage(seq: number, onDecoded?: () => void): Promise<void> {
-    const errorBitmap = await getErrorImage(64, 64);
-    if (this.isDisposed()) {
-      return;
-    }
-    if (this.#displayedImageSequenceNumber > seq) {
-      return;
-    }
-    this.#decodedImage = errorBitmap;
-    this.#textureNeedsUpdate = true;
-    this.update();
-    this.#showingErrorImage = true;
-    // call ondecoded to display the error image when calibration is None
-    onDecoded?.();
-    this.renderer.queueAnimationFrame();
   }
 
   protected async decodeImage(
     image: AnyImage,
     resizeWidth?: number,
-  ): Promise<ImageBitmap | ImageData> {
+  ): Promise<TransparencyImage<ImageBitmap | ImageData>> {
     if ("format" in image) {
-      return await decodeCompressedImageToBitmap(image, resizeWidth);
+      return await decodeCompressedImageToBitmap(
+        this.#transparencyImage as TransparencyImage<ImageBitmap>,
+        image,
+        resizeWidth,
+      );
     }
-    return await (this.decoder ??= new WorkerImageDecoder()).decode(image, this.userData.settings);
+    if (this.decoder === undefined) {
+      this.decoder = new WorkerImageDecoder();
+    }
+    return await this.decoder.decode(this.#transparencyImage, image, this.userData.settings);
+  }
+
+  public handleDecodedImage(frame: TransparencyImage<ImageBitmap | ImageData>, seq?: number): void {
+    if (this.isDisposed()) {
+      return;
+    }
+
+    if (seq && this.#displayedImageSequenceNumber > seq) {
+      return;
+    }
+    this.#decodedImage = frame.imageData;
+    if (this.#renderBehindScene !== frame.usesTransparency) {
+      this.#materialNeedsUpdate = true;
+    }
+    this.#renderBehindScene = frame.usesTransparency;
+
+    this.#textureNeedsUpdate = true;
+    this.update();
+
+    if (seq != undefined) {
+      this.#displayedImageSequenceNumber = seq;
+    }
+    this.showingErrorImage = false;
+    this.onDecode?.();
+    this.removeError(DECODE_IMAGE_ERR_KEY);
+    this.renderer.queueAnimationFrame();
+  }
+
+  public handleDecodeError(err: unknown, seq?: number): void {
+    log.error(err);
+    if (this.isDisposed()) {
+      return;
+    }
+    // avoid needing to recreate error image if it already shown
+    if (!this.showingErrorImage) {
+      void this.#setErrorImage(seq!);
+    }
+    this.addError(DECODE_IMAGE_ERR_KEY, `Error decoding image: ${(err as Error).message}`);
   }
 
   public update(): void {
@@ -243,7 +280,7 @@ export class ImageRenderable extends Renderable<ImageUserData> {
     }
     this.#isUpdating = true;
 
-    if (this.#textureNeedsUpdate && this.#decodedImage) {
+    if ((this.#textureNeedsUpdate && this.#decodedImage) || isVideoFrame(this.#decodedImage)) {
       this.#updateTexture();
       this.#textureNeedsUpdate = false;
     }
@@ -274,6 +311,23 @@ export class ImageRenderable extends Renderable<ImageUserData> {
     this.#isUpdating = false;
   }
 
+  async #setErrorImage(seq: number): Promise<void> {
+    const errorBitmap = await getErrorImage(64, 64);
+    if (this.isDisposed()) {
+      return;
+    }
+    if (this.#displayedImageSequenceNumber > seq) {
+      return;
+    }
+    this.#decodedImage = errorBitmap;
+    this.#textureNeedsUpdate = true;
+    this.update();
+    this.showingErrorImage = true;
+    // call ondecoded to display the error image when calibration is None
+    this.onDecode?.();
+    this.renderer.queueAnimationFrame();
+  }
+
   #rebuildGeometry() {
     assert(this.userData.cameraModel, "Camera model must be set before geometry can be updated");
     // Dispose of the current geometry if the settings have changed
@@ -291,7 +345,7 @@ export class ImageRenderable extends Renderable<ImageUserData> {
     );
     const decodedImage = this.#decodedImage;
     // Create or update the bitmap texture
-    if (decodedImage instanceof ImageBitmap) {
+    if (decodedImage instanceof ImageBitmap || isVideoFrame(decodedImage)) {
       const canvasTexture = this.userData.texture;
       if (
         canvasTexture == undefined ||
@@ -299,9 +353,11 @@ export class ImageRenderable extends Renderable<ImageUserData> {
         !(canvasTexture instanceof THREE.CanvasTexture) ||
         !bitmapDimensionsEqual(decodedImage, canvasTexture.image as ImageBitmap | undefined)
       ) {
-        if (canvasTexture?.image instanceof ImageBitmap) {
+        if (canvasTexture?.image instanceof ImageBitmap || isVideoFrame(canvasTexture?.image)) {
           // don't close the image if it is the error image
-          canvasTexture.image.close();
+          canvasTexture?.image.close();
+          canvasTexture?.dispose();
+          this.userData.texture = createCanvasTexture(decodedImage);
         }
         canvasTexture?.dispose();
         this.userData.texture = createCanvasTexture(decodedImage);
@@ -339,6 +395,7 @@ export class ImageRenderable extends Renderable<ImageUserData> {
     const texture = this.userData.texture;
     if (texture) {
       material.map = texture;
+      // todo process scale
     }
 
     tempColor = stringToRgba(tempColor, this.userData.settings.color);
@@ -409,9 +466,9 @@ export class ImageRenderable extends Renderable<ImageUserData> {
 
 let tempColor = { r: 0, g: 0, b: 0, a: 0 };
 
-function createCanvasTexture(bitmap: ImageBitmap): THREE.CanvasTexture {
+function createCanvasTexture(bitmap: ImageBitmap | ImageData): THREE.Texture {
   const texture = new THREE.CanvasTexture(
-    bitmap,
+    bitmap as any,
     THREE.UVMapping,
     THREE.ClampToEdgeWrapping,
     THREE.ClampToEdgeWrapping,
@@ -419,9 +476,15 @@ function createCanvasTexture(bitmap: ImageBitmap): THREE.CanvasTexture {
     THREE.LinearFilter,
     THREE.RGBAFormat,
     THREE.UnsignedByteType,
-  );
+  ) as unknown as InstanceType<typeof THREE.CanvasTexture> & {
+    isVideoTexture: boolean;
+    update: () => void;
+  };
+  texture.flipY = false;
   texture.generateMipmaps = false;
   texture.colorSpace = THREE.SRGBColorSpace;
+  texture.isVideoTexture = isVideoFrame(bitmap);
+  texture.update = () => {};
   return texture;
 }
 
@@ -499,7 +562,7 @@ function createGeometry(
   return geometry;
 }
 
-const bitmapDimensionsEqual = (a?: ImageBitmap, b?: ImageBitmap) =>
+const bitmapDimensionsEqual = (a?: ImageBitmap | ImageData, b?: ImageBitmap) =>
   a?.width === b?.width && a?.height === b?.height;
 
 async function getErrorImage(width: number, height: number): Promise<ImageBitmap> {

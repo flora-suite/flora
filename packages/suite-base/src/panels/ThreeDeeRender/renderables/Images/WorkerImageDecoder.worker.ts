@@ -8,11 +8,18 @@ import * as Comlink from "@lichtblick/comlink";
 
 import { decodeRawImage, RawImageOptions } from "./decodeImage";
 import type { Image as RosImage } from "../../ros";
+import { TransparencyImage } from "./ImageTypes";
 
-function decode(image: RosImage | RawImage, options: Partial<RawImageOptions>): ImageData {
+function decode(
+  transparency: TransparencyImage,
+  image: RosImage | RawImage,
+  options: Partial<RawImageOptions>,
+): TransparencyImage {
   const result = new ImageData(image.width, image.height);
   decodeRawImage(image, options, result.data);
-  return Comlink.transfer(result, [result.data.buffer]);
+  transparency.usesTransparency = false;
+  transparency.imageData = result;
+  return Comlink.transfer(transparency, [transparency.imageData.data.buffer]);
 }
 
 export const service = {

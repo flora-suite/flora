@@ -6,6 +6,7 @@ import {
   CompressedImage,
   RawImage,
   ImageAnnotations as FoxgloveImageAnnotations,
+  CompressedVideo,
 } from "@foxglove/schemas";
 import * as _ from "lodash-es";
 
@@ -199,6 +200,10 @@ export class MessageHandler implements IMessageHandler {
   };
 
   public handleCompressedImage = (messageEvent: PartialMessageEvent<CompressedImage>): void => {
+    this.handleImage(messageEvent, normalizeCompressedImage(messageEvent.message));
+  };
+
+  public handleCompressedVideo = (messageEvent: PartialMessageEvent<CompressedVideo>): void => {
     this.handleImage(messageEvent, normalizeCompressedImage(messageEvent.message));
   };
 
@@ -449,6 +454,7 @@ export interface IMessageHandler {
   handleRosCompressedImage: (messageEvent: PartialMessageEvent<RosCompressedImage>) => void;
   handleRawImage: (messageEvent: PartialMessageEvent<RawImage>) => void;
   handleCompressedImage: (messageEvent: PartialMessageEvent<CompressedImage>) => void;
+  handleCompressedVideo: (messageEvent: PartialMessageEvent<CompressedVideo>) => void;
   handleCameraInfo: (message: PartialMessageEvent<CameraInfo>) => void;
   handleAnnotations: (
     messageEvent: MessageEvent<FoxgloveImageAnnotations | RosImageMarker | RosImageMarkerArray>,
