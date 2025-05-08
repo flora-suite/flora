@@ -587,7 +587,7 @@ export default function Panel<
           {
             key: "splitDown",
             text: "Split down",
-            icon: <SplitVertical20Regular />,
+            icon: <SplitHorizontal20Regular />,
             onClick: () => {
               split(childId, "column");
             },
@@ -595,7 +595,7 @@ export default function Panel<
           {
             key: "splitRight",
             text: "Split right",
-            icon: <SplitHorizontal20Regular />,
+            icon: <SplitVertical20Regular />,
             onClick: () => {
               split(childId, "row");
             },
