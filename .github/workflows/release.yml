@@ -77,7 +77,7 @@ jobs:
           git tag "v${{ env.new_version }}"
           git push origin main --tags
 
-      - name: Build prod files
+      - name: Build desktop prod files
         if: ${{ github.event.inputs.client }}
         run: |
           yarn run desktop:build:prod
@@ -113,7 +113,7 @@ jobs:
             dist/latest-mac.yml
             dist/latest.yml
 
-      - name: build web
+      - name: Build web prod
         if: ${{ github.event.inputs.web }}
         run: |
           yarn web:build:prod
@@ -124,6 +124,7 @@ jobs:
           github-token: ${{ secrets.FLORA_GITHUB_TOKEN }}
           config: ${{ secrets.RCLONE_CONFIG }}
           config-secret-name: RCLONE_CONFIG
+
       - name: Upload Pre-built images
         if: ${{ github.event.inputs.web }}
         run: rclone sync web/.webpack/ flora-app:/flora-app/
