@@ -56,9 +56,11 @@ export function NestedMenuItem(
               >
                 {item.icon != undefined ? <ListItemIcon>{item.icon}</ListItemIcon> : ReactNull}
                 <ListItemText>{item.label}</ListItemText>
-                {item.shortcut && <Typography flex-grow-0 variant="body2">
-                  <kbd>{item.shortcut}</kbd>
-                </Typography>}
+                {item.shortcut && (
+                  <Typography sx={{ flexGrow: 0 }} variant="body2">
+                    <kbd>{item.shortcut}</kbd>
+                  </Typography>
+                )}
               </MenuItem>
             );
           case "divider":
