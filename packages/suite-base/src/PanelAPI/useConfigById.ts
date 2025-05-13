@@ -6,7 +6,9 @@ import * as _ from "lodash-es";
 import { useCallback } from "react";
 import { DeepPartial } from "ts-essentials";
 
+import { Topic } from "@lichtblick/suite";
 import { useMessagePipeline } from "@lichtblick/suite-base/components/MessagePipeline";
+import { ExtensionSettings } from "@lichtblick/suite-base/components/PanelSettings/types";
 import {
   LayoutState,
   useCurrentLayoutActions,
@@ -27,7 +29,7 @@ import { getPanelTypeFromId } from "../util/layout";
  */
 export default function useConfigById<Config extends Record<string, unknown>>(
   panelId: string | undefined,
-): [Config | undefined, SaveConfig<Config>] {
+): [Config | undefined, SaveConfig<Config>, ExtensionSettings] {
   const { getCurrentLayoutState, savePanelConfigs } = useCurrentLayoutActions();
   const extensionSettings = useExtensionCatalog(getExtensionPanelSettings);
   const sortedTopics = useMessagePipeline((state) => state.sortedTopics);

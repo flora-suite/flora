@@ -31,6 +31,7 @@ export default {
 
 const MockExtensionLoader: ExtensionLoader = {
   namespace: "local",
+  getExtension: async () => undefined,
   getExtensions: async () => [],
   loadExtension: async (_id: string) => "",
   installExtension: async (_foxeFileData: Uint8Array) => {
