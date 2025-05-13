@@ -184,6 +184,12 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
     playerEvents: { play, pause },
   });
 
+  // Store stable reference to avoid re-running effects unnecessarily
+  const handleFilesRef = useRef<typeof handleFiles>(handleFiles);
+  useLayoutEffect(() => {
+    handleFilesRef.current = handleFiles;
+  }, [handleFiles]);
+
   // file types we support for drag/drop
   const allowedDropExtensions = useMemo(() => {
     const extensions = [".foxe"];
@@ -243,11 +249,16 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
 
   // files the main thread told us to open
   const filesToOpen = useElectronFilesToOpen();
+
   useEffect(() => {
-    if (filesToOpen) {
-      void handleFiles(Array.from(filesToOpen));
+    handleFilesRef.current = handleFiles;
+  }, [handleFiles]);
+
+  useEffect(() => {
+    if (filesToOpen && filesToOpen.length > 0) {
+      void handleFilesRef.current(Array.from(filesToOpen));
     }
-  }, [filesToOpen, handleFiles]);
+  }, [filesToOpen]);
 
   const dropHandler = useCallback(
     async ({ files, handles }: { files?: File[]; handles?: FileSystemFileHandle[] }) => {
