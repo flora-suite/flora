@@ -25,6 +25,7 @@ export const plot = {
   min: "Min",
   position: "Position",
   receiveTime: "Receive Time",
+  resetView: "Reset view",
   secondsRange: "Range (seconds)",
   series: "Series",
   showLabels: "Show labels",
@@ -36,5 +37,4 @@ export const plot = {
   value: "Value",
   xAxis: "X Axis",
   yAxis: "Y Axis",
-  resetView: "Reset view",
 };
