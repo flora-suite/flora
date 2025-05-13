@@ -11,7 +11,6 @@
 //   You may not use this file except in compliance with the License.
 
 import { Link, Typography } from "@mui/material";
-import { t } from "i18next";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { makeStyles } from "tss-react/mui";
