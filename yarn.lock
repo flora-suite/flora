@@ -4436,6 +4436,7 @@ __metadata:
     geojson: "npm:0.5.0"
     gl-matrix: "npm:3.4.3"
     hammerjs: "npm:2.0.8"
+    heap-js: "npm:2.6.0"
     i18next: "npm:23.7.18"
     i18next-browser-languagedetector: "npm:7.1.0"
     idb: "npm:8.0.2"
@@ -4528,8 +4529,10 @@ __metadata:
     "@pmmmwh/react-refresh-webpack-plugin": "npm:0.5.11"
     "@storybook/react": "npm:8.6.12"
     "@types/electron-devtools-installer": "npm:4.0.0"
+    "@types/mock-fs": "npm:4.13.4"
     "@types/plist": "npm:^3.0.3"
     "@types/pngjs": "npm:^6.0.2"
+    "@types/randomstring": "npm:1.3.0"
     "@types/tinycolor2": "npm:1.4.4"
     "@types/utif": "npm:^3.0.2"
     "@xmldom/xmldom": "npm:0.8.10"
@@ -4548,12 +4551,14 @@ __metadata:
     html-webpack-plugin: "npm:5.5.3"
     i18next: "npm:23.5.1"
     jszip: "npm:3.10.1"
+    mock-fs: "npm:5.5.0"
     path-browserify: "npm:1.0.1"
     plist: "npm:3.1.0"
     pngjs: "npm:7.0.0"
-    quicklookjs: "npm:0.0.3"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
+    quicklookjs: "npm:1.0.1"
+    randomstring: "npm:1.3.1"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
     react-refresh-typescript: "npm:2.0.9"
     react-use: "npm:17.5.1"
     tinycolor2: "npm:1.6.0"
@@ -6946,6 +6951,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/mock-fs@npm:4.13.4":
+  version: 4.13.4
+  resolution: "@types/mock-fs@npm:4.13.4"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/687c8e36d91031529924fd89011b7a87167ea33a1b92a9d845f0feb1a5157f168412c62ee308e57b9a71fd938197b4c71ca1784eb44e8a7cbdd816011ffd7f65
+  languageName: node
+  linkType: hard
+
 "@types/moment-duration-format@npm:2.2.6":
   version: 2.2.6
   resolution: "@types/moment-duration-format@npm:2.2.6"
@@ -7056,7 +7070,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/randomstring@npm:^1":
+"@types/randomstring@npm:1.3.0, @types/randomstring@npm:^1":
   version: 1.3.0
   resolution: "@types/randomstring@npm:1.3.0"
   checksum: 10c0/f7f8ba9c6b793c467e98193fccc2b17778c9cbb5e9da81b6f466c2f2b5089d37f4923b4b02d0e10d5cf2b6bb7a5d0db6ca9aecb93d20835e478a6c1050dbb1f3
@@ -14082,6 +14096,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"heap-js@npm:2.6.0":
+  version: 2.6.0
+  resolution: "heap-js@npm:2.6.0"
+  checksum: 10c0/49fad329f38987ee5cf76841e504b5a6b537781718997a7f4922a706be80afc07f6d92c77ae7036c7ed16ceaa6258d0d294793a120c12389926138edcb73876e
+  languageName: node
+  linkType: hard
+
 "heap-js@npm:^2.2.0":
   version: 2.5.0
   resolution: "heap-js@npm:2.5.0"
@@ -17360,6 +17381,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mock-fs@npm:5.5.0":
+  version: 5.5.0
+  resolution: "mock-fs@npm:5.5.0"
+  checksum: 10c0/56539c9ab1d29b72c4b3b54f003808c7c51e5c82454a80fc46fd811f40401652da32412bbf26daa4eabff0e44a08eeafbeb6c885c60c1111b5429a4279efbda4
+  languageName: node
+  linkType: hard
+
 "moize@npm:6.1.6":
   version: 6.1.6
   resolution: "moize@npm:6.1.6"
@@ -18831,10 +18859,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quicklookjs@npm:0.0.3":
-  version: 0.0.3
-  resolution: "quicklookjs@npm:0.0.3"
-  checksum: 10c0/9f3300355e2cbac78adb37be9339681fe583fba90a5c674df8af796655fc77f85abc08c066296a7fcca1936095f090decf590711b26b6a6ae27ba1a9404ee2ce
+"quicklookjs@npm:1.0.1":
+  version: 1.0.1
+  resolution: "quicklookjs@npm:1.0.1"
+  checksum: 10c0/df2b92505290159180dc14ee46d920b2fbaad85adc5bd49639c738e118c5b1315fcfca3abb4c42dde42ba5212c277992fa417ac87bd8ab5d4fc3520d497655f2
   languageName: node
   linkType: hard
 
@@ -18876,7 +18904,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"randombytes@npm:^2.0.0, randombytes@npm:^2.0.1, randombytes@npm:^2.0.5, randombytes@npm:^2.1.0":
+"randombytes@npm:2.1.0, randombytes@npm:^2.0.0, randombytes@npm:^2.0.1, randombytes@npm:^2.0.5, randombytes@npm:^2.1.0":
   version: 2.1.0
   resolution: "randombytes@npm:2.1.0"
   dependencies:
@@ -18903,6 +18931,17 @@ __metadata:
   bin:
     randomstring: bin/randomstring
   checksum: 10c0/3ffc29662c33d68fd58be3600fd03dd4eb81e4d7b63e9d55619297d0198a5bd31a90353cd3a1ececfc0696e9e4e2827d1529d585265c4a102f4516c6c69f5367
+  languageName: node
+  linkType: hard
+
+"randomstring@npm:1.3.1":
+  version: 1.3.1
+  resolution: "randomstring@npm:1.3.1"
+  dependencies:
+    randombytes: "npm:2.1.0"
+  bin:
+    randomstring: bin/randomstring
+  checksum: 10c0/1509b0dbda91b5270986c2e28389aba68dfda6edbc2357cd3938b16616a3596e9b8e04006be414960266ff73a7686f5cce784cf7b6a05a3e918d0f7e45333c33
   languageName: node
   linkType: hard
 
@@ -19097,6 +19136,18 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
   checksum: 10c0/66dfc5f93e13d0674e78ef41f92ed21dfb80f9c4ac4ac25a4b51046d41d4d2186abc915b897f69d3d0ebbffe6184e7c5876f2af26bfa956f179225d921be713a
+  languageName: node
+  linkType: hard
+
+"react-dom@npm:18.3.1":
+  version: 18.3.1
+  resolution: "react-dom@npm:18.3.1"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+    scheduler: "npm:^0.23.2"
+  peerDependencies:
+    react: ^18.3.1
+  checksum: 10c0/a752496c1941f958f2e8ac56239172296fcddce1365ce45222d04a1947e0cc5547df3e8447f855a81d6d39f008d7c32eab43db3712077f09e3f67c4874973e85
   languageName: node
   linkType: hard
 
@@ -20211,7 +20262,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.0":
+"scheduler@npm:^0.23.0, scheduler@npm:^0.23.2":
   version: 0.23.2
   resolution: "scheduler@npm:0.23.2"
   dependencies:
