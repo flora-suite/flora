@@ -84,6 +84,7 @@ import { PanelStateContextProvider } from "@lichtblick/suite-base/providers/Pane
 import WorkspaceContextProvider from "@lichtblick/suite-base/providers/WorkspaceContextProvider";
 import ICONS from "@lichtblick/suite-base/theme/icons";
 import { parseAppURLState } from "@lichtblick/suite-base/util/appURLState";
+import useBroadcast from "@lichtblick/suite-base/util/broadcast/useBroadcast";
 import isDesktopApp from "@lichtblick/suite-base/util/isDesktopApp";
 
 import { useWorkspaceActions } from "./context/Workspace/useWorkspaceActions";
@@ -575,6 +576,13 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
       props.showCustomWindowControls,
     ],
   );
+
+  useBroadcast({
+    play,
+    pause,
+    seek,
+    playUntil,
+  });
 
   return (
     <PanelStateContextProvider>
