@@ -143,6 +143,12 @@ const Plot = (props: PlotProps): React.JSX.Element => {
   }, [coordinator, getMessagePipelineState, subscribeMessagePipeline]);
 
   useEffect(() => {
+    if (coordinator) {
+      coordinator.setShouldSync({ shouldSync });
+    }
+  }, [coordinator, shouldSync]);
+
+  useEffect(() => {
     if (!renderer || !canvasDiv) {
       return;
     }
