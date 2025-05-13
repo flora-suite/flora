@@ -77,7 +77,7 @@ class PlayerBuilder {
   public static topic(props: Partial<Topic> = {}): Topic {
     return defaults<Topic>(props, {
       aliasedFromName: BasicBuilder.string(),
-      name: `/${BasicBuilder.string()}`,
+      name: `/${BasicBuilder.string()}/${BasicBuilder.string()}`,
       schemaName: BasicBuilder.string(),
     });
   }

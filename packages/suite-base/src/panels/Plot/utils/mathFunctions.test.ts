@@ -2,7 +2,7 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { mathFunctions } from "@lichtblick/suite-base/panels/Plot/mathFunctions";
+import { mathFunctions } from "@lichtblick/suite-base/panels/Plot/utils/mathFunctions";
 import BasicBuilder from "@lichtblick/suite-base/testing/builders/BasicBuilder";
 
 describe("mathFunctions", () => {
