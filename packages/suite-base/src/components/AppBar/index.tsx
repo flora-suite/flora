@@ -10,7 +10,7 @@ import {
   PanelRight24Regular,
   SlideAdd24Regular,
 } from "@fluentui/react-icons";
-import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
+import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
 import { Avatar, IconButton, Tooltip } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,6 +18,8 @@ import tc from "tinycolor2";
 import { makeStyles } from "tss-react/mui";
 
 import { FloraLogo } from "@lichtblick/suite-base/components/FloraLogo";
+import { AppSetting } from "@lichtblick/suite-base/AppSetting";
+import { MemoryUseIndicator } from "@lichtblick/suite-base/components/MemoryUseIndicator";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { useAppContext } from "@lichtblick/suite-base/context/AppContext";
 import {
@@ -29,6 +31,7 @@ import {
   useWorkspaceStore,
 } from "@lichtblick/suite-base/context/Workspace/WorkspaceContext";
 import { useWorkspaceActions } from "@lichtblick/suite-base/context/Workspace/useWorkspaceActions";
+import { useAppConfigurationValue } from "@lichtblick/suite-base/hooks";
 
 import { AddPanelMenu } from "./AddPanelMenu";
 import { AppBarContainer } from "./AppBarContainer";
@@ -173,6 +176,9 @@ export function AppBar(props: AppBarProps): JSX.Element {
   const { t } = useTranslation("appBar");
 
   const { appBarLayoutButton } = useAppContext();
+  const [enableMemoryUseIndicator = false] = useAppConfigurationValue<boolean>(
+    AppSetting.ENABLE_MEMORY_USE_INDICATOR,
+  );
 
   const hasCurrentLayout = useCurrentLayoutSelector(selectHasCurrentLayout);
 
@@ -249,6 +255,7 @@ export function AppBar(props: AppBarProps): JSX.Element {
 
           <div className={classes.end}>
             <div className={classes.endInner}>
+              {enableMemoryUseIndicator && <MemoryUseIndicator />}
               {appBarLayoutButton}
               <Stack direction="row" alignItems="center" data-tourid="sidebar-button-group">
                 <AppBarIconButton
@@ -297,7 +304,7 @@ export function AppBar(props: AppBarProps): JSX.Element {
                   }}
                   data-testid="user-button"
                 >
-                  <Avatar className={classes.avatar} variant="rounded" >
+                  <Avatar className={classes.avatar} variant="rounded">
                     <SettingsApplicationsIcon />
                   </Avatar>
                 </IconButton>
