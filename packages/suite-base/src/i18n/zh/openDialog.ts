@@ -22,7 +22,7 @@ export const openDialog: Partial<TypeOptions["resources"]["openDialog"]> = {
   openConnection: "打开连接",
   openConnectionDescription: "连接到实时机器人或服务器。",
   openDataSource: "打开数据源",
-  openLocalFile: "打开本地文件",
+  openLocalFiles: "打开本地文件",
   openLocalFileDescription: "直接从本地文件系统可视化数据。",
   openUrl: "上传和共享数据",
   openUrlDescription: "使用 Flora 数据平台与您的团队共享数据。",

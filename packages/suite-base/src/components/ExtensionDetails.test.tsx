@@ -9,7 +9,6 @@ import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useSnackbar } from "notistack";
 
-import { Immutable } from "@lichtblick/suite/src/immutable";
 import { ExtensionDetails } from "@lichtblick/suite-base/components/ExtensionDetails";
 import { useAnalytics } from "@lichtblick/suite-base/context/AnalyticsContext";
 import { useExtensionCatalog } from "@lichtblick/suite-base/context/ExtensionCatalogContext";
@@ -18,6 +17,7 @@ import {
   useExtensionMarketplace,
 } from "@lichtblick/suite-base/context/ExtensionMarketplaceContext";
 import BasicBuilder from "@lichtblick/suite-base/testing/builders/BasicBuilder";
+import ExtensionBuilder from "@lichtblick/suite-base/testing/builders/ExtensionBuilder";
 import isDesktopApp from "@lichtblick/suite-base/util/isDesktopApp";
 
 jest.mock("notistack", () => ({
@@ -46,20 +46,9 @@ describe("ExtensionDetails Component", () => {
   const mockUninstallExtension = jest.fn();
   const mockGetMarkdown = jest.fn();
 
-  const mockExtension: Immutable<ExtensionMarketplaceDetail> = {
-    id: BasicBuilder.string(),
-    name: BasicBuilder.string(),
-    qualifiedName: BasicBuilder.string(),
-    description: BasicBuilder.string(),
-    publisher: BasicBuilder.string(),
-    homepage: BasicBuilder.string(),
-    license: BasicBuilder.string(),
-    version: BasicBuilder.string(),
-    readme: BasicBuilder.string(),
-    changelog: BasicBuilder.string(),
-    foxe: BasicBuilder.string(),
+  const mockExtension: ExtensionMarketplaceDetail = ExtensionBuilder.extensionMarketplaceDetail({
     namespace: "local",
-  };
+  });
 
   beforeEach(() => {
     (useSnackbar as jest.Mock).mockReturnValue({ enqueueSnackbar: mockEnqueueSnackbar });

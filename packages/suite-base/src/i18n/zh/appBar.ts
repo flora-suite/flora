@@ -22,7 +22,7 @@ export const appBar: Partial<TypeOptions["resources"]["appBar"]> = {
   open: "打开…",
   openDataSources: "打开数据源",
   openConnection: "打开连接…",
-  openLocalFile: "打开本地文件…",
+  openLocalFiles: "打开本地文件…",
   recentDataSources: "最近使用的数据源",
   settings: "设置",
   showLeftSidebar: "显示左侧边栏",

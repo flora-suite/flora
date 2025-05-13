@@ -4398,7 +4398,7 @@ __metadata:
     "@types/moment-duration-format": "npm:2.2.6"
     "@types/nearley": "npm:2.11.5"
     "@types/ramda": "npm:0.29.4"
-    "@types/randomstring": "npm:^1"
+    "@types/randomstring": "npm:1.3.0"
     "@types/react": "npm:18.2.56"
     "@types/react-dom": "npm:18.2.7"
     "@types/react-hover-observer": "workspace:*"
@@ -4427,6 +4427,7 @@ __metadata:
     css-loader: "npm:6.8.1"
     cytoscape: "npm:3.28.1"
     cytoscape-dagre: "npm:2.5.0"
+    dompurify: "npm:3.2.5"
     esbuild-loader: "npm:2.21.0"
     eventemitter3: "npm:5.0.1"
     fake-indexeddb: "npm:4.0.2"
@@ -4465,7 +4466,7 @@ __metadata:
     path-browserify: "npm:1.0.1"
     prettier: "npm:3.0.3"
     ramda: "npm:0.30.1"
-    randomstring: "npm:1.3.0"
+    randomstring: "npm:1.3.1"
     react: "npm:18.2.0"
     react-colorful: "npm:5.6.1"
     react-dnd: "npm:16.0.1"
@@ -7070,7 +7071,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/randomstring@npm:1.3.0, @types/randomstring@npm:^1":
+"@types/randomstring@npm:1.3.0":
   version: 1.3.0
   resolution: "@types/randomstring@npm:1.3.0"
   checksum: 10c0/f7f8ba9c6b793c467e98193fccc2b17778c9cbb5e9da81b6f466c2f2b5089d37f4923b4b02d0e10d5cf2b6bb7a5d0db6ca9aecb93d20835e478a6c1050dbb1f3
@@ -7337,6 +7338,13 @@ __metadata:
   version: 4.0.5
   resolution: "@types/tough-cookie@npm:4.0.5"
   checksum: 10c0/68c6921721a3dcb40451543db2174a145ef915bc8bcbe7ad4e59194a0238e776e782b896c7a59f4b93ac6acefca9161fccb31d1ce3b3445cb6faa467297fb473
+  languageName: node
+  linkType: hard
+
+"@types/trusted-types@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@types/trusted-types@npm:2.0.7"
+  checksum: 10c0/4c4855f10de7c6c135e0d32ce462419d8abbbc33713b31d294596c0cc34ae1fa6112a2f9da729c8f7a20707782b0d69da3b1f8df6645b0366d08825ca1522e0c
   languageName: node
   linkType: hard
 
@@ -11395,6 +11403,18 @@ __metadata:
   dependencies:
     domelementtype: "npm:^2.3.0"
   checksum: 10c0/bba1e5932b3e196ad6862286d76adc89a0dbf0c773e5ced1eb01f9af930c50093a084eff14b8de5ea60b895c56a04d5de8bbc4930c5543d029091916770b2d2a
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:3.2.5":
+  version: 3.2.5
+  resolution: "dompurify@npm:3.2.5"
+  dependencies:
+    "@types/trusted-types": "npm:^2.0.7"
+  dependenciesMeta:
+    "@types/trusted-types":
+      optional: true
+  checksum: 10c0/b564167cc588933ad2d25c185296716bdd7124e9d2a75dac76efea831bb22d1230ce5205a1ab6ce4c1010bb32ac35f7a5cb2dd16c78cbf382111f1228362aa59
   languageName: node
   linkType: hard
 
@@ -18897,13 +18917,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"randombytes@npm:2.0.3":
-  version: 2.0.3
-  resolution: "randombytes@npm:2.0.3"
-  checksum: 10c0/f0ca74bc051c3cb9281c56e1c7d9b551879e0e09f6d7cf39bac5c168563503032582476fb4a643f1da94b7cbbfbda31b75d6819a699f0f25c196c0219c6ef95f
-  languageName: node
-  linkType: hard
-
 "randombytes@npm:2.1.0, randombytes@npm:^2.0.0, randombytes@npm:^2.0.1, randombytes@npm:^2.0.5, randombytes@npm:^2.1.0":
   version: 2.1.0
   resolution: "randombytes@npm:2.1.0"
@@ -18920,17 +18933,6 @@ __metadata:
     randombytes: "npm:^2.0.5"
     safe-buffer: "npm:^5.1.0"
   checksum: 10c0/11aeed35515872e8f8a2edec306734e6b74c39c46653607f03c68385ab8030e2adcc4215f76b5e4598e028c4750d820afd5c65202527d831d2a5f207fe2bc87c
-  languageName: node
-  linkType: hard
-
-"randomstring@npm:1.3.0":
-  version: 1.3.0
-  resolution: "randomstring@npm:1.3.0"
-  dependencies:
-    randombytes: "npm:2.0.3"
-  bin:
-    randomstring: bin/randomstring
-  checksum: 10c0/3ffc29662c33d68fd58be3600fd03dd4eb81e4d7b63e9d55619297d0198a5bd31a90353cd3a1ececfc0696e9e4e2827d1529d585265c4a102f4516c6c69f5367
   languageName: node
   linkType: hard
 
