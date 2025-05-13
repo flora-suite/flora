@@ -70,12 +70,18 @@ export function ExtensionDetails({ extension, onClose, installed }: Props): Reac
   const canUninstall = extension.namespace !== "org";
 
   const { value: readmeContent } = useAsync(
-    async () => (readmeUrl != undefined ? await marketplace.getMarkdown(readmeUrl) : ""),
-    [marketplace, readmeUrl],
+    async () =>
+      readme != undefined && isValidUrl(readme)
+        ? await marketplace.getMarkdown(readme)
+        : DOMPurify.sanitize(readme ?? "No readme found."),
+    [marketplace, readme],
   );
   const { value: changelogContent } = useAsync(
-    async () => (changelogUrl != undefined ? await marketplace.getMarkdown(changelogUrl) : ""),
-    [marketplace, changelogUrl],
+    async () =>
+      changelog != undefined && isValidUrl(changelog)
+        ? await marketplace.getMarkdown(changelog)
+        : DOMPurify.sanitize(changelog ?? "No changelog found."),
+    [marketplace, changelog],
   );
 
   const analytics = useAnalytics();
