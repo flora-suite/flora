@@ -4386,6 +4386,7 @@ __metadata:
     "@tanstack/react-table": "npm:8.11.7"
     "@testing-library/jest-dom": "npm:6.6.2"
     "@testing-library/react": "npm:16.2.0"
+    "@testing-library/user-event": "npm:14.5.2"
     "@types/base16": "npm:^1.0.5"
     "@types/cytoscape": "npm:^3.19.16"
     "@types/geojson": "npm:7946.0.11"
