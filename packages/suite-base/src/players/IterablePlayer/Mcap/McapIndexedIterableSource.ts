@@ -12,7 +12,7 @@ import { MessageEvent, Metadata } from "@lichtblick/suite";
 import {
   GetBackfillMessagesArgs,
   IIterableSource,
-  Initalization,
+  Initialization,
   IteratorResult,
   MessageIteratorArgs,
 } from "@lichtblick/suite-base/players/IterablePlayer/IIterableSource";
@@ -45,7 +45,7 @@ export class McapIndexedIterableSource implements IIterableSource {
     this.#reader = reader;
   }
 
-  public async initialize(): Promise<Initalization> {
+  public async initialize(): Promise<Initialization> {
     let startTime: bigint | undefined;
     let endTime: bigint | undefined;
     for (const chunk of this.#reader.chunkIndexes) {
@@ -288,6 +288,10 @@ export class McapIndexedIterableSource implements IIterableSource {
     const sizeEstimate = estimateObjectSize(msg);
     this.#messageSizeEstimateByHash[subscriptionHash] = sizeEstimate;
     return sizeEstimate;
+  }
+
+  public getStart(): Time | undefined {
+    return this.#start;
   }
 }
 

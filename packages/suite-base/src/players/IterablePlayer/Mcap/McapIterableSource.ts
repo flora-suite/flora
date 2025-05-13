@@ -6,6 +6,7 @@ import { McapIndexedReader, McapTypes } from "@mcap/core";
 
 import Log from "@lichtblick/log";
 import { loadDecompressHandlers } from "@lichtblick/mcap-support";
+import { Time } from "@lichtblick/rostime";
 import { MessageEvent } from "@lichtblick/suite-base/players/types";
 
 import { BlobReadable } from "./BlobReadable";
@@ -15,7 +16,7 @@ import { RemoteFileReadable } from "./RemoteFileReadable";
 import {
   IIterableSource,
   IteratorResult,
-  Initalization,
+  Initialization,
   MessageIteratorArgs,
   GetBackfillMessagesArgs,
 } from "../IIterableSource";
@@ -51,7 +52,7 @@ export class McapIterableSource implements IIterableSource {
     this.#source = source;
   }
 
-  public async initialize(): Promise<Initalization> {
+  public async initialize(): Promise<Initialization> {
     const source = this.#source;
 
     switch (source.type) {
@@ -117,5 +118,9 @@ export class McapIterableSource implements IIterableSource {
     }
 
     return await this.#sourceImpl.getBackfillMessages(args);
+  }
+
+  public getStart(): Time | undefined {
+    return this.#sourceImpl!.getStart!();
   }
 }

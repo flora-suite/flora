@@ -26,8 +26,6 @@ export default async function injectFilesToOpen(
     return;
   }
 
-  log.debug(`injectFilesToOpen: ${filesToOpen.join(",")}`);
-
   try {
     if (!debug.isAttached()) {
       debug.attach("1.1");
@@ -43,7 +41,7 @@ export default async function injectFilesToOpen(
       files: filesToOpen,
     });
 
-    log.debug(`Set input files #${inputElementId}: ${filesToOpen.join(",")}`);
+    log.debug(`Set input files #${inputElementId}: \n${filesToOpen.join("\n")}`);
 
     // clear the files once we've opened them
     filesToOpen.splice(0, filesToOpen.length);
