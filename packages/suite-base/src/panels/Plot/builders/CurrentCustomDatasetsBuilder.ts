@@ -9,6 +9,7 @@ import { filterMap } from "@lichtblick/den/collection";
 import { MessagePath } from "@lichtblick/message-path";
 import { Immutable, Time, MessageEvent } from "@lichtblick/suite";
 import { simpleGetMessagePathDataItems } from "@lichtblick/suite-base/components/MessagePathSyntax/simpleGetMessagePathDataItems";
+import { mathFunctions } from "@lichtblick/suite-base/panels/Plot/mathFunctions";
 import { PlayerState } from "@lichtblick/suite-base/players/types";
 
 import {
@@ -19,9 +20,8 @@ import {
   SeriesConfigKey,
   SeriesItem,
 } from "./IDatasetsBuilder";
-import { Dataset } from "../ChartRenderer";
 import { getChartValue, isChartValue, Datum } from "../datum";
-import { mathFunctions } from "../mathFunctions";
+import { Dataset } from "../types";
 
 type DatumWithReceiveTime = Datum & {
   receiveTime: Time;
