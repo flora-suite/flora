@@ -8,6 +8,7 @@ import { PanelSettings } from "@lichtblick/suite";
 import { PlayerPresence } from "@lichtblick/suite-base/players/types";
 
 import { BuilderRenderStateInput, initRenderStateBuilder } from "./renderState";
+import PlayerBuilder from "@lichtblick/suite-base/testing/builders/PlayerBuilder";
 
 function makeInitialState(): BuilderRenderStateInput {
   return {
@@ -107,6 +108,14 @@ describe("renderState", () => {
 
   it("should provide stable time values", () => {
     const buildRenderState = initRenderStateBuilder();
+    const playerState = PlayerBuilder.playerState({
+      activeData: PlayerBuilder.activeData(),
+    });
+
+    playerState.activeData!.currentTime = { sec: 33, nsec: 1 };
+    playerState.activeData!.startTime = { sec: 1, nsec: 1 };
+    playerState.activeData!.endTime = { sec: 100, nsec: 1 };
+
     const initialState: Parameters<typeof buildRenderState>[0] = {
       watchedFields: new Set(["currentTime", "endTime", "previewTime", "startTime"]),
       appSettings: undefined,

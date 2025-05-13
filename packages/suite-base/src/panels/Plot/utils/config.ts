@@ -72,6 +72,8 @@ type DeprecatedPlotConfig = {
   sidebarWidth?: number;
 };
 
+export type PlotLegendDisplay = "floating" | "top" | "left" | "none";
+
 export type PlotConfig = DeprecatedPlotConfig & {
   paths: PlotPath[];
   minXValue?: number;
@@ -79,7 +81,7 @@ export type PlotConfig = DeprecatedPlotConfig & {
   minYValue?: string | number;
   maxYValue?: string | number;
   showLegend: boolean;
-  legendDisplay: "floating" | "top" | "left" | "none";
+  legendDisplay: PlotLegendDisplay;
   showPlotValuesInLegend: boolean;
   showXAxisLabels: boolean;
   showYAxisLabels: boolean;

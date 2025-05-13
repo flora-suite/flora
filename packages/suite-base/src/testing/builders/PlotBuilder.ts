@@ -1,13 +1,13 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
+import { Datum, HoverElement } from "@lichtblick/suite-base/panels/Plot/types";
 import {
   BasePlotPath,
   PlotConfig,
   PlotPath,
   PlotXAxisVal,
-} from "@lichtblick/suite-base/panels/Plot/config";
-import { Datum, HoverElement } from "@lichtblick/suite-base/panels/Plot/types";
+} from "@lichtblick/suite-base/panels/Plot/utils/config";
 import BasicBuilder from "@lichtblick/suite-base/testing/builders/BasicBuilder";
 import { defaults } from "@lichtblick/suite-base/testing/builders/utilities";
 import { TimestampMethod } from "@lichtblick/suite-base/util/time";
@@ -34,11 +34,9 @@ export default class PlotBuilder {
 
   public static path(props: Partial<PlotPath> = {}): PlotPath {
     return defaults<PlotPath>(props, {
-      value: BasicBuilder.string(),
-      label: BasicBuilder.string(),
-      color: BasicBuilder.string(),
       enabled: BasicBuilder.boolean(),
       timestampMethod: BasicBuilder.sample(["headerStamp", "receiveTime"] as TimestampMethod[]),
+      value: BasicBuilder.string(),
     });
   }
 
