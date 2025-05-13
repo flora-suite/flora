@@ -176,7 +176,6 @@ function initRenderStateBuilder(): BuildRenderStateFn {
         const topics = sortedTopics.map((topic): Topic => {
           const newTopic: Topic = {
             name: topic.name,
-            datatype: topic.schemaName ?? "",
             schemaName: topic.schemaName ?? "",
           };
 

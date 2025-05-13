@@ -102,7 +102,23 @@ describe("renderState", () => {
     });
 
     expect(state).toEqual({
-      topics: [{ name: "test", schemaName: "schema", datatype: "schema", convertibleTo: ["more"] }],
+      topics: [{ name: "test", schemaName: "schema", convertibleTo: ["more"] }],
+    });
+  });
+
+  it("should not include convertibleTo when there are no message converters", () => {
+    const { buildRenderState, input } = setup();
+    const playerState = PlayerBuilder.playerState();
+    _.merge(input, {
+      playerState,
+      sortedTopics: [{ name: "test", schemaName: "schema" }],
+      subscriptions: [BasicBuilder.genericMap],
+      watchedFields: new Set(["topics"]),
+    });
+    const state = buildRenderState(input);
+
+    expect(state).toEqual({
+      topics: [{ name: "test", schemaName: "schema" }],
     });
   });
 
@@ -169,7 +185,7 @@ describe("renderState", () => {
       endTime: { sec: 100, nsec: 1 },
       startTime: { sec: 1, nsec: 1 },
       previewTime: 3.500000001,
-      topics: [{ datatype: "schema", name: "test", schemaName: "schema" }],
+      topics: [{ name: "test", schemaName: "schema" }],
     });
   });
 
@@ -198,7 +214,7 @@ describe("renderState", () => {
     });
 
     expect(state).toEqual({
-      topics: [{ name: "test", schemaName: "schema", datatype: "schema" }],
+      topics: [{ name: "test", schemaName: "schema" }],
       currentFrame: [
         {
           topic: "test",
@@ -247,8 +263,8 @@ describe("renderState", () => {
 
     expect(state).toEqual({
       topics: [
-        { name: "another", schemaName: "schema", datatype: "schema" },
-        { name: "test", schemaName: "schema", datatype: "schema" },
+        { name: "another", schemaName: "schema" },
+        { name: "test", schemaName: "schema" },
       ],
       currentFrame: [
         {
@@ -363,8 +379,8 @@ describe("renderState", () => {
 
     expect(state).toEqual({
       topics: [
-        { name: "test1", schemaName: "schema", datatype: "schema" },
-        { name: "test2", schemaName: "schema", datatype: "schema" },
+        { name: "test1", schemaName: "schema" },
+        { name: "test2", schemaName: "schema" },
       ],
       allFrames: [
         {
@@ -489,9 +505,7 @@ describe("renderState", () => {
     });
 
     expect(state).toEqual({
-      topics: [
-        { name: "test", schemaName: "schema", datatype: "schema", convertibleTo: ["otherSchema"] },
-      ],
+      topics: [{ name: "test", schemaName: "schema", convertibleTo: ["otherSchema"] }],
       currentFrame: [
         {
           topic: "test",
@@ -696,7 +710,6 @@ describe("renderState", () => {
         {
           name: "test",
           schemaName: "schema",
-          datatype: "schema",
           convertibleTo: ["otherSchema", "anotherSchema"],
         },
       ],
@@ -837,9 +850,7 @@ describe("renderState", () => {
     });
 
     expect(state).toEqual({
-      topics: [
-        { name: "test", schemaName: "schema", datatype: "schema", convertibleTo: ["otherSchema"] },
-      ],
+      topics: [{ name: "test", schemaName: "schema", convertibleTo: ["otherSchema"] }],
       currentFrame: [
         {
           topic: "test",
@@ -921,13 +932,11 @@ describe("renderState", () => {
         {
           name: "test",
           schemaName: "schema",
-          datatype: "schema",
           convertibleTo: ["otherSchema", "anotherSchema"],
         },
         {
           name: "test2",
           schemaName: "schema2",
-          datatype: "schema2",
         },
       ],
       currentFrame: expect.any(Array),
