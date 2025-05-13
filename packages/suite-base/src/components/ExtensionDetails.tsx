@@ -4,6 +4,7 @@
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { Button, Link, Tab, Tabs, Typography, Divider } from "@mui/material";
+import DOMPurify from "dompurify";
 import { useSnackbar } from "notistack";
 import { useCallback, useState } from "react";
 import { useAsync, useMountedState } from "react-use";
@@ -20,6 +21,7 @@ import {
 } from "@lichtblick/suite-base/context/ExtensionMarketplaceContext";
 import { AppEvent } from "@lichtblick/suite-base/services/IAnalytics";
 import isDesktopApp from "@lichtblick/suite-base/util/isDesktopApp";
+import { isValidUrl } from "@lichtblick/suite-base/util/isValidURL";
 
 type Props = {
   installed: boolean;
@@ -53,7 +55,11 @@ enum OperationStatus {
  * @param {Function} props.onClose - Callback function to close the details view.
  * @returns {React.ReactElement} The rendered component.
  */
-export function ExtensionDetails({ extension, onClose, installed }: Props): React.ReactElement {
+export function ExtensionDetails({
+  extension,
+  onClose,
+  installed,
+}: Readonly<Props>): React.ReactElement {
   const { classes } = useStyles();
   const [isInstalled, setIsInstalled] = useState(installed);
   const [operationStatus, setOperationStatus] = useState<OperationStatus>(OperationStatus.IDLE);
@@ -64,8 +70,8 @@ export function ExtensionDetails({ extension, onClose, installed }: Props): Reac
   const uninstallExtension = useExtensionCatalog((state) => state.uninstallExtension);
   const marketplace = useExtensionMarketplace();
   const { enqueueSnackbar } = useSnackbar();
-  const readmeUrl = extension.readme;
-  const changelogUrl = extension.changelog;
+  const readme = extension.readme;
+  const changelog = extension.changelog;
   const canInstall = extension.foxe != undefined;
   const canUninstall = extension.namespace !== "org";
 
