@@ -25,6 +25,8 @@ export type PrimitiveType =
   | "float64"
   | "string";
 
+export type OperatorType = "==" | "!=" | "<=" | ">=" | "<" | ">";
+
 export type MessagePathFilter = {
   type: "filter";
   path: string[];
@@ -32,6 +34,7 @@ export type MessagePathFilter = {
   nameLoc: number;
   valueLoc: number;
   repr: string; // the original string representation of the filter
+  operator: OperatorType;
 };
 
 // A parsed version of paths.
