@@ -33,7 +33,7 @@ export function isPathToDirectory(paths: string[]): boolean {
   }
 }
 
-export function resolveSourcePaths(sourceParameter?: string): string[] {
+export function resolveSourcePaths(sourceParameter: string | undefined): string[] {
   if (!sourceParameter) {
     return [];
   }
