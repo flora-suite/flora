@@ -15,6 +15,7 @@ import StudioWindow from "./StudioWindow";
 import getDevModeIcon from "./getDevModeIcon";
 import injectFilesToOpen from "./injectFilesToOpen";
 // import installChromeExtensions from "./installChromeExtensions";
+import { parseCLIFlags } from "./parseCLIFlags";
 import {
   registerRosPackageProtocolHandlers,
   registerRosPackageProtocolSchemes,
@@ -115,7 +116,10 @@ export async function main(): Promise<void> {
       app.emit("open-url", { preventDefault() {} }, link);
     }
 
-    const files = argv.slice(1).filter((arg) => isFileToOpen(arg));
+    const files = argv
+      .slice(1)
+      .filter((arg) => !arg.startsWith("--")) // Filter out flags
+      .filter((arg) => isFileToOpen(arg));
     for (const file of files) {
       app.emit("open-file", { preventDefault() {} }, file);
     }
@@ -138,6 +142,7 @@ export async function main(): Promise<void> {
   // or command line arguments.
   const filesToOpen: string[] = process.argv
     .slice(1)
+    .filter((arg) => !arg.startsWith("--")) // Filter out flags
     .map((filePath) => path.resolve(filePath)) // Convert to absolute path, linux has some problems to resolve relative paths
     .filter(isFileToOpen);
 
@@ -203,6 +208,10 @@ export async function main(): Promise<void> {
   // support preload lookups for the user data path and home directory
   ipcMain.handle("getUserDataPath", () => app.getPath("userData"));
   ipcMain.handle("getHomePath", () => app.getPath("home"));
+
+  // Get the command line flags passed to the app when it was launched
+  const parsedCLIFlags = parseCLIFlags(process.argv);
+  ipcMain.handle("getCLIFlags", () => parsedCLIFlags);
 
   // Must be called before app.ready event
   registerRosPackageProtocolSchemes();
