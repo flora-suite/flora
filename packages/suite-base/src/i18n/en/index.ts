@@ -7,6 +7,7 @@ export * from "./appBar";
 export * from "./appSettings";
 export * from "./dataSourceInfo";
 export * from "./desktopWindow";
+export * from "./gauge";
 export * from "./general";
 export * from "./incompatibleLayoutVersion";
 export * from "./layoutBrowser";
