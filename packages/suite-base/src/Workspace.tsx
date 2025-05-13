@@ -11,8 +11,7 @@
 //   You may not use this file except in compliance with the License.
 
 import { Link, Typography } from "@mui/material";
-import { useSnackbar } from "notistack";
-import { extname } from "path";
+import { t } from "i18next";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { makeStyles } from "tss-react/mui";
@@ -65,7 +64,6 @@ import {
   useCurrentUserType,
 } from "@lichtblick/suite-base/context/CurrentUserContext";
 import { EventsStore, useEvents } from "@lichtblick/suite-base/context/EventsContext";
-import { useExtensionCatalog } from "@lichtblick/suite-base/context/ExtensionCatalogContext";
 import { usePlayerSelection } from "@lichtblick/suite-base/context/PlayerSelectionContext";
 import {
   LeftSidebarItemKey,
@@ -79,6 +77,7 @@ import { useAppConfigurationValue } from "@lichtblick/suite-base/hooks";
 import useAddPanel from "@lichtblick/suite-base/hooks/useAddPanel";
 import { useDefaultWebLaunchPreference } from "@lichtblick/suite-base/hooks/useDefaultWebLaunchPreference";
 import useElectronFilesToOpen from "@lichtblick/suite-base/hooks/useElectronFilesToOpen";
+import { useHandleFiles } from "@lichtblick/suite-base/hooks/useHandleFiles";
 import useSeekTimeFromCLI from "@lichtblick/suite-base/hooks/useSeekTimeFromCLI";
 import { PlayerPresence } from "@lichtblick/suite-base/players/types";
 import { PanelStateContextProvider } from "@lichtblick/suite-base/providers/PanelStateContextProvider";
@@ -166,7 +165,24 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
   const { AppBarComponent = AppBar } = props;
   const { t } = useTranslation("workspace");
 
+  const play = useMessagePipeline(selectPlay);
+  const playUntil = useMessagePipeline(selectPlayUntil);
+  const pause = useMessagePipeline(selectPause);
+  const seek = useMessagePipeline(selectSeek);
+  const isPlaying = useMessagePipeline(selectIsPlaying);
+  const getMessagePipeline = useMessagePipelineGetter();
+  const getTimeInfo = useCallback(
+    () => getMessagePipeline().playerState.activeData ?? {},
+    [getMessagePipeline],
+  );
+
   const { dialogActions, sidebarActions } = useWorkspaceActions();
+  const { handleFiles } = useHandleFiles({
+    availableSources,
+    selectSource,
+    isPlaying,
+    playerEvents: { play, pause },
+  });
 
   // file types we support for drag/drop
   const allowedDropExtensions = useMemo(() => {
@@ -224,71 +240,6 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
       containerRef.current.focus();
     }
   }, []);
-
-  const { enqueueSnackbar } = useSnackbar();
-
-  const installExtensions = useExtensionCatalog((state) => state.installExtensions);
-
-  const handleFiles = useCallback(
-    async (files: File[]) => {
-      if (files.length === 0) {
-        return;
-      }
-
-      const otherFiles: File[] = [];
-      log.debug("open files", files);
-
-      const extensionsData: Uint8Array[] = [];
-      for (const file of files) {
-        try {
-          if (file.name.endsWith(".foxe")) {
-            const arrayBuffer = await file.arrayBuffer();
-            extensionsData.push(new Uint8Array(arrayBuffer));
-          } else {
-            otherFiles.push(file);
-          }
-        } catch (error) {
-          console.error(`Error loading foxe file ${file.name}`, error);
-        }
-      }
-
-      if (extensionsData.length > 0) {
-        try {
-          enqueueSnackbar(`Installing ${extensionsData.length} extensions`, { variant: "info" });
-          const result = await installExtensions("local", extensionsData);
-          const installed = result.filter(({ success }) => success);
-          const progressText = `${installed.length}/${result.length}`;
-
-          if (installed.length === result.length) {
-            enqueueSnackbar(`Installed all extensions (${progressText})`, { variant: "success" });
-          } else {
-            enqueueSnackbar(`Installed ${progressText} extensions.`, { variant: "warning" });
-          }
-        } catch (error) {
-          enqueueSnackbar(`An error occurred during extension installation: ${error.message}`, {
-            variant: "error",
-          });
-        }
-      }
-
-      if (otherFiles.length > 0) {
-        // Look for a source that supports the dragged file extensions
-        for (const source of availableSources) {
-          const filteredFiles = otherFiles.filter((file) => {
-            const ext = extname(file.name);
-            return source.supportedFileTypes?.includes(ext);
-          });
-
-          // select the first source that has files that match the supported extensions
-          if (filteredFiles.length > 0) {
-            selectSource(source.id, { type: "file", files: otherFiles });
-            break;
-          }
-        }
-      }
-    },
-    [availableSources, enqueueSnackbar, installExtensions, selectSource],
-  );
 
   // files the main thread told us to open
   const filesToOpen = useElectronFilesToOpen();
@@ -536,17 +487,6 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
       },
     };
   }, [dialogActions.dataSource, dialogActions.openFile, sidebarActions.left, sidebarActions.right]);
-
-  const play = useMessagePipeline(selectPlay);
-  const playUntil = useMessagePipeline(selectPlayUntil);
-  const pause = useMessagePipeline(selectPause);
-  const seek = useMessagePipeline(selectSeek);
-  const isPlaying = useMessagePipeline(selectIsPlaying);
-  const getMessagePipeline = useMessagePipelineGetter();
-  const getTimeInfo = useCallback(
-    () => getMessagePipeline().playerState.activeData ?? {},
-    [getMessagePipeline],
-  );
 
   const targetUrlState = useMemo(() => {
     const deepLinks = props.deepLinks ?? [];
