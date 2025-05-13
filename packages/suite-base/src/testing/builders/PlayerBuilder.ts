@@ -2,7 +2,6 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import type { MessageEvent } from "@lichtblick/suite";
 import {
   BlockCache,
   MessageBlock,
@@ -18,6 +17,7 @@ import {
   TopicStats,
 } from "@lichtblick/suite-base/players/types";
 import BasicBuilder from "@lichtblick/suite-base/testing/builders/BasicBuilder";
+import MessageEventBuilder from "@lichtblick/suite-base/testing/builders/MessageEventBuilder";
 import RosDatatypesBuilder from "@lichtblick/suite-base/testing/builders/RosDatatypesBuilder";
 import RosTimeBuilder from "@lichtblick/suite-base/testing/builders/RosTimeBuilder";
 import { defaults } from "@lichtblick/suite-base/testing/builders/utilities";
@@ -37,25 +37,9 @@ class PlayerBuilder {
     return defaults<TopicSelection>(props, BasicBuilder.genericMap(PlayerBuilder.subscribePayload));
   }
 
-  public static messageEvent(props: Partial<MessageEvent> = {}): MessageEvent {
-    return defaults<MessageEvent>(props, {
-      message: BasicBuilder.stringMap(),
-      publishTime: RosTimeBuilder.time(),
-      receiveTime: RosTimeBuilder.time(),
-      schemaName: BasicBuilder.string(),
-      sizeInBytes: BasicBuilder.number(),
-      topic: BasicBuilder.string(),
-      topicConfig: BasicBuilder.stringMap(),
-    });
-  }
-
-  public static messageEvents(count = 3): MessageEvent[] {
-    return BasicBuilder.multiple(PlayerBuilder.messageEvent, count);
-  }
-
   public static messageBlock(props: Partial<MessageBlock> = {}): MessageBlock {
     return defaults<MessageBlock>(props, {
-      messagesByTopic: BasicBuilder.genericDictionary(PlayerBuilder.messageEvents),
+      messagesByTopic: BasicBuilder.genericDictionary(MessageEventBuilder.messageEvents),
       needTopics: PlayerBuilder.topicSelection(),
       sizeInBytes: BasicBuilder.number(),
     });
@@ -118,7 +102,7 @@ class PlayerBuilder {
       endTime: RosTimeBuilder.time(),
       isPlaying: BasicBuilder.boolean(),
       lastSeekTime: BasicBuilder.number(),
-      messages: PlayerBuilder.messageEvents(),
+      messages: MessageEventBuilder.messageEvents(),
       speed: BasicBuilder.number(),
       startTime: RosTimeBuilder.time(),
       topics: PlayerBuilder.topics(),
