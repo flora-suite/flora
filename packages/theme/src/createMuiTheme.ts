@@ -19,11 +19,12 @@ declare module "@mui/material/styles" {
   }
 }
 
-export const createMuiTheme = (themePreference: ThemePreference): Theme =>
-  createTheme({
+export const createMuiTheme = (themePreference: ThemePreference): Theme => {
+  return createTheme({
     name: themePreference,
     palette: palette[themePreference],
     shape: { borderRadius: 2 },
     typography,
     components,
   });
+};
