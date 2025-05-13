@@ -124,6 +124,7 @@ export default forwardRef<HTMLDivElement, PropsWithChildren<StackProps>>(
       paddingInlineStart,
       paddingInlineEnd,
       position,
+      testId,
       style,
       zeroMinWidth = false,
       ...rest
@@ -150,24 +151,31 @@ export default forwardRef<HTMLDivElement, PropsWithChildren<StackProps>>(
       overflowX,
       overflowY,
       padding,
+      paddingBlock,
+      paddingBlockEnd,
+      paddingBlockStart,
       paddingBottom,
+      paddingInline,
+      paddingInlineEnd,
+      paddingInlineStart,
       paddingLeft,
       paddingRight,
       paddingTop,
       paddingX,
       paddingY,
-      paddingBlock,
-      paddingBlockStart,
-      paddingBlockEnd,
-      paddingInline,
-      paddingInlineStart,
-      paddingInlineEnd,
       position,
+      testId,
       zeroMinWidth,
     });
 
     return (
-      <div ref={ref} className={cx(classes.root, className)} style={style} {...rest}>
+      <div
+        ref={ref}
+        className={cx(classes.root, className)}
+        style={style}
+        data-testid={testId}
+        {...rest}
+      >
         {children}
       </div>
     );
@@ -265,6 +273,9 @@ export type StackProps = {
 
   /** Defines the `position` style property. */
   position?: CSSProperties["position"];
+
+  /** Defines the `data-testid` for testing purposes. */
+  testId?: string;
 
   /** Defines the `flex` style property. */
   flex?: CSSProperties["flex"];
