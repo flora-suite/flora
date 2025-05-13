@@ -7,7 +7,7 @@ import * as R from "ramda";
 import { Immutable } from "@lichtblick/suite";
 import { MessageAndData } from "@lichtblick/suite-base/components/MessagePathSyntax/useCachedGetMessagePathDataItems";
 
-import { StateTransitionPath } from "./types";
+import { ImmutableDataset, StateTransitionPath } from "./types";
 
 function presence<T>(value: undefined | T): undefined | T {
   if (value === "") {
@@ -24,9 +24,7 @@ export function stateTransitionPathDisplayName(
   return presence(path.label) ?? presence(path.value) ?? `Series ${index + 1}`;
 }
 
-export function datasetContainsArray(
-  dataset: Immutable<(MessageAndData[] | undefined)[]>,
-): boolean {
+export function datasetContainsArray(dataset: ImmutableDataset): boolean {
   // We need to detect when the path produces more than one data point,
   // since that is invalid input
   const dataCounts = R.pipe(
