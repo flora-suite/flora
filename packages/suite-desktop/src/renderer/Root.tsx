@@ -34,16 +34,18 @@ const storageBridge = (global as unknown as { storageBridge?: Storage }).storage
 const menuBridge = (global as { menuBridge?: NativeMenuBridge }).menuBridge;
 const ctxbridge = (global as { ctxbridge?: OsContext }).ctxbridge;
 
-export default function Root(props: {
+type RootProps = {
   appParameters: CLIFlags;
   appConfiguration: IAppConfiguration;
   extraProviders: JSX.Element[] | undefined;
   dataSources: IDataSourceFactory[] | undefined;
-}): JSX.Element {
+};
+
+export default function Root(props: RootProps): React.JSX.Element {
   if (!storageBridge) {
     throw new Error("storageBridge is missing");
   }
-  const { appConfiguration } = props;
+  const { appConfiguration, appParameters, extraProviders } = props;
 
   useEffect(() => {
     const handler = () => {
@@ -147,7 +149,7 @@ export default function Root(props: {
 
   return (
     <App
-      appParameters={props.appParameters}
+      appParameters={appParameters}
       deepLinks={deepLinks}
       dataSources={dataSources}
       appConfiguration={appConfiguration}
@@ -166,7 +168,7 @@ export default function Root(props: {
       onMaximizeWindow={onMaximizeWindow}
       onUnmaximizeWindow={onUnmaximizeWindow}
       onCloseWindow={onCloseWindow}
-      extraProviders={props.extraProviders}
+      extraProviders={extraProviders}
     />
   );
 }
