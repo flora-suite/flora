@@ -602,7 +602,7 @@ export function Plot(props: Props): JSX.Element {
   }, [coordinator, globalBounds, shouldSync, subscriberId]);
 
   useEffect(() => {
-    if (!coordinator || !shouldSync) {
+    if (!coordinator) {
       return;
     }
 
