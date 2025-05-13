@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
+// SPDX-License-Identifier: MPL-2.0
+
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -13,19 +16,22 @@ import * as _ from "lodash-es";
 import memoizeWeak from "memoize-weak";
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import tinycolor from "tinycolor2";
-import { keyframes } from "tss-react";
-import { makeStyles } from "tss-react/mui";
 import { useImmer } from "use-immer";
 
 import { filterMap } from "@lichtblick/den/collection";
 import {
   Immutable,
   SettingsTreeAction,
+  SettingsTreeField,
   SettingsTreeNode,
   SettingsTreeNodeActionItem,
 } from "@lichtblick/suite";
 import { HighlightedText } from "@lichtblick/suite-base/components/HighlightedText";
+import { useStyles } from "@lichtblick/suite-base/components/SettingsTreeEditor/NodeEditor.style";
+import {
+  NodeEditorProps,
+  SelectVisibilityFilterValue,
+} from "@lichtblick/suite-base/components/SettingsTreeEditor/types";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { useAppContext } from "@lichtblick/suite-base/context/AppContext";
 
@@ -35,121 +41,7 @@ import { VisibilityToggle } from "./VisibilityToggle";
 import { icons } from "./icons";
 import { prepareSettingsNodes } from "./utils";
 
-type NodeEditorProps = {
-  actionHandler: (action: SettingsTreeAction) => void;
-  defaultOpen?: boolean;
-  filter?: string;
-  focusedPath?: readonly string[];
-  path: readonly string[];
-  settings?: Immutable<SettingsTreeNode>;
-};
-
-const NODE_HEADER_MIN_HEIGHT = 35;
-
-const useStyles = makeStyles()((theme) => ({
-  actionButton: {
-    padding: theme.spacing(0.5),
-  },
-  editNameField: {
-    font: "inherit",
-    gridColumn: "span 2",
-    width: "100%",
-
-    ".MuiInputBase-input": {
-      fontSize: "0.75rem",
-      padding: theme.spacing(0.75, 1),
-    },
-  },
-  focusedNode: {
-    animation: `
-      ${keyframes`
-      from {
-        background-color: ${tinycolor(theme.palette.primary.main).setAlpha(0.3).toRgbString()};
-      }
-      to {
-        background-color: transparent;
-      }`}
-      0.5s ease-in-out
-    `,
-  },
-  fieldPadding: {
-    gridColumn: "span 2",
-    height: theme.spacing(0.5),
-  },
-  iconWrapper: {
-    position: "absolute",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    top: "50%",
-    left: 0,
-    transform: "translate(-97.5%, -50%)",
-  },
-
-  nodeHeader: {
-    display: "flex",
-    gridColumn: "span 2",
-    paddingRight: theme.spacing(0.5),
-    minHeight: NODE_HEADER_MIN_HEIGHT,
-
-    "@media (pointer: fine)": {
-      ".MuiCheckbox-root": {
-        visibility: "visible",
-      },
-
-      "[data-node-function=edit-label]": {
-        visibility: "hidden",
-      },
-
-      "&:hover": {
-        backgroundColor: theme.palette.action.hover,
-
-        ".MuiCheckbox-root": {
-          visibility: "visible",
-        },
-
-        "[data-node-function=edit-label]": {
-          visibility: "visible",
-        },
-      },
-    },
-  },
-  nodeHeaderVisible: {
-    "@media (pointer: fine)": {
-      ".MuiCheckbox-root": {
-        visibility: "hidden",
-      },
-      "&:hover": {
-        ".MuiCheckbox-root": {
-          visibility: "visible",
-        },
-      },
-    },
-  },
-
-  nodeHeaderToggle: {
-    display: "grid",
-    alignItems: "center",
-    gridTemplateColumns: "auto 1fr auto",
-    opacity: 0.6,
-    position: "relative",
-    userSelect: "none",
-    width: "100%",
-  },
-  nodeHeaderToggleHasProperties: {
-    cursor: "pointer",
-  },
-  nodeHeaderToggleVisible: {
-    opacity: 1,
-  },
-  errorTooltip: {
-    whiteSpace: "pre-line",
-    maxHeight: "15vh",
-    overflowY: "auto",
-  },
-}));
-
-function ExpansionArrow({ expanded }: { expanded: boolean }): JSX.Element {
+function ExpansionArrow({ expanded }: { expanded: boolean }): React.JSX.Element {
   const { classes } = useStyles();
 
   const Component = expanded ? ArrowDownIcon : ArrowRightIcon;
@@ -162,7 +54,6 @@ function ExpansionArrow({ expanded }: { expanded: boolean }): JSX.Element {
 
 const makeStablePath = memoizeWeak((path: readonly string[], key: string) => [...path, key]);
 
-type SelectVisibilityFilterValue = "all" | "visible" | "invisible";
 const SelectVisibilityFilterOptions: (t: TFunction<"settingsEditor">) => {
   label: string;
   value: SelectVisibilityFilterValue;
@@ -194,7 +85,7 @@ type State = {
   visibilityFilter: SelectVisibilityFilterValue;
 };
 
-function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
+function NodeEditorComponent(props: NodeEditorProps): React.JSX.Element {
   const { actionHandler, defaultOpen = true, filter, focusedPath, settings = {} } = props;
   const [state, setState] = useImmer<State>({
     editing: false,
@@ -253,36 +144,58 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
 
   const rootRef = useRef<HTMLDivElement>(ReactNull);
 
-  const fieldEditors = filterMap(Object.entries(fields ?? {}), ([key, field]) => {
-    return field ? (
+  const entries = useMemo(() => Object.entries(fields ?? {}), [fields]);
+
+  const renderFieldEditor = useCallback(
+    (key: string, field: Immutable<SettingsTreeField>) => (
       <FieldEditor
         key={key}
         field={field}
         path={makeStablePath(props.path, key)}
         actionHandler={actionHandler}
       />
-    ) : undefined;
-  });
+    ),
+    [props.path, actionHandler],
+  );
 
-  const filterFn =
-    state.visibilityFilter === "visible"
-      ? showVisibleFilter
-      : state.visibilityFilter === "invisible"
-        ? showInvisibleFilter
-        : undefined;
-  const childNodes = filterMap(prepareSettingsNodes(children ?? {}), ([key, child]) => {
-    return !filterFn || filterFn(child) ? (
+  const fieldEditors = useMemo(
+    () =>
+      entries.filter(([, field]) => field).map(([key, field]) => renderFieldEditor(key, field!)),
+    [entries, renderFieldEditor],
+  );
+
+  const filterFn = useMemo(() => {
+    if (state.visibilityFilter === "visible") {
+      return showVisibleFilter;
+    }
+    if (state.visibilityFilter === "invisible") {
+      return showInvisibleFilter;
+    }
+    return undefined;
+  }, [state.visibilityFilter]);
+
+  const preparedNodes = useMemo(() => prepareSettingsNodes(children ?? {}), [children]);
+
+  const filteredNodes = useMemo(() => {
+    if (!filterFn) {
+      return preparedNodes;
+    }
+    return preparedNodes.filter(([, child]) => filterFn(child));
+  }, [preparedNodes, filterFn]);
+
+  const childNodes = useMemo(() => {
+    return filterMap(filteredNodes, ([key, child]) => (
       <NodeEditor
         actionHandler={actionHandler}
-        defaultOpen={child.defaultExpansionState === "collapsed" ? false : true}
+        defaultOpen={child.defaultExpansionState !== "collapsed"}
         filter={filter}
         focusedPath={focusedPath}
         key={key}
         settings={child}
         path={makeStablePath(props.path, key)}
       />
-    ) : undefined;
-  });
+    ));
+  }, [filteredNodes, actionHandler, filter, focusedPath, props.path]);
 
   const IconComponent = settings.icon ? icons[settings.icon] : undefined;
 
@@ -453,9 +366,8 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
               <EditIcon fontSize="small" />
             </IconButton>
           )}
-          {statusButton
-            ? statusButton
-            : settings.visible != undefined && (
+          {statusButton ??
+            (settings.visible != undefined && (
               <VisibilityToggle
                 size="small"
                 checked={visible}
@@ -463,7 +375,7 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
                 style={{ opacity: allowVisibilityToggle ? 1 : 0 }}
                 disabled={!allowVisibilityToggle}
               />
-            )}
+            ))}
           {inlineActions.map((action) => {
             const Icon = action.icon ? icons[action.icon] : undefined;
             const handler = () => {

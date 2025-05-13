@@ -1,6 +1,5 @@
-import path from "path";
-
 import { AppType, launchApp } from "./launchApp";
+import { loadFile } from "./utils/loadFile";
 
 describe("mapPanel", () => {
   const closeDataSourceDialogAfterAppLaunch = async (app: AppType) => {
@@ -12,14 +11,8 @@ describe("mapPanel", () => {
   it("should open map panel when loading a file", async () => {
     await using app = await launchApp();
     await closeDataSourceDialogAfterAppLaunch(app);
-    //Add rosbag file from source
-    const filePath = path.resolve(
-      __dirname,
-      "../../packages/suite-base/src/test/fixtures/example.bag",
-    );
-    //Drag and drop file
-    const fileInput = app.renderer.locator("[data-puppeteer-file-upload]");
-    await fileInput.setInputFiles(filePath);
+
+    await loadFile(app, "../../../packages/suite-base/src/test/fixtures/example.bag");
 
     //Click on add panel and select Map
     await app.renderer.getByTestId("AddPanelButton").click();
