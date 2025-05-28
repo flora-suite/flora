@@ -3692,6 +3692,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@flora-suite/chartjs-plugin-zoom@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@flora-suite/chartjs-plugin-zoom@npm:1.0.0"
+  dependencies:
+    hammerjs: "npm:^2.0.8"
+  peerDependencies:
+    chart.js: ^3.0.0-beta.13
+  checksum: 10c0/5b0eefa8b12505f0bed8ab1430d0a16ed5da6e64b2abe865a78401844f414b05642cba90a421e7ee0691edef6ea960abb5b5a55539d010ee77fe72f0d91ff1d5
+  languageName: node
+  linkType: hard
+
 "@fluentui/react-icons@npm:2.0.224":
   version: 2.0.224
   resolution: "@fluentui/react-icons@npm:2.0.224"
@@ -4294,9 +4305,9 @@ __metadata:
   linkType: hard
 
 "@kurkle/color@npm:^0.3.0":
-  version: 0.3.2
-  resolution: "@kurkle/color@npm:0.3.2"
-  checksum: 10c0/a9e8e3e35dcd59dec4dd4f0105919c05e24823a96347bcf152965c29e48d6290b66d5fb96c071875db752e10930724c48ce6d338fefbd65e0ce5082d5c78970e
+  version: 0.3.4
+  resolution: "@kurkle/color@npm:0.3.4"
+  checksum: 10c0/0e9fd55c614b005c5f0c4c755bca19ec0293bc7513b4ea3ec1725234f9c2fa81afbc78156baf555c8b9cb0d305619253c3f5bca016067daeebb3d00ebb4ea683
   languageName: node
   linkType: hard
 
@@ -4318,17 +4329,6 @@ __metadata:
   version: 1.0.1
   resolution: "@lichtblick/cdr@npm:1.0.1"
   checksum: 10c0/1622f88c6afacf35b7833ec4238480d4058ac50b071b421e90ed5673727e0b2c9ffcac4c10cf382d6dd2dca4d89b6cc1db7ab5ef663539408ef31a207b232d42
-  languageName: node
-  linkType: hard
-
-"@lichtblick/chartjs-plugin-zoom@npm:1.0.0":
-  version: 1.0.0
-  resolution: "@lichtblick/chartjs-plugin-zoom@npm:1.0.0"
-  dependencies:
-    hammerjs: "npm:^2.0.8"
-  peerDependencies:
-    chart.js: ^3.0.0-beta.13
-  checksum: 10c0/de19a0c9d276ee52ba66fe2739fdbebe8fe0c8aeb73d7739ef5c74623b6dd415e9b9e898cee4a42fddef88d087b69fc2fffbfab3bf3d8dfffd206b2be87d1728
   languageName: node
   linkType: hard
 
@@ -4609,11 +4609,11 @@ __metadata:
     "@emotion/cache": "npm:11.14.0"
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.0"
+    "@flora-suite/chartjs-plugin-zoom": "npm:1.0.0"
     "@fluentui/react-icons": "npm:2.0.224"
     "@foxglove/schemas": "npm:1.6.3"
     "@foxglove/ws-protocol": "npm:0.8.0"
     "@lichtblick/avl": "npm:1.0.0"
-    "@lichtblick/chartjs-plugin-zoom": "npm:1.0.0"
     "@lichtblick/comlink": "npm:1.0.3"
     "@lichtblick/comlink-transfer-handlers": "workspace:*"
     "@lichtblick/crc": "npm:1.0.0"

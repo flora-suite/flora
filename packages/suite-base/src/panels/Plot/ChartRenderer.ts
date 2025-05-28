@@ -6,7 +6,7 @@ import { Chart } from "chart.js";
 import { AnnotationOptions } from "chartjs-plugin-annotation";
 import EventEmitter from "eventemitter3";
 
-import { Zoom as ZoomPlugin } from "@lichtblick/chartjs-plugin-zoom";
+import { Zoom as ZoomPlugin } from "@flora-suite/chartjs-plugin-zoom";
 import { unwrap } from "@lichtblick/den/monads";
 import { Immutable } from "@lichtblick/suite";
 import {
