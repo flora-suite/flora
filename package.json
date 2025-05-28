@@ -92,7 +92,7 @@
     "@types/case-sensitive-paths-webpack-plugin": "2.1.9",
     "@types/jest": "29.5.14",
     "@types/license-checker": "^25.0.6",
-    "@types/node": "22.15.23",
+    "@types/node": "22.15.24",
     "@types/react": "18.3.23",
     "@types/react-dom": "^18.3.7",
     "@types/react-refresh": "^0.14.6",
