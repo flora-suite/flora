@@ -17,7 +17,7 @@
     "@pmmmwh/react-refresh-webpack-plugin": "0.6.0",
     "@storybook/react": "8.6.12",
     "@types/copy-webpack-plugin": "10.1.0",
-    "@types/react": "19.1.6",
+    "@types/react": "18.3.12",
     "@types/react-refresh": "^0",
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "12.0.2",
