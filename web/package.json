@@ -6,10 +6,10 @@
     "@lichtblick/log": "workspace:*",
     "@lichtblick/suite-web": "workspace:*",
     "@lichtblick/tsconfig": "1.0.0",
-    "@types/serve-handler": "^6",
-    "playwright": "1.37.1",
+    "@types/serve-handler": "^6.1.4",
+    "playwright": "1.52.0",
     "serve-handler": "6.1.6",
-    "webpack": "5.99.7",
+    "webpack": "5.99.9",
     "webpack-dev-server": "5.2.1"
   }
 }
