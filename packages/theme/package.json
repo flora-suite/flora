@@ -21,12 +21,16 @@
     "@mui/icons-material": "6.1.6",
     "@mui/lab": "5.0.0-alpha.176",
     "@mui/material": "6.1.6",
-    "@mui/x-data-grid": "6.18.7",
+    "@mui/system": "7.1.0",
+    "@mui/x-data-grid": "8.4.0",
     "@storybook/react": "8.4.0",
     "@types/react": "18.3.12",
+    "@types/react-dom": "^18",
     "i18next": "23.11.2",
     "i18next-browser-languagedetector": "7.2.1",
     "react": "18.3.1",
-    "react-i18next": "14.1.0"
+    "react-dom": "18.3.1",
+    "react-i18next": "14.1.0",
+    "storybook": "8.6.14"
   }
 }
