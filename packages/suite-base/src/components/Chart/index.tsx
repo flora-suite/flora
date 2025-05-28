@@ -6,7 +6,7 @@
 // Since we don't use the modules directly in this file, we need to load the types as references
 // so typescript will have the merged declarations.
 /// <reference types="chartjs-plugin-datalabels" />
-/// <reference types="@lichtblick/chartjs-plugin-zoom" />
+/// <reference types="@flora-suite/chartjs-plugin-zoom" />
 
 import { ChartOptions } from "chart.js";
 import Hammer from "hammerjs";
@@ -16,7 +16,7 @@ import { useMountedState } from "react-use";
 import { assert } from "ts-essentials";
 import { v4 as uuidv4 } from "uuid";
 
-import { type ZoomPluginOptions } from "@lichtblick/chartjs-plugin-zoom/types/options";
+import { type ZoomPluginOptions } from "@flora-suite/chartjs-plugin-zoom/types/options";
 import Logger from "@lichtblick/log";
 import ChartJsMux, {
   ChartUpdateMessage,
@@ -159,7 +159,7 @@ function Chart(props: Props): JSX.Element {
 
     return () => {
       log.info(`Unregister chart ${id}`);
-      sendWrapper("destroy").catch(() => { }); // may fail if worker is torn down
+      sendWrapper("destroy").catch(() => {}); // may fail if worker is torn down
       rpcSendRef.current = undefined;
       sendWrapperRef.current = undefined;
       initialized.current = false;

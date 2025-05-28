@@ -29,7 +29,7 @@ import { useMountedState } from "react-use";
 import { makeStyles } from "tss-react/mui";
 import { v4 as uuidv4 } from "uuid";
 
-import type { ZoomOptions } from "@lichtblick/chartjs-plugin-zoom/types/options";
+import type { ZoomOptions } from "@flora-suite/chartjs-plugin-zoom/types/options";
 import { filterMap } from "@lichtblick/den/collection";
 import Logger from "@lichtblick/log";
 import ChartComponent from "@lichtblick/suite-base/components/Chart/index";

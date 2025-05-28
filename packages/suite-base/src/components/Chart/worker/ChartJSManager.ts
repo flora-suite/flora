@@ -26,7 +26,7 @@ import DatalabelPlugin from "chartjs-plugin-datalabels";
 import { type Options as DatalabelsPluginOptions } from "chartjs-plugin-datalabels/types/options";
 import EventEmitter from "eventemitter3";
 
-import { Zoom as ZoomPlugin } from "@lichtblick/chartjs-plugin-zoom";
+import { Zoom as ZoomPlugin } from "@flora-suite/chartjs-plugin-zoom";
 import Logger from "@lichtblick/log";
 import { RpcElement, RpcScales } from "@lichtblick/suite-base/components/Chart/types";
 import {
