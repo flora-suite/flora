@@ -11,6 +11,12 @@ export const useStyles = makeStyles<void, "error">()((theme, _params, classes) =
       paddingBlock: theme.spacing(0.3125),
     },
   },
+  select: {
+    ".MuiInputBase-inputSizeSmall": {
+      paddingInline: 0,
+      paddingBlock: theme.spacing(0.3125),
+    },
+  },
   clearIndicator: {
     marginRight: theme.spacing(-0.25),
     opacity: theme.palette.action.disabledOpacity,
