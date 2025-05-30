@@ -244,7 +244,7 @@ function FieldInput({
       const hasError = !selectedOption && (!isEmpty || field.value != undefined);
       return (
         <Select
-          className={cx({ [classes.error]: hasError })}
+          className={cx({ [classes.error]: hasError, [classes.select]: true })}
           size="small"
           displayEmpty
           fullWidth
