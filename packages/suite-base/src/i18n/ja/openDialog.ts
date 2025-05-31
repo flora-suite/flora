@@ -26,7 +26,7 @@ export const openDialog: Partial<TypeOptions["resources"]["openDialog"]> = {
   openConnection: "接続を開く",
   openConnectionDescription: "ライブロボットまたはサーバーに接続します。",
   openDataSource: "データソースを開く",
-  openLocalFile: "ローカルファイルを開く",
+  openLocalFiles: "ローカルファイルを開く",
   openLocalFileDescription: "ローカルファイルシステムから直接データを可視化します。",
   openUrl: "データをアップロードして共有する",
   openUrlDescription: "Foxglove を使用して、チームとデータを共有します。",

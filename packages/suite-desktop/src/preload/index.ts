@@ -15,6 +15,7 @@ import { getExtensions, installExtension, loadExtension, uninstallExtension } fr
 import { fetchLayouts } from "./layouts";
 import { decodeRendererArg } from "../common/rendererArgs";
 import {
+  CLIFlags,
   Desktop,
   ForwardedMenuEvent,
   ForwardedWindowEvent,
@@ -56,6 +57,7 @@ export function main(): void {
       input.setAttribute("hidden", "true");
       input.setAttribute("type", "file");
       input.setAttribute("id", "electron-open-file-input");
+      input.setAttribute("multiple", "true");
       document.body.appendChild(input);
 
       // let main know we are ready to accept open-file requests
@@ -113,6 +115,9 @@ export function main(): void {
     },
     async updateLanguage() {
       await ipcRenderer.invoke("updateLanguage");
+    },
+    async getCLIFlags(): Promise<CLIFlags> {
+      return await (ipcRenderer.invoke("getCLIFlags") as Promise<CLIFlags>);
     },
     getDeepLinks(): string[] {
       return deepLinks;

@@ -23,7 +23,7 @@ const selectSelectedEventId = (store: EventsStore) => store.selectedEventId;
 
 function updateUrl(newState: AppURLState) {
   const newStateUrl = updateAppURLState(new URL(window.location.href), newState);
-  window.history.replaceState(undefined, "", newStateUrl.href);
+  window.history.replaceState(undefined, "", decodeURIComponent(newStateUrl.href));
 }
 
 /**
@@ -58,6 +58,11 @@ export function useStateToURLSynchronization(): void {
           eventId: selectedEventId,
         },
         _.isString,
+      ),
+      dsParamsArray: _.pickBy(
+        stablePlayerUrlState.parameters,
+
+        _.isArray,
       ),
     });
   }, [selectedEventId, stablePlayerUrlState]);

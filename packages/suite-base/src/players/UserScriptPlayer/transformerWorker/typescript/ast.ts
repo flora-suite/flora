@@ -153,7 +153,6 @@ export const findDefaultExportFunction = (
 
   const defaultExportSymbol = checker
     .getExportsOfModule(symbol)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
     .find((node) => node.escapedName === "default");
   if (!defaultExportSymbol) {
     throw new DatatypeExtractionError(noFuncError);
@@ -452,7 +451,6 @@ export const constructDatatypes = (
         // One solution could potentially to 'cast' this node as an
         // ArrayTypeNode and recurse. Opting out of using 'Array' keyword for
         // now.
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         if (nextSymbol?.escapedName === "Array") {
           throw new DatatypeExtractionError(preferArrayLiteral);
         }

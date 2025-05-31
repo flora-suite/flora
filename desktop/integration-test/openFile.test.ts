@@ -1,6 +1,5 @@
-import path from "path";
-
 import { AppType, launchApp } from "./launchApp";
+import { loadFile } from "./utils/loadFile";
 
 describe("openFiles", () => {
   const closeDataSourceDialogAfterAppLaunch = async (app: AppType) => {
@@ -9,28 +8,27 @@ describe("openFiles", () => {
     await expect(app.renderer.getByTestId("DataSourceDialog").isVisible()).resolves.toBe(false);
   };
 
-  it("should open the rosbag file when dragging and dropping it", async () => {
+  it("should open the rosbag file when dragging and dropping it and then switch to an mcap", async () => {
     await using app = await launchApp();
     await closeDataSourceDialogAfterAppLaunch(app);
-
-    //Add rosbag file from source
-    const filePath = path.resolve(
-      __dirname,
-      "../../packages/suite-base/src/test/fixtures/example.bag",
-    );
 
     //Expect that there are not preloaded files
     await expect(
       app.renderer.getByText("No data source", { exact: true }).innerText(),
     ).resolves.toBe("No data source");
 
-    //Drag and drop file
-    const fileInput = app.renderer.locator("[data-puppeteer-file-upload]");
-    await fileInput.setInputFiles(filePath);
+    await loadFile(app, "../../../packages/suite-base/src/test/fixtures/example.bag");
 
-    //Expect that the file is being shown
-    await expect(app.renderer.getByText("example.bag", { exact: true }).innerText()).resolves.toBe(
-      "example.bag",
-    );
+    //Expect that the bag file is being shown
+    await expect(
+      app.renderer.getByText("example.bag", { exact: true }).innerText(),
+    ).resolves.toBeDefined();
+
+    await loadFile(app, "../../../packages/suite-base/src/test/fixtures/example.mcap");
+
+    //Expect that the mcap file is being shown
+    await expect(
+      app.renderer.getByText("example.mcap", { exact: true }).innerText(),
+    ).resolves.toBeDefined();
   }, 20_000);
 });

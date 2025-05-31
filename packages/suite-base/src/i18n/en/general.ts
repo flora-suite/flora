@@ -9,4 +9,6 @@ export const general = {
   on: "On",
   off: "Off",
   auto: "auto",
+  noDefaultLayoutParameter:
+    "The layout '{{layoutName}}' specified in the app parameters does not exist.",
 };

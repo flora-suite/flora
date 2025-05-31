@@ -61,7 +61,12 @@ import {
   getValueActionForValue,
 } from "./getValueActionForValue";
 import { NodeState, RawMessagesPanelConfig } from "./types";
-import { DATA_ARRAY_PREVIEW_LIMIT, generateDeepKeyPaths, toggleExpansion } from "./utils";
+import {
+  DATA_ARRAY_PREVIEW_LIMIT,
+  generateDeepKeyPaths,
+  getConstantNameByKeyPath,
+  toggleExpansion,
+} from "./utils";
 
 type Props = {
   config: Immutable<RawMessagesPanelConfig>;
@@ -77,6 +82,18 @@ const isSingleElemArray = (obj: unknown): obj is unknown[] => {
 
 const dataWithoutWrappingArray = (data: unknown) => {
   return isSingleElemArray(data) && typeof data[0] === "object" ? data[0] : data;
+};
+
+export const getSingleValue = (data: unknown, queriedData: MessagePathDataItem[]): unknown => {
+  if (!isSingleElemArray(data)) {
+    return data;
+  }
+
+  if (queriedData[0]?.constantName == undefined) {
+    return data[0];
+  }
+
+  return `${data[0]} (${queriedData[0]?.constantName})`;
 };
 
 const useStyles = makeStyles()((theme) => ({
@@ -318,7 +335,7 @@ function RawMessages(props: Props) {
             );
           }
 
-          let constantName: string | undefined;
+          let constantName: string | undefined = getConstantNameByKeyPath(keyPath, queriedData);
           if (structureItem) {
             const childStructureItem = getStructureItemForPath(
               structureItem,
@@ -399,7 +416,7 @@ function RawMessages(props: Props) {
     const shouldDisplaySingleVal =
       (data != undefined && typeof data !== "object") ||
       (isSingleElemArray(data) && data[0] != undefined && typeof data[0] !== "object");
-    const singleVal = isSingleElemArray(data) ? data[0] : data;
+    const singleVal = getSingleValue(data, baseItem.queriedData);
 
     const diffData =
       diffItem && dataWithoutWrappingArray(diffItem.queriedData.map(({ value }) => value));
@@ -431,7 +448,7 @@ function RawMessages(props: Props) {
         />
         {shouldDisplaySingleVal ? (
           <Typography
-            variant="h1"
+            variant="body1"
             fontSize={fontSize}
             whiteSpace="pre-wrap"
             style={{ wordWrap: "break-word" }}

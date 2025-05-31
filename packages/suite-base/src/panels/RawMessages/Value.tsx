@@ -15,18 +15,16 @@ import { withStyles, makeStyles } from "tss-react/mui";
 
 import HoverableIconButton from "@lichtblick/suite-base/components/HoverableIconButton";
 import Stack from "@lichtblick/suite-base/components/Stack";
-import { openSiblingPlotPanel } from "@lichtblick/suite-base/panels/Plot/openSiblingPlotPanel";
-import { plotableRosTypes } from "@lichtblick/suite-base/panels/Plot/plotableRosTypes";
-import {
-  openSiblingStateTransitionsPanel,
-  transitionableRosTypes,
-} from "@lichtblick/suite-base/panels/StateTransitions/openSiblingStateTransitionsPanel";
+import { openSiblingPlotPanel } from "@lichtblick/suite-base/panels/Plot/utils/openSiblingPlotPanel";
+import { openSiblingStateTransitionsPanel } from "@lichtblick/suite-base/panels/StateTransitions/openSiblingStateTransitionsPanel";
+import { PLOTABLE_ROS_TYPES } from "@lichtblick/suite-base/panels/shared/constants";
 import { OpenSiblingPanel } from "@lichtblick/suite-base/types/panels";
 import clipboard from "@lichtblick/suite-base/util/clipboard";
 
 import HighlightedValue from "./HighlightedValue";
 import { copyMessageReplacer } from "./copyMessageReplacer";
 import { ValueAction } from "./getValueActionForValue";
+import { TRANSITIONABLE_ROS_TYPES } from "../StateTransitions/constants";
 
 const StyledIconButton = withStyles(HoverableIconButton, (theme) => ({
   root: {
@@ -134,8 +132,8 @@ function Value(props: ValueProps): JSX.Element {
       });
     }
     if (valueAction != undefined) {
-      const isPlotableType = plotableRosTypes.includes(valueAction.primitiveType);
-      const isTransitionalType = transitionableRosTypes.includes(valueAction.primitiveType);
+      const isPlotableType = PLOTABLE_ROS_TYPES.includes(valueAction.primitiveType);
+      const isTransitionalType = TRANSITIONABLE_ROS_TYPES.includes(valueAction.primitiveType);
       const isMultiSlicePath = valueAction.multiSlicePath === valueAction.singleSlicePath;
 
       if (valueAction.filterPath.length > 0) {

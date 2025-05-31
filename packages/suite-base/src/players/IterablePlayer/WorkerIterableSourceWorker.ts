@@ -10,7 +10,7 @@ import type {
   GetBackfillMessagesArgs,
   IIterableSource,
   IMessageCursor,
-  Initalization,
+  Initialization,
   IteratorResult,
   MessageIteratorArgs,
 } from "./IIterableSource";
@@ -23,7 +23,7 @@ export class WorkerIterableSourceWorker implements IIterableSource {
     this._source = source;
   }
 
-  public async initialize(): Promise<Initalization> {
+  public async initialize(): Promise<Initialization> {
     return await this._source.initialize();
   }
 

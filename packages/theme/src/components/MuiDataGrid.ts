@@ -13,20 +13,14 @@ export const MuiDataGrid: OverrideComponentReturn<"MuiDataGrid"> = {
     },
     slotProps: {
       panel: {
-        popperOptions: {
-          placement: "bottom-end",
-        },
+        open: true,
       },
       baseTextField: {
-        variant: "outlined",
         size: "small",
         label: undefined,
       },
       baseSwitch: {
         size: "medium",
-        sx: {
-          padding: 0.5,
-        },
       },
     },
   },
@@ -38,9 +32,6 @@ export const MuiDataGrid: OverrideComponentReturn<"MuiDataGrid"> = {
       "&:focus": {
         outline: "none",
       },
-    },
-    columnsPanel: {
-      padding: 0,
     },
     columnHeader: {
       // Disable focus outline by default since most of our grids are used
