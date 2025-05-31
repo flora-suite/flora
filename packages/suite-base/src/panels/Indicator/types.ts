@@ -1,19 +1,36 @@
+import { PanelExtensionContext } from "@lichtblick/suite";
+
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-export type Operator = "=" | "<" | "<=" | ">" | ">=";
-export type Rule = {
-  rawValue: string;
-  operator: Operator;
+export type IndicatorOperator = "=" | "<" | "<=" | ">" | ">=";
+
+export type IndicatorStyle = "bulb" | "background";
+
+export type IndicatorRule = {
   color: string;
   label: string;
+  operator: IndicatorOperator;
+  rawValue: string;
 };
 
-export type Config = {
-  path: string;
-  style: "bulb" | "background";
-  rules: Rule[];
+export type RawValueIndicator =
+  | undefined
+  | boolean
+  | bigint
+  | number
+  | string
+  | { data?: boolean | bigint | number | string };
+
+export type IndicatorConfig = {
   fallbackColor: string;
   fallbackLabel: string;
+  path: string;
+  rules: IndicatorRule[];
+  style: IndicatorStyle;
+};
+
+export type IndicatorProps = {
+  context: PanelExtensionContext;
 };

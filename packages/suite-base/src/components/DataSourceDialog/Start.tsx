@@ -296,7 +296,7 @@ export default function Start(): JSX.Element {
     return [
       {
         key: "open-local-file",
-        text: t("openLocalFile"),
+        text: t("openLocalFiles"),
         secondaryText: t("openLocalFileDescription"),
         icon: (
           <SvgIcon fontSize="large" color="primary" viewBox="0 0 2048 2048">

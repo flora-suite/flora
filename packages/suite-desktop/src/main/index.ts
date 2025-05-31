@@ -15,6 +15,8 @@ import StudioWindow from "./StudioWindow";
 import getDevModeIcon from "./getDevModeIcon";
 import injectFilesToOpen from "./injectFilesToOpen";
 // import installChromeExtensions from "./installChromeExtensions";
+import { parseCLIFlags } from "./parseCLIFlags";
+import { resolveSourcePaths } from "./resolveSourcePaths";
 import {
   registerRosPackageProtocolHandlers,
   registerRosPackageProtocolSchemes,
@@ -115,7 +117,10 @@ export async function main(): Promise<void> {
       app.emit("open-url", { preventDefault() {} }, link);
     }
 
-    const files = argv.slice(1).filter((arg) => isFileToOpen(arg));
+    const files = argv
+      .slice(1)
+      .filter((arg) => !arg.startsWith("--")) // Filter out flags
+      .filter((arg) => isFileToOpen(arg));
     for (const file of files) {
       app.emit("open-file", { preventDefault() {} }, file);
     }
@@ -133,13 +138,23 @@ export async function main(): Promise<void> {
       log.warn("Could not set app as handler for lichtblick://");
     }
   }
+  // Get the command line flags passed to the app when it was launched
+  const parsedCLIFlags = parseCLIFlags(process.argv);
 
-  // files our app should open - either from user double-click on a supported fileAssociation
-  // or command line arguments.
   const filesToOpen: string[] = process.argv
     .slice(1)
+    .filter((arg) => !arg.startsWith("--")) // Filter out flags
     .map((filePath) => path.resolve(filePath)) // Convert to absolute path, linux has some problems to resolve relative paths
     .filter(isFileToOpen);
+
+  // Get file paths passed through the parameter "--source="
+  const filesToOpenFromSourceParameter = resolveSourcePaths(parsedCLIFlags.source);
+
+  filesToOpen.push(...filesToOpenFromSourceParameter);
+
+  const uniqueFilesToOpen = [...new Set(filesToOpen)];
+
+  const verifiedFilesToOpen: string[] = uniqueFilesToOpen.filter(isFileToOpen);
 
   // indicates the preloader has setup the file input used to inject which files to open
   let preloaderFileInputIsReady = false;
@@ -150,12 +165,12 @@ export async function main(): Promise<void> {
   // The open-file handler registered earlier will handle adding the file to filesToOpen
   app.on("open-file", async (_ev, filePath) => {
     log.debug("open-file handler", filePath);
-    filesToOpen.push(filePath);
+    verifiedFilesToOpen.push(filePath);
 
     if (preloaderFileInputIsReady) {
       const focusedWindow = BrowserWindow.getFocusedWindow();
       if (focusedWindow) {
-        await injectFilesToOpen(focusedWindow.webContents.debugger, filesToOpen);
+        await injectFilesToOpen(focusedWindow.webContents.debugger, verifiedFilesToOpen);
       } else {
         // On MacOS the user may have closed all the windows so we need to open a new window
         new StudioWindow().load();
@@ -169,7 +184,7 @@ export async function main(): Promise<void> {
   ipcMain.handle("load-pending-files", async (ev) => {
     log.debug("load-pending-files");
     const debug = ev.sender.debugger;
-    await injectFilesToOpen(debug, filesToOpen);
+    await injectFilesToOpen(debug, verifiedFilesToOpen);
     preloaderFileInputIsReady = true;
   });
 
@@ -203,6 +218,8 @@ export async function main(): Promise<void> {
   // support preload lookups for the user data path and home directory
   ipcMain.handle("getUserDataPath", () => app.getPath("userData"));
   ipcMain.handle("getHomePath", () => app.getPath("home"));
+
+  ipcMain.handle("getCLIFlags", () => parsedCLIFlags);
 
   // Must be called before app.ready event
   registerRosPackageProtocolSchemes();

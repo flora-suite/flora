@@ -27,22 +27,25 @@ import { DesktopExtensionLoader } from "./services/DesktopExtensionLoader";
 import { DesktopLayoutLoader } from "./services/DesktopLayoutLoader";
 import { NativeAppMenu } from "./services/NativeAppMenu";
 import { NativeWindow } from "./services/NativeWindow";
-import { Desktop, NativeMenuBridge, Storage } from "../common/types";
+import { CLIFlags, Desktop, NativeMenuBridge, Storage } from "../common/types";
 
 const desktopBridge = (global as unknown as { desktopBridge: Desktop }).desktopBridge;
 const storageBridge = (global as unknown as { storageBridge?: Storage }).storageBridge;
 const menuBridge = (global as { menuBridge?: NativeMenuBridge }).menuBridge;
 const ctxbridge = (global as { ctxbridge?: OsContext }).ctxbridge;
 
-export default function Root(props: {
+type RootProps = {
+  appParameters: CLIFlags;
   appConfiguration: IAppConfiguration;
   extraProviders: JSX.Element[] | undefined;
   dataSources: IDataSourceFactory[] | undefined;
-}): JSX.Element {
+};
+
+export default function Root(props: RootProps): React.JSX.Element {
   if (!storageBridge) {
     throw new Error("storageBridge is missing");
   }
-  const { appConfiguration } = props;
+  const { appConfiguration, appParameters, extraProviders } = props;
 
   useEffect(() => {
     const handler = () => {
@@ -145,28 +148,26 @@ export default function Root(props: {
   }, []);
 
   return (
-    <>
-      <App
-        deepLinks={deepLinks}
-        dataSources={dataSources}
-        appConfiguration={appConfiguration}
-        extensionLoaders={extensionLoaders}
-        layoutLoaders={layoutLoaders}
-        nativeAppMenu={nativeAppMenu}
-        nativeWindow={nativeWindow}
-        enableGlobalCss
-        appBarLeftInset={ctxbridge?.platform === "darwin" && !isFullScreen ? 72 : undefined}
-        onAppBarDoubleClick={() => {
-          nativeWindow.handleTitleBarDoubleClick();
-        }}
-        showCustomWindowControls={ctxbridge?.platform === "linux"}
-        isMaximized={isMaximized}
-        onMinimizeWindow={onMinimizeWindow}
-        onMaximizeWindow={onMaximizeWindow}
-        onUnmaximizeWindow={onUnmaximizeWindow}
-        onCloseWindow={onCloseWindow}
-        extraProviders={props.extraProviders}
-      />
-    </>
+    <App
+      appParameters={appParameters}
+      deepLinks={deepLinks}
+      dataSources={dataSources}
+      appConfiguration={appConfiguration}
+      extensionLoaders={extensionLoaders}
+      layoutLoaders={layoutLoaders}
+      nativeAppMenu={nativeAppMenu}
+      nativeWindow={nativeWindow}
+      enableGlobalCss
+      appBarLeftInset={ctxbridge?.platform === "darwin" && !isFullScreen ? 72 : undefined}
+      onAppBarDoubleClick={() => {
+        nativeWindow.handleTitleBarDoubleClick();
+      }}
+      isMaximized={isMaximized}
+      onMinimizeWindow={onMinimizeWindow}
+      onMaximizeWindow={onMaximizeWindow}
+      onUnmaximizeWindow={onUnmaximizeWindow}
+      onCloseWindow={onCloseWindow}
+      extraProviders={extraProviders}
+    />
   );
 }

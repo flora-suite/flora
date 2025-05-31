@@ -39,6 +39,7 @@ import {
   MessagePipelineContext,
   useMessagePipeline,
 } from "@lichtblick/suite-base/components/MessagePipeline";
+import SyncInstanceToggle from "@lichtblick/suite-base/components/PlaybackControls/SwitchSyncInstances/SyncInstanceToggle";
 import PlaybackSpeedControls from "@lichtblick/suite-base/components/PlaybackSpeedControls";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { useCurrentUser } from "@lichtblick/suite-base/context/BaseUserContext";
@@ -49,6 +50,7 @@ import {
 } from "@lichtblick/suite-base/context/Workspace/WorkspaceContext";
 import { useWorkspaceActions } from "@lichtblick/suite-base/context/Workspace/useWorkspaceActions";
 import { Player, PlayerPresence } from "@lichtblick/suite-base/players/types";
+import BroadcastManager from "@lichtblick/suite-base/util/broadcast/BroadcastManager";
 
 import PlaybackTimeDisplay from "./PlaybackTimeDisplay";
 import { RepeatAdapter } from "./RepeatAdapter";
@@ -89,15 +91,23 @@ const selectPresence = (ctx: MessagePipelineContext) => ctx.playerState.presence
 const selectEventsSupported = (store: EventsStore) => store.eventsSupported;
 const selectPlaybackRepeat = (store: WorkspaceContextStore) => store.playbackControls.repeat;
 
-export default function PlaybackControls(props: {
+type PlaybackControlsProps = Readonly<{
   play: NonNullable<Player["startPlayback"]>;
   pause: NonNullable<Player["pausePlayback"]>;
   seek: NonNullable<Player["seekPlayback"]>;
   playUntil?: Player["playUntil"];
   isPlaying: boolean;
   getTimeInfo: () => { startTime?: Time; endTime?: Time; currentTime?: Time };
-}): JSX.Element {
-  const { play, pause, seek, isPlaying, getTimeInfo, playUntil } = props;
+}>;
+
+export default function PlaybackControls({
+  play,
+  pause,
+  seek,
+  playUntil,
+  isPlaying,
+  getTimeInfo,
+}: PlaybackControlsProps): React.JSX.Element {
   const presence = useMessagePipeline(selectPresence);
 
   const { classes, cx } = useStyles();
@@ -115,15 +125,26 @@ export default function PlaybackControls(props: {
   }, [setRepeat]);
 
   const togglePlayPause = useCallback(() => {
+    const { startTime: start, endTime: end, currentTime: current } = getTimeInfo();
+
     if (isPlaying) {
       pause();
+
+      BroadcastManager.getInstance().postMessage({
+        type: "pause",
+        time: current!,
+      });
     } else {
-      const { startTime: start, endTime: end, currentTime: current } = getTimeInfo();
       // if we are at the end, we need to go back to start
       if (current && end && start && compare(current, end) >= 0) {
         seek(start);
       }
       play();
+
+      BroadcastManager.getInstance().postMessage({
+        type: "play",
+        time: current!,
+      });
     }
   }, [isPlaying, pause, getTimeInfo, play, seek]);
 
@@ -144,11 +165,20 @@ export default function PlaybackControls(props: {
       // i.e. Skipping coordinate frame messages may result in incorrectly rendered markers or
       // missing markers altogther.
       const targetTime = jumpSeek(DIRECTION.FORWARD, currentTime, ev);
-
       if (playUntil) {
         playUntil(targetTime);
+
+        BroadcastManager.getInstance().postMessage({
+          type: "playUntil",
+          time: targetTime,
+        });
       } else {
         seek(targetTime);
+
+        BroadcastManager.getInstance().postMessage({
+          type: "seek",
+          time: targetTime,
+        });
       }
     },
     [getTimeInfo, playUntil, seek],
@@ -160,7 +190,13 @@ export default function PlaybackControls(props: {
       if (!currentTime) {
         return;
       }
-      seek(jumpSeek(DIRECTION.BACKWARD, currentTime, ev));
+      const targetTime = jumpSeek(DIRECTION.BACKWARD, currentTime, ev);
+      seek(targetTime);
+
+      BroadcastManager.getInstance().postMessage({
+        type: "seek",
+        time: targetTime,
+      });
     },
     [getTimeInfo, seek],
   );
@@ -260,6 +296,7 @@ export default function PlaybackControls(props: {
             />
           </Stack>
           <Stack direction="row" flex={1} alignItems="center" justifyContent="flex-end" gap={0.5}>
+            <SyncInstanceToggle />
             <HoverableIconButton
               size="small"
               title="Loop playback"

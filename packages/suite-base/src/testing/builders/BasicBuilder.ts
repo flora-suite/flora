@@ -14,7 +14,6 @@ import {
 } from "@lichtblick/suite-base/testing/builders/types";
 import { defaults } from "@lichtblick/suite-base/testing/builders/utilities";
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class BasicBuilder {
   public static date(
     props: Partial<{
@@ -48,6 +47,12 @@ export default class BasicBuilder {
 
   public static float(min = 1, max = 20): number {
     return _.random(min, max, true);
+  }
+
+  public static bigInt(min: bigint = 1n, max: bigint = 20n): bigint {
+    const range = max - min + 1n;
+    const randomBigInt = BigInt(Math.floor(Math.random() * Number(range)));
+    return min + randomBigInt;
   }
 
   public static string({

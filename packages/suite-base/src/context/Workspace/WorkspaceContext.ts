@@ -54,6 +54,7 @@ export type WorkspaceContextStore = {
   };
   playbackControls: {
     repeat: boolean;
+    syncInstances: boolean;
   };
   sidebars: {
     left: {

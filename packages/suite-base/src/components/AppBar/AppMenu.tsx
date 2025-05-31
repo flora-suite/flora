@@ -2,15 +2,19 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { FileOpenOutlined, FolderOpenOutlined, InsertLinkOutlined } from "@mui/icons-material";
 import { Menu, PaperProps, PopoverPosition, PopoverReference } from "@mui/material";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "tss-react/mui";
 
 import TextMiddleTruncate from "@lichtblick/suite-base/components/TextMiddleTruncate";
 import { usePlayerSelection } from "@lichtblick/suite-base/context/PlayerSelectionContext";
+import {
+  WorkspaceContextStore,
+  useWorkspaceStore,
+} from "@lichtblick/suite-base/context/Workspace/WorkspaceContext";
 import { useWorkspaceActions } from "@lichtblick/suite-base/context/Workspace/useWorkspaceActions";
+import { useLayoutTransfer } from "@lichtblick/suite-base/hooks/useLayoutTransfer";
 import { formatKeyboardShortcut } from "@lichtblick/suite-base/util/formatKeyboardShortcut";
 
 import { NestedMenuItem } from "./NestedMenuItem";
@@ -27,53 +31,65 @@ export type AppMenuProps = {
 
 const useStyles = makeStyles()({
   menuList: {
-    minWidth: 240,
-    maxWidth: 280,
+    minWidth: 180,
+    maxWidth: 220,
   },
   truncate: {
     alignSelf: "center !important",
   },
 });
 
-export function AppMenu(props: AppMenuProps): JSX.Element {
+const selectLeftSidebarOpen = (store: WorkspaceContextStore) => store.sidebars.left.open;
+const selectRightSidebarOpen = (store: WorkspaceContextStore) => store.sidebars.right.open;
+
+export function AppMenu(props: AppMenuProps): React.JSX.Element {
   const { open, handleClose, anchorEl, anchorReference, anchorPosition, disablePortal } = props;
   const { classes } = useStyles();
   const { t } = useTranslation("appBar");
 
+  const [nestedMenu, setNestedMenu] = useState<string | undefined>();
+
   const { recentSources, selectRecent } = usePlayerSelection();
 
-  const { dialogActions } = useWorkspaceActions();
+  const leftSidebarOpen = useWorkspaceStore(selectLeftSidebarOpen);
+  const rightSidebarOpen = useWorkspaceStore(selectRightSidebarOpen);
+  const { sidebarActions, dialogActions } = useWorkspaceActions();
 
-  // menu
+  const handleNestedMenuClose = useCallback(() => {
+    setNestedMenu(undefined);
+    handleClose();
+  }, [handleClose]);
+
+  const handleItemPointerEnter = useCallback((id: string) => {
+    setNestedMenu(id);
+  }, []);
+
+  const { importLayout, exportLayout } = useLayoutTransfer();
+  // FILE
 
   const fileItems = useMemo(() => {
     const items: AppBarMenuItem[] = [
-      {
-        type: "subheader",
-        label: t("openDataSources"),
-        key: "OpenDataSources",
-      },
       {
         type: "item",
         label: t("open"),
         key: "open",
         dataTestId: "menu-item-open",
-        icon: <FolderOpenOutlined />,
         onClick: () => {
           dialogActions.dataSource.open("start");
-          handleClose();
+          handleNestedMenuClose();
         },
       },
       {
         type: "item",
-        label: t("openLocalFile"),
+        label: t("openLocalFiles"),
         key: "open-file",
         shortcut: formatKeyboardShortcut("O", ["Meta"]),
         dataTestId: "menu-item-open-local-file",
-        icon: <FileOpenOutlined />,
         onClick: () => {
-          dialogActions.openFile.open().catch(console.error);
-          handleClose();
+          handleNestedMenuClose();
+          dialogActions.openFile.open().catch((err: unknown) => {
+            console.error(err);
+          });
         },
       },
       {
@@ -82,23 +98,22 @@ export function AppMenu(props: AppMenuProps): JSX.Element {
         key: "open-connection",
         shortcut: formatKeyboardShortcut("O", ["Meta", "Shift"]),
         dataTestId: "menu-item-open-connection",
-        icon: <InsertLinkOutlined />,
         onClick: () => {
           dialogActions.dataSource.open("connection");
-          handleClose();
+          handleNestedMenuClose();
         },
       },
       { type: "divider" },
       { type: "item", label: t("recentDataSources"), key: "recent-sources", disabled: true },
     ];
 
-    recentSources.slice(0, 10).map((recent) => {
+    recentSources.slice(0, 5).map((recent) => {
       items.push({
         type: "item",
         key: recent.id,
         onClick: () => {
           selectRecent(recent.id);
-          handleClose();
+          handleNestedMenuClose();
         },
         label: <TextMiddleTruncate text={recent.title} className={classes.truncate} />,
       });
@@ -109,7 +124,7 @@ export function AppMenu(props: AppMenuProps): JSX.Element {
     classes.truncate,
     dialogActions.dataSource,
     dialogActions.openFile,
-    handleClose,
+    handleNestedMenuClose,
     recentSources,
     selectRecent,
     t,
@@ -117,81 +132,82 @@ export function AppMenu(props: AppMenuProps): JSX.Element {
 
   // VIEW
 
-  // const viewItems = useMemo<AppBarMenuItem[]>(
-  //   () => [
-  //     {
-  //       type: "item",
-  //       label: leftSidebarOpen ? t("hideLeftSidebar") : t("showLeftSidebar"),
-  //       key: "left-sidebar",
-  //       shortcut: "[",
-  //       onClick: () => {
-  //         sidebarActions.left.setOpen(!leftSidebarOpen);
-  //         handleNestedMenuClose();
-  //       },
-  //     },
-  //     {
-  //       type: "item",
-  //       label: rightSidebarOpen ? t("hideRightSidebar") : t("showRightSidebar"),
-  //       key: "right-sidebar",
-  //       shortcut: "]",
-  //       onClick: () => {
-  //         sidebarActions.right.setOpen(!rightSidebarOpen);
-  //         handleNestedMenuClose();
-  //       },
-  //     },
-  //     {
-  //       type: "divider",
-  //     },
-  //     {
-  //       type: "item",
-  //       label: t("importLayoutFromFile"),
-  //       key: "import-layout",
-  //       onClick: () => {
-  //         layoutActions.importFromFile();
-  //         handleNestedMenuClose();
-  //       },
-  //     },
-  //     {
-  //       type: "item",
-  //       label: t("exportLayoutToFile"),
-  //       key: "export-layout",
-  //       onClick: () => {
-  //         layoutActions.exportToFile();
-  //         handleNestedMenuClose();
-  //       },
-  //     },
-  //   ],
-  //   [
-  //     handleNestedMenuClose,
-  //     layoutActions,
-  //     leftSidebarOpen,
-  //     rightSidebarOpen,
-  //     sidebarActions.left,
-  //     sidebarActions.right,
-  //     t,
-  //   ],
-  // );
+  const viewItems = useMemo<AppBarMenuItem[]>(
+    () => [
+      {
+        type: "item",
+        label: leftSidebarOpen ? t("hideLeftSidebar") : t("showLeftSidebar"),
+        key: "left-sidebar",
+        shortcut: "[",
+        onClick: () => {
+          sidebarActions.left.setOpen(!leftSidebarOpen);
+          handleNestedMenuClose();
+        },
+      },
+      {
+        type: "item",
+        label: rightSidebarOpen ? t("hideRightSidebar") : t("showRightSidebar"),
+        key: "right-sidebar",
+        shortcut: "]",
+        onClick: () => {
+          sidebarActions.right.setOpen(!rightSidebarOpen);
+          handleNestedMenuClose();
+        },
+      },
+      {
+        type: "divider",
+      },
+      {
+        type: "item",
+        label: t("importLayoutFromFile"),
+        key: "import-layout",
+        onClick: async () => {
+          await importLayout();
+          handleNestedMenuClose();
+        },
+      },
+      {
+        type: "item",
+        label: t("exportLayoutToFile"),
+        key: "export-layout",
+        onClick: async () => {
+          await exportLayout();
+          handleNestedMenuClose();
+        },
+      },
+    ],
+    [
+      exportLayout,
+      handleNestedMenuClose,
+      importLayout,
+      leftSidebarOpen,
+      rightSidebarOpen,
+      sidebarActions.left,
+      sidebarActions.right,
+      t,
+    ],
+  );
 
   // HELP
 
-  // const onAboutClick = useCallback(() => {
-  //   dialogActions.preferences.open("about");
-  //   handleNestedMenuClose();
-  // }, [dialogActions.preferences, handleNestedMenuClose]);
+  const onAboutClick = useCallback(() => {
+    dialogActions.preferences.open("about");
+    handleNestedMenuClose();
+  }, [dialogActions.preferences, handleNestedMenuClose]);
 
-  // const onDemoClick = useCallback(() => {
-  //   dialogActions.dataSource.open("demo");
-  //   handleNestedMenuClose();
-  // }, [dialogActions.dataSource, handleNestedMenuClose]);
+  const onDemoClick = useCallback(() => {
+    dialogActions.dataSource.open("demo");
+    handleNestedMenuClose();
+  }, [dialogActions.dataSource, handleNestedMenuClose]);
 
-  // const helpItems = useMemo<AppBarMenuItem[]>(
-  //   () => [
-  //     { type: "item", key: "about", label: t("about"), onClick: onAboutClick },
-  //     { type: "divider" },
-  //     { type: "item", key: "demo", label: t("exploreSampleData"), onClick: onDemoClick },
-  //   ],
-  //   [onAboutClick, onDemoClick, t],
-  // );
+  const helpItems = useMemo<AppBarMenuItem[]>(
+    () => [
+      { type: "item", key: "about", label: t("about"), onClick: onAboutClick },
+      { type: "divider" },
+      { type: "item", key: "demo", label: t("exploreSampleData"), onClick: onDemoClick },
+    ],
+    [onAboutClick, onDemoClick, t],
+  );
 
   return (
     <>
@@ -202,9 +218,8 @@ export function AppMenu(props: AppMenuProps): JSX.Element {
         disablePortal={disablePortal}
         id="app-menu"
         open={open}
-        onClose={handleClose}
-        autoFocus={false}
         disableAutoFocusItem
+        onClose={handleNestedMenuClose}
         MenuListProps={{
           "aria-labelledby": "app-menu-button",
           dense: true,
@@ -216,7 +231,30 @@ export function AppMenu(props: AppMenuProps): JSX.Element {
           } as Partial<PaperProps & { "data-tourid"?: string }>,
         }}
       >
-        <NestedMenuItem items={fileItems}>{t("file")}</NestedMenuItem>
+        <NestedMenuItem
+          onPointerEnter={handleItemPointerEnter}
+          items={fileItems}
+          open={nestedMenu === "app-menu-file"}
+          id="app-menu-file"
+        >
+          {t("file")}
+        </NestedMenuItem>
+        <NestedMenuItem
+          onPointerEnter={handleItemPointerEnter}
+          items={viewItems}
+          open={nestedMenu === "app-menu-view"}
+          id="app-menu-view"
+        >
+          {t("view")}
+        </NestedMenuItem>
+        <NestedMenuItem
+          onPointerEnter={handleItemPointerEnter}
+          items={helpItems}
+          open={nestedMenu === "app-menu-help"}
+          id="app-menu-help"
+        >
+          {t("help")}
+        </NestedMenuItem>
       </Menu>
     </>
   );

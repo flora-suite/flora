@@ -43,3 +43,16 @@ export const STATE_TRANSITION_PLUGINS: ChartOptions["plugins"] = {
     },
   },
 };
+
+export const TRANSITIONABLE_ROS_TYPES = [
+  "bool",
+  "int8",
+  "uint8",
+  "int16",
+  "uint16",
+  "int32",
+  "uint32",
+  "int64",
+  "uint64",
+  "string",
+];

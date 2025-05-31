@@ -3,164 +3,56 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import { Typography } from "@mui/material";
-import * as _ from "lodash-es";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useState } from "react";
-import { makeStyles } from "tss-react/mui";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 
-import { MessagePath, parseMessagePath } from "@lichtblick/message-path";
-import { MessageEvent, PanelExtensionContext, SettingsTreeAction } from "@lichtblick/suite";
-import { simpleGetMessagePathDataItems } from "@lichtblick/suite-base/components/MessagePathSyntax/simpleGetMessagePathDataItems";
+import { parseMessagePath } from "@lichtblick/message-path";
+import { SettingsTreeAction } from "@lichtblick/suite";
 import Stack from "@lichtblick/suite-base/components/Stack";
+import { GlobalVariables } from "@lichtblick/suite-base/hooks/useGlobalVariables";
+import { useStyles } from "@lichtblick/suite-base/panels/Indicator/Indicator.style";
+import { DEFAULT_CONFIG } from "@lichtblick/suite-base/panels/Indicator/constants";
+import { stateReducer } from "@lichtblick/suite-base/panels/shared/gaugeAndIndicatorStateReducer";
+import { GaugeAndIndicatorState } from "@lichtblick/suite-base/panels/shared/types";
 
 import { getMatchingRule } from "./getMatchingRule";
 import { settingsActionReducer, useSettingsTree } from "./settings";
-import { Config } from "./types";
+import { IndicatorConfig, IndicatorProps, RawValueIndicator } from "./types";
 
-type Props = {
-  context: PanelExtensionContext;
-};
-
-const defaultConfig: Config = {
-  path: "",
-  style: "bulb",
-  fallbackColor: "#a0a0a0",
-  fallbackLabel: "False",
-  rules: [{ operator: "=", rawValue: "true", color: "#68e24a", label: "True" }],
-};
-
-const useStyles = makeStyles()({
-  root: {
-    width: 40,
-    height: 40,
-    borderRadius: "50%",
-    position: "relative",
-    backgroundImage: [
-      `radial-gradient(transparent, transparent 55%, rgba(255,255,255,0.4) 80%, rgba(255,255,255,0.4))`,
-      `radial-gradient(circle at 38% 35%, rgba(255,255,255,0.8), transparent 30%, transparent)`,
-      `radial-gradient(circle at 46% 44%, transparent, transparent 61%, rgba(0,0,0,0.7) 74%, rgba(0,0,0,0.7))`,
-    ].join(","),
-  },
-});
-
-type State = {
-  path: string;
-  parsedPath: MessagePath | undefined;
-  latestMessage: MessageEvent | undefined;
-  latestMatchingQueriedData: unknown;
-  error: Error | undefined;
-  pathParseError: string | undefined;
-};
-
-type Action =
-  | { type: "frame"; messages: readonly MessageEvent[] }
-  | { type: "path"; path: string }
-  | { type: "seek" };
-
-function getSingleDataItem(results: unknown[]) {
-  if (results.length <= 1) {
-    return results[0];
-  }
-  throw new Error("Message path produced multiple results");
-}
-
-function reducer(state: State, action: Action): State {
-  try {
-    switch (action.type) {
-      case "frame": {
-        if (state.pathParseError != undefined) {
-          return { ...state, latestMessage: _.last(action.messages), error: undefined };
-        }
-        let latestMatchingQueriedData = state.latestMatchingQueriedData;
-        let latestMessage = state.latestMessage;
-        if (state.parsedPath) {
-          for (const message of action.messages) {
-            if (message.topic !== state.parsedPath.topicName) {
-              continue;
-            }
-            const data = getSingleDataItem(
-              simpleGetMessagePathDataItems(message, state.parsedPath),
-            );
-            if (data != undefined) {
-              latestMatchingQueriedData = data;
-              latestMessage = message;
-            }
-          }
-        }
-        return { ...state, latestMessage, latestMatchingQueriedData, error: undefined };
-      }
-      case "path": {
-        const newPath = parseMessagePath(action.path);
-        let pathParseError: string | undefined;
-        if (
-          newPath?.messagePath.some(
-            (part) =>
-              (part.type === "filter" && typeof part.value === "object") ||
-              (part.type === "slice" &&
-                (typeof part.start === "object" || typeof part.end === "object")),
-          ) === true
-        ) {
-          pathParseError = "Message paths using variables are not currently supported";
-        }
-        let latestMatchingQueriedData: unknown;
-        let error: Error | undefined;
-        try {
-          latestMatchingQueriedData =
-            newPath && pathParseError == undefined && state.latestMessage
-              ? getSingleDataItem(simpleGetMessagePathDataItems(state.latestMessage, newPath))
-              : undefined;
-        } catch (err) {
-          error = err;
-        }
-        return {
-          ...state,
-          path: action.path,
-          parsedPath: newPath,
-          latestMatchingQueriedData,
-          error,
-          pathParseError,
-        };
-      }
-      case "seek":
-        return {
-          ...state,
-          latestMessage: undefined,
-          latestMatchingQueriedData: undefined,
-          error: undefined,
-        };
-    }
-  } catch (error) {
-    return { ...state, latestMatchingQueriedData: undefined, error };
-  }
-}
-
-export function Indicator({ context }: Props): JSX.Element {
+export function Indicator({ context }: IndicatorProps): React.JSX.Element {
   // panel extensions must notify when they've completed rendering
   // onRender will setRenderDone to a done callback which we can invoke after we've rendered
-  const [renderDone, setRenderDone] = useState<() => void>(() => () => { });
-  const {
-    classes,
-    theme: {
-      palette: { augmentColor },
-    },
-  } = useStyles();
+  const [renderDone, setRenderDone] = useState<() => void>(() => () => {});
 
   const [config, setConfig] = useState(() => ({
-    ...defaultConfig,
-    ...(context.initialState as Partial<Config>),
+    ...DEFAULT_CONFIG,
+    ...(context.initialState as Partial<IndicatorConfig>),
   }));
 
+  const { style, rules, fallbackColor, fallbackLabel } = config;
+
   const [state, dispatch] = useReducer(
-    reducer,
+    stateReducer,
     config,
-    ({ path }): State => ({
-      path,
-      parsedPath: parseMessagePath(path),
-      latestMessage: undefined,
-      latestMatchingQueriedData: undefined,
-      pathParseError: undefined,
+    ({ path: statePath }): GaugeAndIndicatorState => ({
+      globalVariables: undefined,
       error: undefined,
+      latestMatchingQueriedData: undefined,
+      latestMessage: undefined,
+      parsedPath: parseMessagePath(statePath),
+      path: statePath,
+      pathParseError: undefined,
     }),
   );
+
+  const { error, latestMatchingQueriedData, parsedPath, pathParseError } = state;
 
   useLayoutEffect(() => {
     dispatch({ type: "path", path: config.path });
@@ -175,6 +67,13 @@ export function Indicator({ context }: Props): JSX.Element {
     context.onRender = (renderState, done) => {
       setRenderDone(() => done);
 
+      if (renderState.variables) {
+        dispatch({
+          type: "updateGlobalVariables",
+          globalVariables: Object.fromEntries(renderState.variables) as GlobalVariables,
+        });
+      }
+
       if (renderState.didSeek === true) {
         dispatch({ type: "seek" });
       }
@@ -185,11 +84,12 @@ export function Indicator({ context }: Props): JSX.Element {
     };
     context.watch("currentFrame");
     context.watch("didSeek");
+    context.watch("variables");
 
     return () => {
       context.onRender = undefined;
     };
-  }, [context]);
+  }, [context, dispatch]);
 
   const settingsActionHandler = useCallback(
     (action: SettingsTreeAction) => {
@@ -198,7 +98,7 @@ export function Indicator({ context }: Props): JSX.Element {
     [setConfig],
   );
 
-  const settingsTree = useSettingsTree(config, state.pathParseError, state.error?.message);
+  const settingsTree = useSettingsTree(config, pathParseError, error?.message);
   useEffect(() => {
     context.updatePanelSettingsEditor({
       actionHandler: settingsActionHandler,
@@ -207,65 +107,76 @@ export function Indicator({ context }: Props): JSX.Element {
   }, [context, settingsActionHandler, settingsTree]);
 
   useEffect(() => {
-    if (state.parsedPath?.topicName != undefined) {
-      context.subscribe([{ topic: state.parsedPath.topicName, preload: false }]);
+    if (parsedPath?.topicName != undefined) {
+      context.subscribe([{ topic: parsedPath.topicName, preload: false }]);
     }
     return () => {
       context.unsubscribeAll();
     };
-  }, [context, state.parsedPath?.topicName]);
+  }, [context, parsedPath?.topicName]);
 
   // Indicate render is complete - the effect runs after the dom is updated
   useEffect(() => {
     renderDone();
   }, [renderDone]);
 
-  const rawValue =
-    typeof state.latestMatchingQueriedData === "boolean" ||
-      typeof state.latestMatchingQueriedData === "bigint" ||
-      typeof state.latestMatchingQueriedData === "string" ||
-      typeof state.latestMatchingQueriedData === "number"
-      ? state.latestMatchingQueriedData
+  const rawValue = useMemo(() => {
+    return ["boolean", "number", "bigint", "string"].includes(typeof latestMatchingQueriedData)
+      ? latestMatchingQueriedData
       : undefined;
+  }, [latestMatchingQueriedData]);
 
-  const { style, rules, fallbackColor, fallbackLabel } = config;
-  const matchingRule = useMemo(() => getMatchingRule(rawValue, rules), [rawValue, rules]);
+  const matchingRule = useMemo(
+    () => getMatchingRule(rawValue as RawValueIndicator, rules),
+    [rawValue, rules],
+  );
+
+  const bulbColor = matchingRule?.color ?? fallbackColor;
+  const {
+    classes,
+    theme: {
+      palette: { augmentColor },
+    },
+  } = useStyles({ style, backgroundColor: bulbColor });
+
+  const label = matchingRule?.label ?? fallbackLabel;
+  const textColor = useMemo(() => {
+    return style === "background"
+      ? augmentColor({ color: { main: bulbColor } }).contrastText
+      : bulbColor;
+  }, [style, bulbColor, augmentColor]);
+
   return (
     <Stack fullHeight>
-      <Stack
-        flexGrow={1}
-        justifyContent="space-around"
-        alignItems="center"
-        overflow="hidden"
-        padding={1}
-        style={{
-          backgroundColor:
-            style === "background" ? matchingRule?.color ?? fallbackColor : undefined,
-        }}
-      >
-        <Stack direction="row" alignItems="center" gap={2}>
-          {style === "bulb" && (
-            <div
-              className={classes.root}
-              style={{ backgroundColor: matchingRule?.color ?? fallbackColor }}
-            />
-          )}
-          <Typography
-            color={
-              style === "background"
-                ? augmentColor({
-                  color: { main: matchingRule?.color ?? fallbackColor },
-                }).contrastText
-                : matchingRule?.color ?? fallbackColor
-            }
-            fontFamily="fontMonospace"
-            variant="h1"
-            whiteSpace="pre"
-          >
-            {matchingRule?.label ?? fallbackLabel}
-          </Typography>
-        </Stack>
+      <Stack className={classes.indicatorStack}>
+        {style === "bulb" && <Bulb label={label} bulbColor={bulbColor} />}
+        {style === "background" && <Background label={label} textColor={textColor} />}
       </Stack>
     </Stack>
   );
 }
+
+const Bulb = memo(({ label, bulbColor }: { label: string; bulbColor: string }) => {
+  const { classes } = useStyles({ backgroundColor: bulbColor });
+
+  return (
+    <Stack className={classes.stack}>
+      <div className={classes.bulb} data-testid="bulb-indicator" />
+      <Typography className={classes.typography}>{label}</Typography>
+    </Stack>
+  );
+});
+Bulb.displayName = "Bulb";
+
+const Background = memo(({ label, textColor }: { label: string; textColor: string }) => {
+  const { classes } = useStyles({});
+
+  return (
+    <Stack className={classes.stack} testId="background-indicator">
+      <Typography className={classes.typography} color={textColor}>
+        {label}
+      </Typography>
+    </Stack>
+  );
+});
+Background.displayName = "Background";

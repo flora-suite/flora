@@ -11,7 +11,7 @@ import { BufferedIterableSource } from "./BufferedIterableSource";
 import {
   GetBackfillMessagesArgs,
   IIterableSource,
-  Initalization,
+  Initialization,
   IteratorResult,
   MessageIteratorArgs,
 } from "./IIterableSource";
@@ -40,7 +40,7 @@ function waiter(count: number) {
 }
 
 class TestSource implements IIterableSource {
-  public async initialize(): Promise<Initalization> {
+  public async initialize(): Promise<Initialization> {
     return {
       start: { sec: 0, nsec: 0 },
       end: { sec: 10, nsec: 0 },

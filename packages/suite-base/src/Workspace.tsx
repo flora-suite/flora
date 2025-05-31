@@ -11,8 +11,6 @@
 //   You may not use this file except in compliance with the License.
 
 import { Link, Typography } from "@mui/material";
-import { useSnackbar } from "notistack";
-import { extname } from "path";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { makeStyles } from "tss-react/mui";
@@ -65,7 +63,6 @@ import {
   useCurrentUserType,
 } from "@lichtblick/suite-base/context/CurrentUserContext";
 import { EventsStore, useEvents } from "@lichtblick/suite-base/context/EventsContext";
-import { useExtensionCatalog } from "@lichtblick/suite-base/context/ExtensionCatalogContext";
 import { usePlayerSelection } from "@lichtblick/suite-base/context/PlayerSelectionContext";
 import {
   LeftSidebarItemKey,
@@ -79,15 +76,17 @@ import { useAppConfigurationValue } from "@lichtblick/suite-base/hooks";
 import useAddPanel from "@lichtblick/suite-base/hooks/useAddPanel";
 import { useDefaultWebLaunchPreference } from "@lichtblick/suite-base/hooks/useDefaultWebLaunchPreference";
 import useElectronFilesToOpen from "@lichtblick/suite-base/hooks/useElectronFilesToOpen";
+import { useHandleFiles } from "@lichtblick/suite-base/hooks/useHandleFiles";
+import useSeekTimeFromCLI from "@lichtblick/suite-base/hooks/useSeekTimeFromCLI";
 import { PlayerPresence } from "@lichtblick/suite-base/players/types";
 import { PanelStateContextProvider } from "@lichtblick/suite-base/providers/PanelStateContextProvider";
 import WorkspaceContextProvider from "@lichtblick/suite-base/providers/WorkspaceContextProvider";
 import ICONS from "@lichtblick/suite-base/theme/icons";
 import { parseAppURLState } from "@lichtblick/suite-base/util/appURLState";
+import useBroadcast from "@lichtblick/suite-base/util/broadcast/useBroadcast";
 import isDesktopApp from "@lichtblick/suite-base/util/isDesktopApp";
 
 import { useWorkspaceActions } from "./context/Workspace/useWorkspaceActions";
-
 
 const log = Logger.getLogger(__filename);
 
@@ -166,7 +165,30 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
   const { AppBarComponent = AppBar } = props;
   const { t } = useTranslation("workspace");
 
+  const play = useMessagePipeline(selectPlay);
+  const playUntil = useMessagePipeline(selectPlayUntil);
+  const pause = useMessagePipeline(selectPause);
+  const seek = useMessagePipeline(selectSeek);
+  const isPlaying = useMessagePipeline(selectIsPlaying);
+  const getMessagePipeline = useMessagePipelineGetter();
+  const getTimeInfo = useCallback(
+    () => getMessagePipeline().playerState.activeData ?? {},
+    [getMessagePipeline],
+  );
+
   const { dialogActions, sidebarActions } = useWorkspaceActions();
+  const { handleFiles } = useHandleFiles({
+    availableSources,
+    selectSource,
+    isPlaying,
+    playerEvents: { play, pause },
+  });
+
+  // Store stable reference to avoid re-running effects unnecessarily
+  const handleFilesRef = useRef<typeof handleFiles>(handleFiles);
+  useLayoutEffect(() => {
+    handleFilesRef.current = handleFiles;
+  }, [handleFiles]);
 
   // file types we support for drag/drop
   const allowedDropExtensions = useMemo(() => {
@@ -225,108 +247,35 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
     }
   }, []);
 
-  const { enqueueSnackbar } = useSnackbar();
-
-  const installExtension = useExtensionCatalog((state) => state.installExtension);
-
-  const openHandle = useCallback(
-    async (
-      handle: FileSystemFileHandle /* foxglove-depcheck-used: @types/wicg-file-system-access */,
-    ) => {
-      log.debug("open handle", handle);
-      const file = await handle.getFile();
-
-      if (file.name.endsWith(".foxe")) {
-        // Extension installation
-        try {
-          const arrayBuffer = await file.arrayBuffer();
-          const data = new Uint8Array(arrayBuffer);
-          const extension = await installExtension("local", data);
-          enqueueSnackbar(`Installed extension ${extension.id}`, { variant: "success" });
-        } catch (err) {
-          log.error(err);
-          enqueueSnackbar(`Failed to install extension ${file.name}: ${err.message}`, {
-            variant: "error",
-          });
-        }
-      }
-
-      // Look for a source that supports the file extensions
-      const matchedSource = availableSources.find((source) => {
-        const ext = extname(file.name);
-        return source.supportedFileTypes?.includes(ext);
-      });
-      if (matchedSource) {
-        selectSource(matchedSource.id, { type: "file", handle });
-      }
-    },
-    [availableSources, enqueueSnackbar, installExtension, selectSource],
-  );
-
-  const openFiles = useCallback(
-    async (files: File[]) => {
-      const otherFiles: File[] = [];
-      log.debug("open files", files);
-
-      for (const file of files) {
-        if (file.name.endsWith(".foxe")) {
-          // Extension installation
-          try {
-            const arrayBuffer = await file.arrayBuffer();
-            const data = new Uint8Array(arrayBuffer);
-            const extension = await installExtension("local", data);
-            enqueueSnackbar(`Installed extension ${extension.id}`, { variant: "success" });
-          } catch (err) {
-            log.error(err);
-            enqueueSnackbar(`Failed to install extension ${file.name}: ${err.message}`, {
-              variant: "error",
-            });
-          }
-        } else {
-          otherFiles.push(file);
-        }
-      }
-
-      if (otherFiles.length > 0) {
-        // Look for a source that supports the dragged file extensions
-        for (const source of availableSources) {
-          const filteredFiles = otherFiles.filter((file) => {
-            const ext = extname(file.name);
-            return source.supportedFileTypes?.includes(ext);
-          });
-
-          // select the first source that has files that match the supported extensions
-          if (filteredFiles.length > 0) {
-            selectSource(source.id, { type: "file", files: otherFiles });
-            break;
-          }
-        }
-      }
-    },
-    [availableSources, enqueueSnackbar, installExtension, selectSource],
-  );
-
   // files the main thread told us to open
   const filesToOpen = useElectronFilesToOpen();
+
   useEffect(() => {
-    if (filesToOpen) {
-      void openFiles(Array.from(filesToOpen));
+    handleFilesRef.current = handleFiles;
+  }, [handleFiles]);
+
+  useEffect(() => {
+    if (filesToOpen && filesToOpen.length > 0) {
+      void handleFilesRef.current(Array.from(filesToOpen));
     }
-  }, [filesToOpen, openFiles]);
+  }, [filesToOpen]);
 
   const dropHandler = useCallback(
-    (event: { files?: File[]; handles?: FileSystemFileHandle[] }) => {
-      const handle = event.handles?.[0];
-      // When selecting sources with handles we can only select with a single handle since we haven't
-      // written the code to store multiple handles for recents. When there are multiple handles, we
-      // fall back to opening regular files.
-      if (handle && event.handles?.length === 1) {
-        void openHandle(handle);
-      } else if (event.files) {
-        void openFiles(event.files);
+    async ({ files, handles }: { files?: File[]; handles?: FileSystemFileHandle[] }) => {
+      const filesArray: File[] = [];
+
+      if (handles?.length === 1) {
+        const fileHandle = handles[0];
+        if (fileHandle) {
+          filesArray.push(await fileHandle.getFile());
+        }
+      } else if (files?.length != undefined) {
+        filesArray.push(...files);
       }
+
+      void handleFiles(filesArray);
     },
-    [openFiles, openHandle],
+    [handleFiles],
   );
 
   // Since the _component_ field of a sidebar item entry is a component and accepts no additional
@@ -449,9 +398,9 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
           badge:
             playerProblems && playerProblems.length > 0
               ? {
-                count: playerProblems.length,
-                color: "error",
-              }
+                  count: playerProblems.length,
+                  color: "error",
+                }
               : undefined,
         },
       ],
@@ -550,17 +499,6 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
     };
   }, [dialogActions.dataSource, dialogActions.openFile, sidebarActions.left, sidebarActions.right]);
 
-  const play = useMessagePipeline(selectPlay);
-  const playUntil = useMessagePipeline(selectPlayUntil);
-  const pause = useMessagePipeline(selectPause);
-  const seek = useMessagePipeline(selectSeek);
-  const isPlaying = useMessagePipeline(selectIsPlaying);
-  const getMessagePipeline = useMessagePipelineGetter();
-  const getTimeInfo = useCallback(
-    () => getMessagePipeline().playerState.activeData ?? {},
-    [getMessagePipeline],
-  );
-
   const targetUrlState = useMemo(() => {
     const deepLinks = props.deepLinks ?? [];
     return deepLinks[0] ? parseAppURLState(new URL(deepLinks[0])) : undefined;
@@ -608,6 +546,8 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
     setUnappliedTime({ time: undefined });
   }, [playerPresence, seek, unappliedTime]);
 
+  useSeekTimeFromCLI();
+
   const appBar = useMemo(
     () => (
       <AppBarComponent
@@ -636,6 +576,13 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
     ],
   );
 
+  useBroadcast({
+    play,
+    pause,
+    seek,
+    playUntil,
+  });
+
   return (
     <PanelStateContextProvider>
       {dataSourceDialog.open && <DataSourceDialog />}
@@ -646,7 +593,7 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
         {appBar}
         <Sidebars
           selectedKey=""
-          onSelectKey={() => { }}
+          onSelectKey={() => {}}
           items={sidebarItems}
           leftItems={leftSidebarItems}
           bottomItems={sidebarBottomItems}

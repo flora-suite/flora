@@ -25,8 +25,9 @@ import type {
   TimestampDatasetsBuilderImpl,
   UpdateDataAction,
 } from "./TimestampDatasetsBuilderImpl";
-import { getChartValue, isChartValue } from "../datum";
-import { MathFunction, mathFunctions } from "../mathFunctions";
+import { MATH_FUNCTIONS } from "../constants";
+import { getChartValue, isChartValue } from "../utils/datum";
+import { MathFunction } from "../utils/mathFunctions";
 
 // If the datasets builder is garbage collected we also need to cleanup the worker
 // This registry ensures the worker is cleaned up when the builder is garbage collected
@@ -83,7 +84,7 @@ export class TimestampDatasetsBuilder implements IDatasetsBuilder {
     if (msgEvents.length > 0) {
       for (const series of this.#series) {
         const mathFn = series.config.parsed.modifier
-          ? mathFunctions[series.config.parsed.modifier]
+          ? MATH_FUNCTIONS[series.config.parsed.modifier]
           : undefined;
 
         if (didSeek) {
@@ -142,7 +143,7 @@ export class TimestampDatasetsBuilder implements IDatasetsBuilder {
 
       for (const series of seriesArr) {
         const mathFn = series.config.parsed.modifier
-          ? mathFunctions[series.config.parsed.modifier]
+          ? MATH_FUNCTIONS[series.config.parsed.modifier]
           : undefined;
 
         const messageEvents = series.blockCursor.next(blocks);
