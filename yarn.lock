@@ -4654,7 +4654,7 @@ __metadata:
     "@types/three": "npm:0.156.0"
     "@types/tinycolor2": "npm:1.4.6"
     "@types/uuid": "npm:9.0.8"
-    "@types/wicg-file-system-access": "npm:2020.9.8"
+    "@types/wicg-file-system-access": "npm:2023.10.6"
     "@uiw/react-textarea-code-editor": "npm:3.1.1"
     async-mutex: "npm:0.5.0"
     babel-jest: "npm:29.7.0"
@@ -7773,10 +7773,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/wicg-file-system-access@npm:2020.9.8":
-  version: 2020.9.8
-  resolution: "@types/wicg-file-system-access@npm:2020.9.8"
-  checksum: 10c0/baa8ca664b4ebc89b4d39f8ee98fa81b887009b0dc99008f9e69b35e6ddb286018b6309232ed3970666c543ce85e7f447c9cdd20152d92b1ff810d29d5895a36
+"@types/wicg-file-system-access@npm:2023.10.6":
+  version: 2023.10.6
+  resolution: "@types/wicg-file-system-access@npm:2023.10.6"
+  checksum: 10c0/6d1086450b28351ea5c8c6078411930984a16588b40d999f9abdc42c9bff63de93101bd7b1edcaba5c5c9ea83acdeb277bcaff913f39f6dac12091459974631f
   languageName: node
   linkType: hard
 
