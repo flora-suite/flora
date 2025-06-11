@@ -175,4 +175,38 @@ describe("ArrayMap", () => {
     const prev = list.set(1, { a: 2 });
     expect(prev).not.toBe(list.at(list.binarySearch(1))![1]);
   });
+
+  it("clears all elements and returns them", () => {
+    const list = new ArrayMap<number, string>();
+
+    // Test clearing empty list
+    expect(list.clear()).toEqual([]);
+    expect(list.size).toBe(0);
+
+    // Add some elements
+    list.set(1, "one");
+    list.set(3, "three");
+    list.set(2, "two");
+    expect(list.size).toBe(3);
+
+    // Clear and verify returned elements are in sorted order
+    const cleared = list.clear();
+    expect(cleared).toEqual([
+      [1, "one"],
+      [2, "two"],
+      [3, "three"],
+    ]);
+    expect(list.size).toBe(0);
+    expect(list.minEntry()).toBeUndefined();
+    expect(list.maxEntry()).toBeUndefined();
+
+    // Verify list is actually empty
+    expect(list.binarySearch(1)).toBe(-1);
+    expect(list.binarySearch(2)).toBe(-1);
+    expect(list.binarySearch(3)).toBe(-1);
+
+    // Test clearing already empty list
+    expect(list.clear()).toEqual([]);
+    expect(list.size).toBe(0);
+  });
 });

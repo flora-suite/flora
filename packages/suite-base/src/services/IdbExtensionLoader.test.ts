@@ -2,8 +2,7 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import fs from "fs";
-import { openDB } from "idb/with-async-ittr";
+import { openDB } from "idb";
 import JSZip from "jszip";
 
 import { StoredExtension } from "@lichtblick/suite-base/services/IExtensionStorage";
@@ -17,7 +16,7 @@ import { ExtensionInfo } from "@lichtblick/suite-base/types/Extensions";
 
 import { IdbExtensionLoader, validatePackageInfo, ALLOWED_FILES } from "./IdbExtensionLoader";
 
-jest.mock("idb/with-async-ittr", () => ({
+jest.mock("idb", () => ({
   openDB: jest.fn(),
 }));
 
@@ -29,20 +28,23 @@ const packageJson: any = {
     typescript: "4.3.2",
   },
   displayName: "turtlesim",
-  id: "Foxglove Inc.studio-extension-turtlesim",
-  license: "MPL-2.0",
+  keywords: ["lichtblick", "extension"],
+  license: "UNLICENSED",
   main: "./dist/extension.js",
   name: "studio-extension-turtlesim",
-  publisher: "Foxglove Inc.",
-  scripts: {
-    build: "fox build",
-    "foxglove:prepublish": "fox build --mode production",
-    "local-install": "fox build && fox install",
-    package: "fox build --mode production && fox package",
-    pretest: "fox pretest",
-  },
+  publisher: "Foxglove Inc",
+  scripts: { local: "flora-extension-dev ." },
   version: "0.0.1",
 };
+
+// Helper function to create a mock .foxe file
+async function createMockFoxeFile(): Promise<Uint8Array> {
+  const zip = new JSZip();
+  zip.file("package.json", JSON.stringify(packageJson) ?? "{}");
+  zip.file("dist/extension.js", "console.log('mock extension');");
+  const arrayBuffer = await zip.generateAsync({ type: "arraybuffer" });
+  return new Uint8Array(arrayBuffer);
+}
 
 const EXT_FILE_TURTLESIM = `${__dirname}/../test/fixtures/lichtblick.suite-extension-turtlesim-0.0.1.foxe`;
 const EXT_FILE_PREFIXED = `${__dirname}/../test/fixtures/prefixed-name-extension.foxe`;
@@ -74,15 +76,16 @@ describe("IdbExtensionLoader", () => {
     });
 
     it("should install local extensions", async () => {
-      const foxe = fs.readFileSync(EXT_FILE_TURTLESIM);
+      const foxe = await createMockFoxeFile();
       const info: ExtensionInfo = {
         ...packageJson,
+        id: "Foxglove Inc.studio-extension-turtlesim",
         namespace: "local",
         qualifiedName: "turtlesim",
       } as ExtensionInfo;
       const loader = new IdbExtensionLoader("local");
 
-      await loader.installExtension(foxe as unknown as Uint8Array);
+      await loader.installExtension(foxe);
 
       expect(mockPut).toHaveBeenCalledWith(METADATA_STORE_NAME, info);
       expect(mockPut).toHaveBeenCalledWith(EXTENSION_STORE_NAME, {
@@ -92,9 +95,10 @@ describe("IdbExtensionLoader", () => {
     });
 
     it("should install private extensions", async () => {
-      const foxe = fs.readFileSync(EXT_FILE_TURTLESIM);
+      const foxe = await createMockFoxeFile();
       const info: ExtensionInfo = {
         ...packageJson,
+        id: "Foxglove Inc.studio-extension-turtlesim",
         namespace: "org",
         qualifiedName: "org:Foxglove Inc:studio-extension-turtlesim",
       } as ExtensionInfo;
@@ -112,13 +116,12 @@ describe("IdbExtensionLoader", () => {
     });
 
     it("should parse package prefixes", async () => {
-      const foxe = fs.readFileSync(EXT_FILE_PREFIXED);
+      const foxe = await createMockFoxeFile();
       const info: ExtensionInfo = {
-        id: "Prefix.package-name",
-        name: "package-name",
+        ...packageJson,
+        id: "Foxglove Inc.studio-extension-turtlesim",
         namespace: "org",
-        publisher: "Prefix",
-        qualifiedName: "org:Prefix:package-name",
+        qualifiedName: "org:Foxglove Inc:studio-extension-turtlesim",
       } as ExtensionInfo;
 
       mockGetAll.mockReturnValue([info]);
@@ -200,7 +203,7 @@ describe("IdbExtensionLoader", () => {
 
   describe("getExtension", () => {
     it("should return the proper extension when call get extension", async () => {
-      const foxe = fs.readFileSync(EXT_FILE_TURTLESIM);
+      const foxe = await createMockFoxeFile();
       const expectedInfo: ExtensionInfo = {
         ...packageJson,
         namespace: "local",
