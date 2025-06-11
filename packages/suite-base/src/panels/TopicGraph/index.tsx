@@ -41,7 +41,7 @@ import PanelToolbar, {
 import Graph, { GraphMutation } from "./Graph";
 
 const LABEL_MAX_WIDTH = 200;
-const STYLESHEET: Cytoscape.Stylesheet[] = [
+const STYLESHEET: Cytoscape.StylesheetStyle[] = [
   {
     selector: "edge",
     style: {
@@ -60,10 +60,7 @@ const STYLESHEET: Cytoscape.Stylesheet[] = [
       "background-color": "#000",
       "border-color": "rgb(69, 165, 255)",
       "border-width": "1px",
-      "padding-top": "4px",
-      "padding-right": "4px",
-      "padding-bottom": "4px",
-      "padding-left": "4px",
+      padding: "4px",
       "font-size": "16px",
       "text-max-width": `${LABEL_MAX_WIDTH}px`,
       "text-wrap": "ellipsis",
@@ -95,10 +92,7 @@ const STYLESHEET: Cytoscape.Stylesheet[] = [
       "background-color": "#000",
       "border-color": "rgb(255, 107, 130)",
       "border-width": "1px",
-      "padding-top": "4px",
-      "padding-right": "4px",
-      "padding-bottom": "4px",
-      "padding-left": "4px",
+      padding: "4px",
       "font-size": "16px",
       "text-max-width": "200px",
       "text-wrap": "ellipsis",
