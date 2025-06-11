@@ -11,7 +11,7 @@ import { stringifyMessagePath } from "@lichtblick/suite-base/components/MessageP
 import { fillInGlobalVariablesInPath } from "@lichtblick/suite-base/components/MessagePathSyntax/useCachedGetMessagePathDataItems";
 import { InteractionEvent, Scale } from "@lichtblick/suite-base/panels/Plot/types";
 import { PlotXAxisVal } from "@lichtblick/suite-base/panels/Plot/utils/config";
-import { MessageBlock } from "@lichtblick/suite-base/players/types";
+import { MessageBlock, PlayerState } from "@lichtblick/suite-base/players/types";
 import BasicBuilder from "@lichtblick/suite-base/testing/builders/BasicBuilder";
 import PlayerBuilder from "@lichtblick/suite-base/testing/builders/PlayerBuilder";
 import PlotBuilder from "@lichtblick/suite-base/testing/builders/PlotBuilder";
@@ -107,7 +107,10 @@ describe("PlotCoordinator", () => {
     });
 
     it("should not emit when no activeData", () => {
-      const state = PlayerBuilder.playerState({ activeData: undefined });
+      const state: PlayerState = {
+        ...PlayerBuilder.playerState(),
+        activeData: undefined,
+      };
 
       const listener = jest.fn();
       plotCoordinator.on("currentValuesChanged", listener);

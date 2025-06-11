@@ -12,11 +12,15 @@ const rule = require("./ramda-usage") as TSESLint.RuleModule<
 >;
 
 const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    tsconfigRootDir: path.join(__dirname, "fixture"),
-    project: "tsconfig.json",
+  languageOptions: {
+    parserOptions: {
+      ecmaVersion: 2020,
+      tsconfigRootDir: path.join(__dirname, "fixture"),
+      project: "tsconfig.json",
+    },
+  },
+  linterOptions: {
+    reportUnusedDisableDirectives: true,
   },
 });
 
