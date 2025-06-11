@@ -21,9 +21,9 @@ import DiagnosticsBuilder from "@lichtblick/suite-base/testing/builders/Diagnost
 
 jest.mock("@lichtblick/suite-base/panels/DiagnosticSummary/hooks/useDiagnostics");
 
-jest.mock("react-virtualized-auto-sizer", () => ({
-  __esModule: true,
-  default: ({
+jest.mock("react-virtualized", () => ({
+  ...jest.requireActual("react-virtualized"),
+  AutoSizer: ({
     children,
   }: {
     children: (size: { height: number; width: number }) => React.JSX.Element;

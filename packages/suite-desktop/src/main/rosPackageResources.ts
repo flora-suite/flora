@@ -20,7 +20,9 @@ function rosPackageName(packageXmlContents: string) {
   const doc = new DOMParser().parseFromString(packageXmlContents, "text/xml");
   const packageName = Array.from(
     (doc as Partial<typeof doc>).documentElement?.childNodes ?? [],
-  ).find((n) => n.nodeName.toLowerCase() === "name")?.textContent;
+  ).find(
+    (n) => n.nodeName.toLowerCase() === "name" || n.nodeName.toLowerCase() === "n",
+  )?.textContent;
   return packageName ?? undefined;
 }
 
@@ -109,9 +111,10 @@ export async function findRosPackage(
       // log.info(`Found ROS package "${pkg}" at "${packagePath}" (in ROS_PACKAGE_PATH "${ROS_PACKAGE_PATH}")`);
       return packagePath;
     }
+    // Log error for each path where the package is not found
+    console.error(`Could not find ROS package "${pkg}" in: ${rosPackagePath}`);
   }
 
-  log.warn(`Could not find ROS package "${pkg}" in: ${rosPackagePaths.join(path.delimiter)}`);
   return undefined;
 }
 

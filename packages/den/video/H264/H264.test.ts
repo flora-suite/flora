@@ -95,7 +95,9 @@ describe("H264", () => {
       0x00, 0x00, 0x01, 0x67, 0x64, 0x0, 0x1e, 0xac, 0xb2, 0x1, 0x40, 0x5f, 0xf2, 0xe0, 0x2d, 0x40,
       0x40, 0x40, 0x50, 0x0, 0x0, 0x3, 0x0, 0x10, 0x0, 0x0, 0x3, 0x3, 0x20, 0xf1, 0x62, 0xe4, 0x80,
     ]);
-    const decoderConfig = H264.ParseDecoderConfig(NALU);
+    const sps = H264.ParseSps(NALU);
+    expect(sps).toBeDefined();
+    const decoderConfig = H264.ParseDecoderConfig(sps!);
     expect(decoderConfig).toEqual({
       codec: "avc1.64001E",
       codedWidth: 640,
@@ -105,8 +107,8 @@ describe("H264", () => {
 
   it("ParseDecoderConfig with spsData undefined", () => {
     const NALU = new Uint8Array([0x00]);
-    const decoderConfig = H264.ParseDecoderConfig(NALU);
-    expect(decoderConfig).toBeUndefined();
+    const sps = H264.ParseSps(NALU);
+    expect(sps).toBeUndefined();
   });
 
   it("ParseDecoderConfig with nal_unit_type not being SPS", () => {
@@ -114,9 +116,9 @@ describe("H264", () => {
       0x00, 0x00, 0x01, 0x67, 0x64, 0x0, 0x1e, 0xac, 0xb2, 0x1, 0x40, 0x5f, 0xf2, 0xe0, 0x2d, 0x40,
       0x40, 0x40, 0x50, 0x0, 0x0, 0x3, 0x0, 0x10, 0x0, 0x0, 0x3, 0x3, 0x20, 0xf1, 0x62, 0xe4, 0x80,
     ]);
-    NALU[0] = 0x67; // Change the nal_unit_type to something other than SPS
-    const decoderConfig = H264.ParseDecoderConfig(NALU);
-    expect(decoderConfig).toBeUndefined();
+    NALU[3] = 0x65; // Change the nal_unit_type to something other than SPS (0x67)
+    const sps = H264.ParseSps(NALU);
+    expect(sps).toBeUndefined();
   });
 
   it("IsAnnexB", () => {
@@ -143,13 +145,13 @@ describe("H264", () => {
     ]); // IDR NALU
     const nonKeyframeData = new Uint8Array([0x00, 0x00, 0x00, 0x01, 0x61, 0x88, 0x84, 0x21]); // Non-IDR NALU
 
-    expect(H264.IsKeyframe(keyframeData)).toBe(true);
-    expect(H264.IsKeyframe(nonKeyframeData)).toBe(false);
+    expect(H264.GetFrameInfo(keyframeData).isKeyFrame).toBe(true);
+    expect(H264.GetFrameInfo(nonKeyframeData).isKeyFrame).toBe(false);
   });
 
   it("IsKeyframe, but box size of annexB is undefined", () => {
     const keyframeData = new Uint8Array([0x00]); // data length < 5
 
-    expect(H264.IsKeyframe(keyframeData)).toBe(false);
+    expect(H264.GetFrameInfo(keyframeData).isKeyFrame).toBe(false);
   });
 });
