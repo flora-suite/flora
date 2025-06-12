@@ -31,7 +31,7 @@
     "@types/utif": "^3.0.5",
     "@xmldom/xmldom": "0.9.8",
     "app-builder-lib": "26.0.16",
-    "async-mutex": "0.4.1",
+    "async-mutex": "0.5.0",
     "builder-util": "26.0.16",
     "clean-webpack-plugin": "4.0.0",
     "dmg-builder": "26.0.16",

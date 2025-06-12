@@ -2676,7 +2676,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.27.4":
+"@babel/runtime@npm:^7.27.6":
   version: 7.27.6
   resolution: "@babel/runtime@npm:7.27.6"
   checksum: 10c0/89726be83f356f511dcdb74d3ea4d873a5f0cf0017d4530cb53aa27380c01ca102d573eff8b8b77815e624b1f8c24e7f0311834ad4fb632c90a770fda00bd4c8
@@ -4238,7 +4238,7 @@ __metadata:
   dependencies:
     "@lichtblick/comlink": "npm:1.0.3"
     "@lichtblick/tsconfig": "npm:1.0.2"
-    async-mutex: "npm:0.4.1"
+    async-mutex: "npm:0.5.0"
     xacro-parser: "npm:0.3.9"
   languageName: unknown
   linkType: soft
@@ -4692,7 +4692,7 @@ __metadata:
     "@types/utif": "npm:^3.0.5"
     "@xmldom/xmldom": "npm:0.9.8"
     app-builder-lib: "npm:26.0.16"
-    async-mutex: "npm:0.4.1"
+    async-mutex: "npm:0.5.0"
     builder-util: "npm:26.0.16"
     clean-webpack-plugin: "npm:4.0.0"
     dmg-builder: "npm:26.0.16"
@@ -4780,7 +4780,7 @@ __metadata:
     "@mui/lab": "npm:5.0.0-alpha.176"
     "@mui/material": "npm:6.4.12"
     "@mui/system": "npm:7.1.1"
-    "@mui/x-data-grid": "npm:8.5.1"
+    "@mui/x-data-grid": "npm:8.5.2"
     "@storybook/react": "npm:^8.6.14"
     "@types/react": "npm:^18.3.23"
     "@types/react-dom": "npm:^18.3.7"
@@ -5318,16 +5318,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:8.5.1":
-  version: 8.5.1
-  resolution: "@mui/x-data-grid@npm:8.5.1"
+"@mui/x-data-grid@npm:8.5.2":
+  version: 8.5.2
+  resolution: "@mui/x-data-grid@npm:8.5.2"
   dependencies:
-    "@babel/runtime": "npm:^7.27.4"
+    "@babel/runtime": "npm:^7.27.6"
     "@mui/utils": "npm:^7.1.1"
-    "@mui/x-internals": "npm:8.5.1"
+    "@mui/x-internals": "npm:8.5.2"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
-    reselect: "npm:^5.1.1"
     use-sync-external-store: "npm:^1.5.0"
   peerDependencies:
     "@emotion/react": ^11.9.0
@@ -5341,20 +5340,21 @@ __metadata:
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 10c0/62ec72acbab359a1c612f199ce2651d625d0329cfc62d72d25bfea84a175b7f2b4b31924d2dfe91c4f9368edf049a265d1e3bd0047381273236af47d5709359e
+  checksum: 10c0/deb5e7e1f9391b92d85acdb39eb1bc0fd85cbad748be839b132b62dedd3fcce5aae1919b4630a76f156ebcbd8402114feff97b6cc118f484883d722d31976b47
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.5.1":
-  version: 8.5.1
-  resolution: "@mui/x-internals@npm:8.5.1"
+"@mui/x-internals@npm:8.5.2":
+  version: 8.5.2
+  resolution: "@mui/x-internals@npm:8.5.2"
   dependencies:
-    "@babel/runtime": "npm:^7.27.4"
+    "@babel/runtime": "npm:^7.27.6"
     "@mui/utils": "npm:^7.1.1"
+    reselect: "npm:^5.1.1"
   peerDependencies:
     "@mui/system": ^5.15.14 || ^6.0.0 || ^7.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/ff7207cd5f3c3d110ce05c477c14e26a04284ab35d48765606a01fb50b51f3776e1e247ad25a3a84fdb63d9287c7e5f88f58a005a8f2804565ebb7d4076ec6da
+  checksum: 10c0/03d2105d82624b0064c618a6bfc289c124f7fd8bff2f11fe5ceb9504514fb4cf59be906b5649b3537f21b86c54dbcbf4406e55d529a8a399d9fbc510f3bd2bf9
   languageName: node
   linkType: hard
 
@@ -9210,15 +9210,6 @@ __metadata:
   version: 2.0.1
   resolution: "async-exit-hook@npm:2.0.1"
   checksum: 10c0/81407a440ef0aab328df2369f1a9d957ee53e9a5a43e3b3dcb2be05151a68de0e4ff5e927f4718c88abf85800731f5b3f69a47a6642ce135f5e7d43ca0fce41d
-  languageName: node
-  linkType: hard
-
-"async-mutex@npm:0.4.1":
-  version: 0.4.1
-  resolution: "async-mutex@npm:0.4.1"
-  dependencies:
-    tslib: "npm:^2.4.0"
-  checksum: 10c0/3c412736c0bc4a9a2cfd948276a8caab8686aa615866a5bd20986e616f8945320acb310058a17afa1b31b8de6f634a78b7ec2217a33d7559b38f68bb85a95854
   languageName: node
   linkType: hard
 
