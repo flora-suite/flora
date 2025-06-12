@@ -7,6 +7,7 @@ import * as THREE from "three";
 import { assert } from "ts-essentials";
 
 import { PinholeCameraModel } from "@lichtblick/den/image";
+import { isVideoFrame } from "@lichtblick/den/video";
 import Logger from "@lichtblick/log";
 import { toNanoSec } from "@lichtblick/rostime";
 import { IRenderer } from "@lichtblick/suite-base/panels/ThreeDeeRender/IRenderer";
@@ -21,7 +22,6 @@ import { decodeCompressedImageToBitmap } from "./decodeImage";
 import { CameraInfo } from "../../ros";
 import { DECODE_IMAGE_ERR_KEY, IMAGE_TOPIC_PATH } from "../ImageMode/constants";
 import { ColorModeSettings } from "../colorMode";
-import { isVideoFrame } from "@lichtblick/den/video";
 
 const log = Logger.getLogger(__filename);
 export interface ImageRenderableSettings extends Partial<ColorModeSettings> {
@@ -222,7 +222,7 @@ export class ImageRenderable extends Renderable<ImageUserData> {
   protected async decodeImage(
     image: AnyImage,
     resizeWidth?: number,
-  ): Promise<TransparencyImage<ImageBitmap | ImageData>> {
+  ): Promise<TransparencyImage> {
     if ("format" in image) {
       return await decodeCompressedImageToBitmap(
         this.#transparencyImage as TransparencyImage<ImageBitmap>,
@@ -236,7 +236,7 @@ export class ImageRenderable extends Renderable<ImageUserData> {
     return await this.decoder.decode(this.#transparencyImage, image, this.userData.settings);
   }
 
-  public handleDecodedImage(frame: TransparencyImage<ImageBitmap | ImageData>, seq?: number): void {
+  public handleDecodedImage(frame: TransparencyImage, seq?: number): void {
     if (this.isDisposed()) {
       return;
     }

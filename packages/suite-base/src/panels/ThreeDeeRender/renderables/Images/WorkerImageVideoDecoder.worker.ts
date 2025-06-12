@@ -2,12 +2,13 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import EventEmitter from "eventemitter3";
-import * as RosTime from "@lichtblick/rostime";
-import { assert } from "ts-essentials";
-import { Mutex } from "async-mutex";
-import { H264 } from "@lichtblick/den/video";
 import { CompressedVideo } from "@foxglove/schemas";
+import { Mutex } from "async-mutex";
+import EventEmitter from "eventemitter3";
+import { assert } from "ts-essentials";
+
+import { H264 } from "@lichtblick/den/video";
+import * as RosTime from "@lichtblick/rostime";
 
 function createDecoderConfig(videoMsg: CompressedVideo): VideoDecoderConfig | undefined {
   switch (videoMsg.format) {
@@ -16,6 +17,7 @@ function createDecoderConfig(videoMsg: CompressedVideo): VideoDecoderConfig | un
       if (spsData != undefined) {
         return H264.ParseDecoderConfig(spsData);
       }
+      break;
     }
     case "h265":
       return {
@@ -95,7 +97,9 @@ class SortedMap<T> {
 
   public remove(key: number) {
     const index = this.binarySearch(key);
-    if (index >= 0) return this.#entries.splice(index, 1)[0];
+    if (index >= 0) {
+      return this.#entries.splice(index, 1)[0];
+    }
   }
 
   public removeAfter(key: number) {
@@ -128,19 +132,27 @@ class SortedMap<T> {
 
   public binarySearch(key: number) {
     const entries = this.#entries;
-    if (entries.length === 0) return -1;
+    if (entries.length === 0) {
+      return -1;
+    }
 
     let low = 0;
     let high = entries.length - 1;
 
-    if (key < entries[low]![0]) return ~low;
-    if (key > entries[high]![0]) return ~(high + 1);
+    if (key < entries[low]![0]) {
+      return ~low;
+    }
+    if (key > entries[high]![0]) {
+      return ~(high + 1);
+    }
 
     while (low <= high) {
       const mid = (low + high) >> 1;
       const midKey = entries[mid]![0];
 
-      if (midKey === key) return mid;
+      if (midKey === key) {
+        return mid;
+      }
 
       if (key < midKey) {
         high = mid - 1;
@@ -297,7 +309,7 @@ class VideoDecoderWorker extends EventEmitter {
     return this.#convertTimeNanosToMicros(this.#playheadTimeNanos);
   }
 
-  #convertTimeNanosToMicros(timeNanos: BigInt) {
+  #convertTimeNanosToMicros(timeNanos: bigint) {
     assert(this.#firstMessageTimeNanos != null, "firstMessageTimeNanos should be set");
     return Math.floor(Number((timeNanos - this.#firstMessageTimeNanos) / 1000n));
   }
@@ -433,8 +445,8 @@ class VideoDecoderWorker extends EventEmitter {
 
       this.#needKeyframe = false;
       this.#pendingFrames.push({
-        frameInfo: frameInfo,
-        frameMsg: frameMsg,
+        frameInfo,
+        frameMsg,
       });
 
       // Configure the decoder and process the queue
@@ -448,8 +460,8 @@ class VideoDecoderWorker extends EventEmitter {
     } else {
       // Add the frame to the pending queue
       this.#pendingFrames.push({
-        frameInfo: frameInfo,
-        frameMsg: frameMsg,
+        frameInfo,
+        frameMsg,
       });
       this.#scheduleUpdate();
     }
@@ -458,7 +470,9 @@ class VideoDecoderWorker extends EventEmitter {
   #processQueue() {
     while (this.#pendingFrames.length > 0) {
       const pendingFrame = this.#pendingFrames[0];
-      if (!pendingFrame) break;
+      if (!pendingFrame) {
+        break;
+      }
 
       const {
         frameInfo: { isKeyFrame, mayNeedRewrite },
@@ -601,7 +615,7 @@ decoderWorker.on("frame", (frame) => {
   transferPostMessage(
     {
       type: "frame",
-      frame: frame,
+      frame,
     },
     [frame],
   );
@@ -611,7 +625,7 @@ decoderWorker.on("noFrame", (emptyFrame) => {
   transferPostMessage(
     {
       type: "noFrame",
-      emptyFrame: emptyFrame,
+      emptyFrame,
     },
     [emptyFrame],
   );
@@ -620,41 +634,41 @@ decoderWorker.on("noFrame", (emptyFrame) => {
 decoderWorker.on("configured", (config) => {
   postMessage({
     type: "configured",
-    config: config,
+    config,
   });
 });
 
 decoderWorker.on("delay", (milliSecBehind) => {
   postMessage({
     type: "delay",
-    milliSecBehind: milliSecBehind,
+    milliSecBehind,
   });
 });
 
 decoderWorker.on("debug", (message) => {
   postMessage({
     type: "debug",
-    message: message,
+    message,
   });
 });
 
 decoderWorker.on("warn", (message) => {
   postMessage({
     type: "warn",
-    message: message,
+    message,
   });
 });
 
 decoderWorker.on("error", (error) => {
   postMessage({
     type: "error",
-    error: error,
+    error,
   });
 });
 
 decoderWorker.on("nonBlockingError", (errorMessage) => {
   postMessage({
     type: "nonBlockingError",
-    errorMessage: errorMessage,
+    errorMessage,
   });
 });

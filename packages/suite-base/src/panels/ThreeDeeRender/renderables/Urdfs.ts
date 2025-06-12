@@ -769,7 +769,7 @@ export class Urdfs extends SceneExtension<UrdfRenderable> {
         this.renderer.settings.errors.remove(["layers", instanceId], FETCH_URDF_ERR);
         this.#loadUrdf({ instanceId, urdf: this.#textDecoder.decode(urdf.data) });
       })
-      .catch((unknown) => {
+      .catch((unknown: unknown) => {
         const err = unknown as Error;
         const hasError = !err.message.startsWith("Failed to fetch");
         const errMessage = `Failed to load URDF from "${url}"${hasError ? `: ${err.message}` : ""}`;

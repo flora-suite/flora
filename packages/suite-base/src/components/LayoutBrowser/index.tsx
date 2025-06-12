@@ -18,6 +18,7 @@ import * as _ from "lodash-es";
 import moment from "moment";
 import { useSnackbar } from "notistack";
 import { useEffect, useLayoutEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import useAsyncFn from "react-use/lib/useAsyncFn";
 import { makeStyles } from "tss-react/mui";
 
@@ -46,7 +47,6 @@ import { AppEvent } from "@lichtblick/suite-base/services/IAnalytics";
 import { Layout, layoutIsShared } from "@lichtblick/suite-base/services/ILayoutStorage";
 
 import LayoutSection from "./LayoutSection";
-import { useTranslation } from "react-i18next";
 
 const log = Logger.getLogger(__filename);
 

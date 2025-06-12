@@ -59,7 +59,7 @@ export class WorkerImageVideoDecoder extends EventEmitter {
   }
 
   #sendToWork(msg: any) {
-    if (this.#closed) throw Error("Can't send message over closed websocket connection");
+    if (this.#closed) {throw Error("Can't send message over closed websocket connection");}
     this.#worker.postMessage(msg);
   }
   public setPlayheadTimeNanos(time: any) {

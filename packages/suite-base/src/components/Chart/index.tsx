@@ -8,6 +8,7 @@
 /// <reference types="chartjs-plugin-datalabels" />
 /// <reference types="@flora-suite/chartjs-plugin-zoom" />
 
+import { type ZoomPluginOptions } from "@flora-suite/chartjs-plugin-zoom/types/options";
 import { ChartOptions } from "chart.js";
 import Hammer from "hammerjs";
 import * as R from "ramda";
@@ -16,7 +17,6 @@ import { useMountedState } from "react-use";
 import { assert } from "ts-essentials";
 import { v4 as uuidv4 } from "uuid";
 
-import { type ZoomPluginOptions } from "@flora-suite/chartjs-plugin-zoom/types/options";
 import Logger from "@lichtblick/log";
 import ChartJsMux, {
   ChartUpdateMessage,

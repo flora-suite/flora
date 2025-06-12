@@ -117,9 +117,9 @@ export class H264 {
 
   public static ParseSps(data: Uint8Array): SPS | undefined {
     const firstNALU = H264.GetFirstNALUOfType(data, H264NaluType.SPS);
-    if (firstNALU == null) return;
+    if (firstNALU == null) {return;}
     const sps = new SPS(firstNALU);
-    if (sps.nal_unit_type === H264NaluType.SPS) return sps;
+    if (sps.nal_unit_type === H264NaluType.SPS) {return sps;}
     return undefined;
   }
 
@@ -203,7 +203,7 @@ export class H264 {
   static RewriteForLowLatencyDecoding(videoData: Uint8Array): Uint8Array | undefined {
     // Find the first SPS NAL unit
     const spsNalu = H264.GetFirstNALUOfType(videoData, H264NaluType.SPS);
-    if (!spsNalu) return undefined;
+    if (!spsNalu) {return undefined;}
 
     // Parse SPS
     const sps = new SPS(spsNalu);

@@ -6,10 +6,10 @@ import { RawImage } from "@foxglove/schemas";
 
 import * as Comlink from "@lichtblick/comlink";
 import { ComlinkWrap } from "@lichtblick/den/worker";
+import { TransparencyImage } from "@lichtblick/suite-base/panels/ThreeDeeRender/renderables/Images/ImageTypes";
 
 import type { RawImageOptions } from "./decodeImage";
 import { Image as RosImage } from "../../ros";
-import { TransparencyImage } from "@lichtblick/suite-base/panels/ThreeDeeRender/renderables/Images/ImageTypes";
 
 /**
  * Provides a worker that can process RawImages on a background thread.
