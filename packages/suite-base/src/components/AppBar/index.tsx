@@ -17,8 +17,8 @@ import { useTranslation } from "react-i18next";
 import tc from "tinycolor2";
 import { makeStyles } from "tss-react/mui";
 
-import { FloraLogo } from "@lichtblick/suite-base/components/FloraLogo";
 import { AppSetting } from "@lichtblick/suite-base/AppSetting";
+import { FloraLogo } from "@lichtblick/suite-base/components/FloraLogo";
 import { MemoryUseIndicator } from "@lichtblick/suite-base/components/MemoryUseIndicator";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { useAppContext } from "@lichtblick/suite-base/context/AppContext";
@@ -265,7 +265,7 @@ export function AppBar(props: AppBarProps): JSX.Element {
                       <kbd className={classes.keyEquivalent}>[</kbd>
                     </>
                   }
-                  aria-label={`${leftSidebarOpen ? t("hideLeftSidebar") : t("showLeftSidebar")}`}
+                  aria-label={leftSidebarOpen ? t("hideLeftSidebar") : t("showLeftSidebar")}
                   onClick={() => {
                     sidebarActions.left.setOpen(!leftSidebarOpen);
                   }}
@@ -280,7 +280,7 @@ export function AppBar(props: AppBarProps): JSX.Element {
                       <kbd className={classes.keyEquivalent}>]</kbd>
                     </>
                   }
-                  aria-label={`${rightSidebarOpen ? t("hideRightSidebar") : t("showRightSidebar")}`}
+                  aria-label={rightSidebarOpen ? t("hideRightSidebar") : t("showRightSidebar")}
                   onClick={() => {
                     sidebarActions.right.setOpen(!rightSidebarOpen);
                   }}

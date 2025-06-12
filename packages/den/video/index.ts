@@ -3,10 +3,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import { CompressedVideo } from "@foxglove/schemas";
+
 import { AV1 } from "./AV1";
 import { H264 } from "./H264";
-import { VP9 } from "./VP9";
 import { H265 } from "./H265";
+import { VP9 } from "./VP9";
 
 export function getFrameInfo(frame: CompressedVideo) {
   switch (frame.format) {

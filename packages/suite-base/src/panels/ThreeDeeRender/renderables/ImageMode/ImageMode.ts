@@ -8,6 +8,7 @@ import { Writable, assert } from "ts-essentials";
 
 import { filterMap } from "@lichtblick/den/collection";
 import { PinholeCameraModel } from "@lichtblick/den/image";
+import { isVideoFrame } from "@lichtblick/den/video";
 import Logger from "@lichtblick/log";
 import { toNanoSec } from "@lichtblick/rostime";
 import {
@@ -78,7 +79,6 @@ import { ICameraHandler } from "../ICameraHandler";
 import { ImageVideoRenderable } from "../Images/ImageVideoRenderable";
 import { getTopicMatchPrefix, sortPrefixMatchesToFront } from "../Images/topicPrefixMatching";
 import { colorModeSettingsFields } from "../colorMode";
-import { isVideoFrame } from "@lichtblick/den/video";
 
 const log = Logger.getLogger(__filename);
 

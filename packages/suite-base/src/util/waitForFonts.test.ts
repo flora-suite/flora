@@ -100,7 +100,7 @@ describe("waitForFonts", () => {
       load: jest
         .fn()
         .mockImplementation(
-          () => new Promise((resolve) => setTimeout(() => resolve("font1-slow"), 100)),
+          async () => await new Promise((resolve) => setTimeout(() => { resolve("font1-slow"); }, 100)),
         ),
     } as unknown as FontFace;
 
@@ -112,7 +112,7 @@ describe("waitForFonts", () => {
       load: jest
         .fn()
         .mockImplementation(
-          () => new Promise((resolve) => setTimeout(() => resolve("font3-medium"), 50)),
+          async () => await new Promise((resolve) => setTimeout(() => { resolve("font3-medium"); }, 50)),
         ),
     } as unknown as FontFace;
 

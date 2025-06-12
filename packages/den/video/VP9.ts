@@ -16,7 +16,7 @@ export class VP9 {
    * Parse frame header information according to VP9 bitstream specification
    */
   static IsKeyframe(data: Uint8Array): boolean {
-    if (data.length === 0) return false;
+    if (data.length === 0) {return false;}
 
     const firstByte = data[0]!;
 
@@ -35,7 +35,7 @@ export class VP9 {
         ? (firstByte & 0x04) !== 0 // 0x04 = 00000100
         : (firstByte & 0x08) !== 0; // 0x08 = 00001000
 
-    if (showExistingFrame) return false;
+    if (showExistingFrame) {return false;}
 
     // Extract frame_type
     const frameType =
