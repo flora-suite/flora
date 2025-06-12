@@ -16,7 +16,7 @@
     "@lichtblick/rostime": "1.0.0",
     "@lichtblick/suite-base": "workspace:*",
     "@lichtblick/theme": "workspace:*",
-    "@lichtblick/tsconfig": "1.0.0",
+    "@lichtblick/tsconfig": "1.0.2",
     "@mcap/core": "2.1.6",
     "@pmmmwh/react-refresh-webpack-plugin": "0.6.0",
     "@storybook/react": "^8.6.14",

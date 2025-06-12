@@ -142,7 +142,7 @@ export function TimezoneSettings(): React.ReactElement {
   const fixedItems: Option[] = useMemo(
     () => [
       detectItem,
-      { key: "zone:UTC", label: `${formatTimezone("UTC")}`, data: "UTC" },
+      { key: "zone:UTC", label: formatTimezone("UTC"), data: "UTC" },
       {
         key: "sep",
         label: "",
@@ -370,7 +370,7 @@ export function LanguageSettings(): React.ReactElement {
     () =>
       LANGUAGE_OPTIONS.map((language) => ({
         key: language.key,
-        text: `${language.value}`,
+        text: language.value,
         data: language.key,
       })),
     [],

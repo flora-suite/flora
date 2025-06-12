@@ -13,8 +13,6 @@ import type { RosValue } from "@lichtblick/suite-base/players/types";
 
 import { Axis, AXIS_LENGTH } from "./Axis";
 import { createArrowMarker } from "./Poses";
-import { RenderableArrow } from "./markers/RenderableArrow";
-import { RenderableLineStrip } from "./markers/RenderableLineStrip";
 import type { AnyRendererSubscription, IRenderer } from "../IRenderer";
 import { BaseUserData, Renderable } from "../Renderable";
 import {
@@ -46,6 +44,8 @@ import {
 } from "../settings";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose, Pose } from "../transforms";
+import { RenderableArrow } from "./markers/RenderableArrow";
+import { RenderableLineStrip } from "./markers/RenderableLineStrip";
 
 type GradientRgba = [ColorRGBA, ColorRGBA];
 type Gradient = [string, string];
@@ -74,8 +74,8 @@ const TIME_ZERO = { sec: 0, nsec: 0 };
 const COLOR_WHITE = { r: 1, g: 1, b: 1, a: 1 };
 
 const DEFAULT_GRADIENT_STR: Gradient = [
-  rgbaToCssString(DEFAULT_GRADIENT[0]!),
-  rgbaToCssString(DEFAULT_GRADIENT[1]!),
+  rgbaToCssString(DEFAULT_GRADIENT[0]),
+  rgbaToCssString(DEFAULT_GRADIENT[1]),
 ];
 
 const DEFAULT_SETTINGS: LayerSettingsPoseArray = {

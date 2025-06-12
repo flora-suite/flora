@@ -88,7 +88,7 @@ export async function main(): Promise<void> {
   process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = isProduction ? "false" : "true";
 
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   if (require("electron-squirrel-startup") as boolean) {
     app.quit();
     return;

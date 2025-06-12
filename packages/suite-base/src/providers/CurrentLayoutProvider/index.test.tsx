@@ -22,10 +22,10 @@ import {
   UserProfileStorage,
   UserProfileStorageContext,
 } from "@lichtblick/suite-base/context/UserProfileStorageContext";
+import AppParametersProvider from "@lichtblick/suite-base/providers/AppParametersProvider";
 import CurrentLayoutProvider, {
   MAX_SUPPORTED_LAYOUT_VERSION,
 } from "@lichtblick/suite-base/providers/CurrentLayoutProvider";
-import AppParametersProvider from "@lichtblick/suite-base/providers/AppParametersProvider";
 import { ILayoutManager } from "@lichtblick/suite-base/services/ILayoutManager";
 import BasicBuilder from "@lichtblick/suite-base/testing/builders/BasicBuilder";
 

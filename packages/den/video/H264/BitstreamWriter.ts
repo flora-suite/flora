@@ -28,10 +28,10 @@ export class BitstreamWriter {
    * @param {number} bit - The bit to write (0 or 1)
    */
   u_1(bit: number) {
-    if (this.#finished) throw new Error("Attempt to write to bitstream after finish()");
+    if (this.#finished) {throw new Error("Attempt to write to bitstream after finish()");}
 
     const bitPosition = this.#bitPos;
-    if (bitPosition >= 8) throw new Error("Invariant: full byte should have been written already");
+    if (bitPosition >= 8) {throw new Error("Invariant: full byte should have been written already");}
 
     // Set bit at appropriate position
     this.#currentByte |= bit << (7 - bitPosition);
@@ -49,7 +49,7 @@ export class BitstreamWriter {
    * @param {number} value - The 2-bit value to write (0-3)
    */
   u_2(value: number) {
-    if (this.#finished) throw new Error("Attempt to write to bitstream after finish()");
+    if (this.#finished) {throw new Error("Attempt to write to bitstream after finish()");}
     this.u_1((value & 2) >>> 1); // Write the high bit
     this.u_1(value & 1); // Write the low bit
   }
@@ -59,7 +59,7 @@ export class BitstreamWriter {
    * @param {number} value - The 3-bit value to write (0-7)
    */
   u_3(value: number) {
-    if (this.#finished) throw new Error("Attempt to write to bitstream after finish()");
+    if (this.#finished) {throw new Error("Attempt to write to bitstream after finish()");}
     this.u_1((value & 4) >>> 2); // Write the highest bit
     this.u_1((value & 2) >>> 1); // Write the middle bit
     this.u_1(value & 1); // Write the lowest bit
@@ -70,11 +70,11 @@ export class BitstreamWriter {
    * @param {number} value - The byte to write (0-255)
    */
   u_8(value: number) {
-    if (this.#finished) throw new Error("Attempt to write to bitstream after finish()");
+    if (this.#finished) {throw new Error("Attempt to write to bitstream after finish()");}
 
     // Optimized path for byte-aligned writes
     if (this.#bitPos === 0) {
-      if (this.#bytePos >= this.#buffer.length) throw new Error("Write would exceed end of buffer");
+      if (this.#bytePos >= this.#buffer.length) {throw new Error("Write would exceed end of buffer");}
 
       // Write byte directly
       this.#buffer[this.#bytePos] = value;
@@ -102,8 +102,8 @@ export class BitstreamWriter {
    * @param {number} value - The value to write
    */
   u(bitCount: number, value: number) {
-    if (this.#finished) throw new Error("Attempt to write to bitstream after finish()");
-    if (bitCount < 1 || bitCount > 32) throw new Error(`u(${bitCount}) is not supported`);
+    if (this.#finished) {throw new Error("Attempt to write to bitstream after finish()");}
+    if (bitCount < 1 || bitCount > 32) {throw new Error(`u(${bitCount}) is not supported`);}
 
     // Write from highest bit to lowest bit
     for (let i = bitCount - 1; i >= 0; --i) {
@@ -116,11 +116,11 @@ export class BitstreamWriter {
    * @param {number} value - The non-negative integer to encode
    */
   ue_v(value: number) {
-    if (this.#finished) throw new Error("Attempt to write to bitstream after finish()");
+    if (this.#finished) {throw new Error("Attempt to write to bitstream after finish()");}
     if (value >= 0xffffffff)
-      throw new Error(
+      {throw new Error(
         `ue(v) does not support writing values higher than 2^32-1 (received ${value})`,
-      );
+      );}
 
     const codeNum = value + 1;
     const numBits = 32 - Math.clz32(codeNum); // Calculate number of bits needed
@@ -141,7 +141,7 @@ export class BitstreamWriter {
    * @param {number} value - The integer to encode (can be positive or negative)
    */
   se_v(value: number) {
-    if (this.#finished) throw new Error("Attempt to write to bitstream after finish()");
+    if (this.#finished) {throw new Error("Attempt to write to bitstream after finish()");}
 
     if (value === 0) {
       this.ue_v(0);
@@ -156,12 +156,12 @@ export class BitstreamWriter {
    * Completes the bitstream writing, handling any incomplete bytes
    */
   finish() {
-    if (this.#finished) throw new Error("finish() was already called");
+    if (this.#finished) {throw new Error("finish() was already called");}
 
     const bitPosition = this.#bitPos;
     if (bitPosition > 0) {
       if (bitPosition >= 8)
-        throw new Error("Invariant: full byte should have been written already");
+        {throw new Error("Invariant: full byte should have been written already");}
       this.#writeByte();
     }
 
@@ -181,12 +181,12 @@ export class BitstreamWriter {
    * @private
    */
   #writeByte() {
-    if (this.#bytePos >= this.#buffer.length) throw new Error("Write would exceed end of buffer");
+    if (this.#bytePos >= this.#buffer.length) {throw new Error("Write would exceed end of buffer");}
 
     // Check if emulation prevention byte is needed (H.264 start code prevention)
     if (this.#currentByte <= 3 && this.#bytePos >= 2 && this.#window === 0) {
       if (this.#bytePos + 1 >= this.#buffer.length)
-        throw new Error("Write would exceed end of buffer");
+        {throw new Error("Write would exceed end of buffer");}
 
       // Insert emulation prevention byte
       this.#buffer[this.#bytePos] = 3;

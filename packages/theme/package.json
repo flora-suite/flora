@@ -17,7 +17,7 @@
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.0",
     "@fluentui/react-icons": "2.0.302",
-    "@lichtblick/tsconfig": "1.0.0",
+    "@lichtblick/tsconfig": "1.0.2",
     "@mui/icons-material": "6.4.12",
     "@mui/lab": "5.0.0-alpha.176",
     "@mui/material": "6.4.12",

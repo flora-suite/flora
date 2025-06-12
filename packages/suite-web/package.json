@@ -13,7 +13,7 @@
     "@fluentui/react-icons": "2.0.302",
     "@lichtblick/log": "workspace:*",
     "@lichtblick/theme": "workspace:*",
-    "@lichtblick/tsconfig": "1.0.0",
+    "@lichtblick/tsconfig": "1.0.2",
     "@mui/material": "6.4.12",
     "@pmmmwh/react-refresh-webpack-plugin": "0.6.0",
     "@storybook/react": "^8.6.14",

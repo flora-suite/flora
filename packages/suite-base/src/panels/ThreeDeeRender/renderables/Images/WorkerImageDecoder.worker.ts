@@ -6,9 +6,9 @@ import type { RawImage } from "@foxglove/schemas";
 
 import * as Comlink from "@lichtblick/comlink";
 
+import { TransparencyImage } from "./ImageTypes";
 import { decodeRawImage, RawImageOptions } from "./decodeImage";
 import type { Image as RosImage } from "../../ros";
-import { TransparencyImage } from "./ImageTypes";
 
 function decode(
   transparency: TransparencyImage,
