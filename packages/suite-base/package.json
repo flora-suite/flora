@@ -109,7 +109,7 @@
     "chartjs-plugin-datalabels": "2.2.0",
     "chromatic": "11.29.0",
     "crypto-browserify": "3.12.1",
-    "css-loader": "6.11.0",
+    "css-loader": "7.1.2",
     "cytoscape": "3.32.0",
     "cytoscape-dagre": "2.5.0",
     "dompurify": "3.2.6",
