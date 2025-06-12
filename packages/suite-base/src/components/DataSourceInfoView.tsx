@@ -159,7 +159,7 @@ export function DataSourceInfoView({ disableSource }: { disableSource?: boolean 
       if (endTime) {
         const date = formatDate(endTime);
         endTimeRef.current.innerText = !isAbsoluteTime(endTime)
-          ? `${formatTimeRaw(endTime)}`
+          ? formatTimeRaw(endTime)
           : `${date} ${formatTime(endTime)}`;
       } else {
         endTimeRef.current.innerHTML = EmDash;

@@ -2,17 +2,21 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { ImageRenderable, ImageUserData } from "./ImageRenderable";
-import { IRenderer } from "../../IRenderer";
-import { AnyImage } from "./ImageTypes";
 import { CompressedVideo } from "@foxglove/schemas";
-import { Label } from "@lichtblick/three-text";
-import Logger from "@lichtblick/log";
-import { WorkerImageVideoDecoder } from "./WorkerImageVideoDecoder";
-import { HUDItem } from "@lichtblick/suite-base/panels/ThreeDeeRender/HUDItemManager";
-import { toNanoSec } from "@lichtblick/rostime";
-import { H264, H265, getFrameInfo } from "@lichtblick/den/video";
 import * as _ from "lodash-es";
+
+import { H264, H265, getFrameInfo } from "@lichtblick/den/video";
+import Logger from "@lichtblick/log";
+import { toNanoSec } from "@lichtblick/rostime";
+import { HUDItem } from "@lichtblick/suite-base/panels/ThreeDeeRender/HUDItemManager";
+import { Label } from "@lichtblick/three-text";
+
+import { ImageRenderable, ImageUserData } from "./ImageRenderable";
+import { AnyImage } from "./ImageTypes";
+import { WorkerImageVideoDecoder } from "./WorkerImageVideoDecoder";
+import { IRenderer } from "../../IRenderer";
+
+
 
 const log = Logger.getLogger(__filename);
 const ERROR_KEY = "VIDEO_DELAY_ERR_KEY";

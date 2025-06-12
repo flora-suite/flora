@@ -1,9 +1,9 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
+import { Zoom as ZoomPlugin } from "@flora-suite/chartjs-plugin-zoom";
 import { Chart, ChartOptions, Element, InteractionItem, Scale } from "chart.js";
 
-import { Zoom as ZoomPlugin } from "@flora-suite/chartjs-plugin-zoom";
 import { Immutable } from "@lichtblick/suite";
 import { ChartRenderer } from "@lichtblick/suite-base/panels/Plot/ChartRenderer";
 import { DEFAULT_ANNOTATION } from "@lichtblick/suite-base/panels/Plot/constants";

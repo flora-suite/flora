@@ -9,17 +9,17 @@
 
 // Simple helper for file picking when the API is not available
 async function createFileInput(options?: OpenFilePickerOptions): Promise<FileSystemFileHandle[]> {
-  return new Promise((resolve) => {
+  return await new Promise((resolve) => {
     const input = document.createElement("input");
     input.type = "file";
-    if (options?.multiple) input.multiple = true;
+    if (options?.multiple) {input.multiple = true;}
     
     // Handle accept types if provided
     if (options?.types) {
       const acceptedTypes = options.types
         .flatMap((type) => type.accept ? Object.values(type.accept).flat() : [])
         .join(",");
-      if (acceptedTypes) input.accept = acceptedTypes;
+      if (acceptedTypes) {input.accept = acceptedTypes;}
     }
 
     input.onchange = () => {
@@ -42,7 +42,7 @@ async function createFileInput(options?: OpenFilePickerOptions): Promise<FileSys
     };
     
     // Cancel case
-    input.oncancel = () => resolve([]);
+    input.oncancel = () => { resolve([]); };
     
     // Trigger file picker
     input.click();

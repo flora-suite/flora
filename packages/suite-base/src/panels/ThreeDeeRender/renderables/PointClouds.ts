@@ -30,7 +30,6 @@ import {
   getColorConverter,
   colorFieldComputedPrefix,
 } from "./colorMode";
-import { FieldReader, getReader, isSupportedField } from "./pointClouds/fieldReaders";
 import type { AnyRendererSubscription, IRenderer } from "../IRenderer";
 import { BaseUserData, Renderable } from "../Renderable";
 import { PartialMessage, PartialMessageEvent, SceneExtension } from "../SceneExtension";
@@ -51,6 +50,7 @@ import {
 } from "../ros";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose, Pose } from "../transforms";
+import { FieldReader, getReader, isSupportedField } from "./pointClouds/fieldReaders";
 
 type PointCloudFieldReaders = {
   xReader: FieldReader;
@@ -984,6 +984,7 @@ function pointFieldWidth(type: PointFieldType): number {
       return 4;
     case PointFieldType.FLOAT64:
       return 8;
+    case PointFieldType.UNKNOWN:
     default:
       return 0;
   }

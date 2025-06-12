@@ -891,7 +891,7 @@ function makeMultiEntityScene({
     {},
   ) as Record<keyof typeof primitives, any[]>;
   for (const primitiveType of Object.keys(primitives)) {
-    const primitiveArray = primitives[primitiveType as keyof typeof primitives]!;
+    const primitiveArray = primitives[primitiveType as keyof typeof primitives];
     let i = 0;
     for (const primitive of primitiveArray) {
       // Each primitive has it's own entity

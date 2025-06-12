@@ -19,7 +19,7 @@ describe("process", () => {
       expect(mockFn).not.toHaveBeenCalled();
 
       // Wait for microtask to execute
-      await new Promise<void>((resolve) => queueMicrotask(resolve));
+      await new Promise<void>((resolve) => { queueMicrotask(resolve); });
 
       expect(mockFn).toHaveBeenCalledTimes(1);
     });
@@ -32,7 +32,7 @@ describe("process", () => {
 
       process.nextTick(mockFn, arg1, arg2, arg3);
 
-      await new Promise<void>((resolve) => queueMicrotask(resolve));
+      await new Promise<void>((resolve) => { queueMicrotask(resolve); });
 
       expect(mockFn).toHaveBeenCalledWith(arg1, arg2, arg3);
     });
@@ -42,7 +42,7 @@ describe("process", () => {
 
       process.nextTick(mockFn);
 
-      await new Promise<void>((resolve) => queueMicrotask(resolve));
+      await new Promise<void>((resolve) => { queueMicrotask(resolve); });
 
       expect(mockFn).toHaveBeenCalledWith();
     });
@@ -56,7 +56,7 @@ describe("process", () => {
       process.nextTick(mockFn2);
       process.nextTick(mockFn3);
 
-      await new Promise<void>((resolve) => queueMicrotask(resolve));
+      await new Promise<void>((resolve) => { queueMicrotask(resolve); });
 
       expect(mockFn1).toHaveBeenCalledTimes(1);
       expect(mockFn2).toHaveBeenCalledTimes(1);
@@ -70,7 +70,7 @@ describe("process", () => {
       process.nextTick(() => order.push(2));
       process.nextTick(() => order.push(3));
 
-      await new Promise<void>((resolve) => queueMicrotask(resolve));
+      await new Promise<void>((resolve) => { queueMicrotask(resolve); });
 
       expect(order).toEqual([1, 2, 3]);
     });
@@ -88,7 +88,7 @@ describe("process", () => {
       process.nextTick(normalFn);
       process.nextTick(obj.method);
 
-      await new Promise<void>((resolve) => queueMicrotask(resolve));
+      await new Promise<void>((resolve) => { queueMicrotask(resolve); });
 
       expect(arrowFn).toHaveBeenCalledTimes(1);
       expect(normalFn).toHaveBeenCalledTimes(1);
@@ -107,7 +107,7 @@ describe("process", () => {
 
       process.nextTick(mockFn, complexArg);
 
-      await new Promise<void>((resolve) => queueMicrotask(resolve));
+      await new Promise<void>((resolve) => { queueMicrotask(resolve); });
 
       expect(mockFn).toHaveBeenCalledWith(complexArg);
     });
@@ -157,7 +157,7 @@ describe("process", () => {
       expect(mockQueueMicrotask).toHaveBeenCalledTimes(1);
       expect(typeof mockQueueMicrotask.mock.calls[0]![0]).toBe("function");
 
-      await new Promise<void>((resolve) => queueMicrotask(resolve));
+      await new Promise<void>((resolve) => { queueMicrotask(resolve); });
       expect(mockFn).toHaveBeenCalledTimes(1);
 
       global.queueMicrotask = originalQueueMicrotask;

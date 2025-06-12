@@ -15,9 +15,9 @@
 
 import { MessageEvent } from "@lichtblick/suite-base/players/types";
 
-import { addMessages } from "../DiagnosticSummary/hooks/useDiagnostics";
-import { LEVELS } from "../DiagnosticSummary/constants";
 import { DiagnosticStatusArrayMsg, DiagnosticInfo } from "../DiagnosticStatus/types";
+import { LEVELS } from "../DiagnosticSummary/constants";
+import { addMessages } from "../DiagnosticSummary/hooks/useDiagnostics";
 import { computeDiagnosticInfo } from "../DiagnosticSummary/utils/util";
 
 const buildMessageAtLevel = (level: number): MessageEvent<DiagnosticStatusArrayMsg> => ({

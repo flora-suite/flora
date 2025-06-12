@@ -38,7 +38,7 @@ async function main(): Promise<void> {
     }
     for (const item of items) {
       // In reality, sometimes item.location is undefined
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+       
       if (item.location == undefined) {
         info(
           `::error file=${pathFromRepoRoot}::Unused export ${item.exportName} in ${pathFromRepoRoot}`,
