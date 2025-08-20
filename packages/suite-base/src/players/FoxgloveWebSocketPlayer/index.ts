@@ -176,8 +176,11 @@ export default class FoxgloveWebSocketPlayer implements Player {
     this.#client = new FoxgloveClient({
       ws:
         typeof Worker !== "undefined"
-          ? new WorkerSocketAdapter(this.#url, [FoxgloveClient.SUPPORTED_SUBPROTOCOL])
-          : new WebSocket(this.#url, [FoxgloveClient.SUPPORTED_SUBPROTOCOL]),
+          ? new WorkerSocketAdapter(this.#url, [
+              FoxgloveClient.SUPPORTED_SUBPROTOCOL,
+              "foxglove.sdk.v1",
+            ])
+          : new WebSocket(this.#url, [FoxgloveClient.SUPPORTED_SUBPROTOCOL, "foxglove.sdk.v1"]),
     });
 
     this.#client.on("open", () => {
