@@ -319,9 +319,7 @@ export function getMessagePathDataItems(
     topic.schemaName == undefined
       ? { structureType: "message", datatype: "", nextByName: {} }
       : structures[topic.schemaName];
-  if (structure) {
-    traverse(message.message, 0, quoteTopicNameIfNeeded(filledInPath.topicName), structure);
-  }
+  traverse(message.message, 0, quoteTopicNameIfNeeded(filledInPath.topicName), structure);
   return queriedData;
 }
 
