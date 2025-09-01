@@ -3119,9 +3119,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/styled@npm:11.14.0":
-  version: 11.14.0
-  resolution: "@emotion/styled@npm:11.14.0"
+"@emotion/styled@npm:11.14.1":
+  version: 11.14.1
+  resolution: "@emotion/styled@npm:11.14.1"
   dependencies:
     "@babel/runtime": "npm:^7.18.3"
     "@emotion/babel-plugin": "npm:^11.13.5"
@@ -3135,7 +3135,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10c0/20aa5c488e4edecf63659212fc5ba1ccff2d3a66593fc8461de7cd5fe9192a741db357ffcd270a455bd61898d7f37cd5c84b4fd2b7974dade712badf7860ca9c
+  checksum: 10c0/2bbf8451df49c967e41fbcf8111a7f6dafe6757f0cc113f2f6e287206c45ac1d54dc8a95a483b7c0cee8614b8a8d08155bded6453d6721de1f8cc8d5b9216963
   languageName: node
   linkType: hard
 
@@ -4484,7 +4484,7 @@ __metadata:
     "@babel/core": "npm:7.27.4"
     "@emotion/cache": "npm:11.14.0"
     "@emotion/react": "npm:11.14.0"
-    "@emotion/styled": "npm:11.14.0"
+    "@emotion/styled": "npm:11.14.1"
     "@flora-suite/chartjs-plugin-zoom": "npm:1.0.0"
     "@fluentui/react-icons": "npm:2.0.302"
     "@foxglove/schemas": "npm:1.7.2"
@@ -4734,7 +4734,7 @@ __metadata:
   resolution: "@lichtblick/suite-web@workspace:packages/suite-web"
   dependencies:
     "@emotion/react": "npm:11.14.0"
-    "@emotion/styled": "npm:11.14.0"
+    "@emotion/styled": "npm:11.14.1"
     "@fluentui/react-icons": "npm:2.0.302"
     "@lichtblick/log": "workspace:*"
     "@lichtblick/suite-base": "workspace:*"
@@ -4773,7 +4773,7 @@ __metadata:
   resolution: "@lichtblick/theme@workspace:packages/theme"
   dependencies:
     "@emotion/react": "npm:11.14.0"
-    "@emotion/styled": "npm:11.14.0"
+    "@emotion/styled": "npm:11.14.1"
     "@fluentui/react-icons": "npm:2.0.302"
     "@lichtblick/tsconfig": "npm:1.0.2"
     "@mui/icons-material": "npm:6.4.12"

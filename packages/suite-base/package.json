@@ -20,7 +20,7 @@
     "@babel/core": "7.27.4",
     "@emotion/cache": "11.14.0",
     "@emotion/react": "11.14.0",
-    "@emotion/styled": "11.14.0",
+    "@emotion/styled": "11.14.1",
     "@flora-suite/chartjs-plugin-zoom": "1.0.0",
     "@fluentui/react-icons": "2.0.302",
     "@foxglove/schemas": "1.7.2",
