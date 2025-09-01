@@ -4629,7 +4629,7 @@ __metadata:
     react-mosaic-component: "npm:6.1.1"
     react-refresh: "npm:0.17.0"
     react-refresh-typescript: "npm:2.0.10"
-    react-resizable-panels: "npm:0.0.55"
+    react-resizable-panels: "npm:3.0.5"
     react-resize-detector: "npm:10.0.1"
     react-transition-group: "npm:4.4.5"
     react-use: "npm:17.6.0"
@@ -19939,13 +19939,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resizable-panels@npm:0.0.55":
-  version: 0.0.55
-  resolution: "react-resizable-panels@npm:0.0.55"
+"react-resizable-panels@npm:3.0.5":
+  version: 3.0.5
+  resolution: "react-resizable-panels@npm:3.0.5"
   peerDependencies:
-    react: ^16.14.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/cc4950bcb4ab7173f678bb5ffd0e3f98f57a48e908c66180527ebecfabb97968da968d8f539a7d4a1281219dc91ea37861f1ec24df4c74fcf387a5c7b15659cd
+    react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+  checksum: 10c0/c6f18dcd3e24410084a8075ffd17c95940322e4a2a51362a0acd2fd2a875a052eac9b3ee589c41e43b603ac614c4cd1d8196ff6fc5f6a72aad837ddea499f816
   languageName: node
   linkType: hard
 
