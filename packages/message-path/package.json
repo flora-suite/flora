@@ -25,10 +25,10 @@
     "nearley": "2.20.1"
   },
   "devDependencies": {
-    "@babel/core": "7.27.4",
-    "@lichtblick/tsconfig": "1.0.2",
+    "@babel/core": "7.28.4",
+    "@lichtblick/tsconfig": "1.1.0",
     "@types/babel__core": "^7.20.5",
     "@types/nearley": "2.11.5",
-    "typescript": "5.3.3"
+    "typescript": "5.9.2"
   }
 }

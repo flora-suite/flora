@@ -22,12 +22,12 @@
     "prepack": "tsc -b"
   },
   "devDependencies": {
-    "@lichtblick/tsconfig": "1.0.2",
+    "@lichtblick/tsconfig": "1.1.0",
     "@types/protobufjs": "workspace:*",
-    "typescript": "5.3.3"
+    "typescript": "5.9.2"
   },
   "dependencies": {
-    "@foxglove/schemas": "1.7.2",
+    "@foxglove/schemas": "1.8.0",
     "@lichtblick/message-definition": "1.0.0",
     "@lichtblick/omgidl-parser": "1.0.0",
     "@lichtblick/omgidl-serialization": "1.0.0",
@@ -38,7 +38,7 @@
     "@lichtblick/wasm-bz2": "1.0.0",
     "@lichtblick/wasm-lz4": "1.0.0",
     "@lichtblick/wasm-zstd": "1.0.0",
-    "@mcap/core": "2.1.6",
+    "@mcap/core": "2.1.7",
     "@protobufjs/base64": "1.1.2",
     "flatbuffers": "25.2.10",
     "flatbuffers_reflection": "0.0.7",

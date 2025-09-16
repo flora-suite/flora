@@ -21,16 +21,16 @@
     "prepack": "tsc -b"
   },
   "devDependencies": {
-    "@lichtblick/tsconfig": "1.0.2",
-    "@testing-library/dom": "10.4.0",
+    "@lichtblick/tsconfig": "1.1.0",
+    "@testing-library/dom": "10.4.1",
     "@testing-library/react": "16.3.0",
     "@types/foxglove__web": "workspace:*",
     "@types/lodash-es": "^4.17.12",
-    "@types/react": "^18.3.23",
+    "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "typescript": "5.3.3"
+    "typescript": "5.9.2"
   },
   "dependencies": {
     "@lichtblick/log": "workspace:*",
