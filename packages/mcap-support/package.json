@@ -24,7 +24,7 @@
   "devDependencies": {
     "@lichtblick/tsconfig": "1.1.0",
     "@types/protobufjs": "workspace:*",
-    "typescript": "5.9.2"
+    "typescript": "5.3.3"
   },
   "dependencies": {
     "@foxglove/schemas": "1.8.0",

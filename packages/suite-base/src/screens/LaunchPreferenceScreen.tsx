@@ -9,9 +9,9 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
-  Grid,
   Typography,
 } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 import { ReactElement, useState } from "react";
 import { makeStyles } from "tss-react/mui";
 

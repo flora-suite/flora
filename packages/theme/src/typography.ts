@@ -2,15 +2,15 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { TypographyOptions, TypographyStyle } from "@mui/material/styles/createTypography";
+import { TypographyVariantsOptions, TypographyStyle } from "@mui/material/styles/createTypography";
 
-declare module "@mui/material/styles/createTypography" {
-  interface Typography {
+declare module "@mui/material/styles" {
+  interface TypographyVariants {
     fontMonospace: string;
     fontSansSerif: string;
     fontFeatureSettings: string;
   }
-  interface TypographyOptions {
+  interface TypographyVariantsOptions {
     fontMonospace: string;
     fontSansSerif: string;
     fontFeatureSettings: string;
@@ -42,7 +42,7 @@ const subtitleFontStyles: TypographyStyle = {
   fontWeight: 500,
 };
 
-export const typography: TypographyOptions = {
+export const typography: TypographyVariantsOptions = {
   fontMonospace,
   fontSansSerif,
   fontFamily: fontSansSerif,
