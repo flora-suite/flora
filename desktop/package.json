@@ -10,7 +10,7 @@
     "@lichtblick/suite-desktop": "workspace:*",
     "@lichtblick/tsconfig": "1.1.0",
     "@types/ws": "^8.18.1",
-    "electron": "38.1.0",
+    "electron": "38.1.2",
     "playwright": "1.55.0",
     "ws": "8.18.3"
   }

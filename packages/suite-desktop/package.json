@@ -35,7 +35,7 @@
     "builder-util": "26.0.20",
     "clean-webpack-plugin": "4.0.0",
     "dmg-builder": "26.0.20",
-    "electron": "38.1.0",
+    "electron": "38.1.2",
     "electron-builder": "26.0.20",
     "electron-builder-squirrel-windows": "26.0.20",
     "electron-devtools-installer": "4.0.0",
@@ -60,7 +60,7 @@
     "storybook": "8.6.14",
     "tinycolor2": "1.6.0",
     "tss-react": "4.9.19",
-    "typescript": "5.9.2",
+    "typescript": "5.3.3",
     "utif": "3.1.0",
     "webpack": "5.101.3",
     "webpack-dev-server": "5.2.2"
