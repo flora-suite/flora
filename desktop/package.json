@@ -8,10 +8,10 @@
     "@lichtblick/log": "workspace:*",
     "@lichtblick/suite-base": "workspace:*",
     "@lichtblick/suite-desktop": "workspace:*",
-    "@lichtblick/tsconfig": "1.1.0",
+    "@lichtblick/tsconfig": "1.0.2",
     "@types/ws": "^8.18.1",
-    "electron": "38.1.2",
-    "playwright": "1.55.0",
+    "electron": "38.2.2",
+    "playwright": "1.56.0",
     "ws": "8.18.3"
   }
 }
