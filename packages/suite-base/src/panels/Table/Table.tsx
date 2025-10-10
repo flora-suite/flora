@@ -199,7 +199,7 @@ function getColumnsFromObject(val: CellValue, accessorPath: string) {
       header: "",
       cell: Expander,
     });
-    columns.unshift(expandColumn);
+    columns.unshift(expandColumn as never);
   }
 
   return columns;
@@ -232,7 +232,7 @@ export default function Table({
       return [];
     }
 
-    const maybeMessage = Array.isArray(value) ? value[0] ?? {} : value;
+    const maybeMessage = Array.isArray(value) ? (value[0] ?? {}) : value;
 
     // Strong assumption about structure of data.
     return getColumnsFromObject(maybeMessage as CellValue, accessorPath);
