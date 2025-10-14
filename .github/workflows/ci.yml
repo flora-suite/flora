@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: 16.17
       - run: corepack enable yarn
@@ -71,7 +71,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: 16.17
       - run: corepack enable yarn
