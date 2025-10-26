@@ -23,7 +23,7 @@ Flora is an integrated visualization and diagnosis tool for robotics, available 
 ### macos
 
 ```shell
-brow tab flora-suite/homebrew-flora
+brew tap flora-suite/homebrew-flora
 brew install flora
 ```
 
