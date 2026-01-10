@@ -3,8 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import { PopoverPosition, PopoverReference } from "@mui/material";
-import { Meta, StoryObj } from "@storybook/react";
-import { userEvent, within } from "@storybook/testing-library";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import * as _ from "lodash-es";
 
 import PlayerSelectionContext, {
@@ -22,7 +21,6 @@ type StoryArgs = {
   anchorPosition?: PopoverPosition;
   disablePortal?: boolean;
   open: boolean;
-  testId?: string;
 };
 
 export default {
@@ -36,7 +34,7 @@ export default {
     handleClose: _.noop,
   },
   decorators: [
-    (Story, { args: { testId: _testId, ...args } }): JSX.Element => (
+    (Story: StoryFn, { args }: { args: StoryArgs }): React.JSX.Element => (
       <MockCurrentLayoutProvider>
         <WorkspaceContextProvider>
           <PlayerSelectionContext.Provider value={playerSelection}>
@@ -46,28 +44,27 @@ export default {
       </MockCurrentLayoutProvider>
     ),
   ],
-  play: async ({ canvasElement, args }) => {
-    if (!args.testId) {
-      return;
-    }
-    const canvas = within(canvasElement);
-    await userEvent.hover(await canvas.findByTestId(args.testId));
-  },
 } satisfies Meta<StoryArgs>;
 
 // Connection
 const playerSelection: PlayerSelection = {
-  selectSource: () => { },
-  selectRecent: () => { },
+  selectSource: () => {},
+  selectRecent: () => {},
   recentSources: [
     // prettier-ignore
-    { id: "1111", title: "NuScenes-v1.0-mini-scene-0655-reallllllllly-long-name-8829908290831091.bag", },
+    { id: "1111", title: "NuScenes-v1.0-mini-scene-0655-reallllllllly-long-name-8829908290831091.bag" },
     { id: "2222", title: "http://localhost:11311", label: "ROS 1" },
     { id: "3333", title: "ws://localhost:9090/", label: "Rosbridge (ROS 1 & 2)" },
     { id: "4444", title: "ws://localhost:8765", label: "Foxglove WebSocket" },
     { id: "5555", title: "2369", label: "Velodyne Lidar" },
-    { id: "6666", title: "THIS ITEM SHOULD BE HIDDEN IN STORYBOOKS", label: "!!!!!!!!!!!!" },
   ],
+  availableSources: [],
+};
+
+const playerSelectionEmpty: PlayerSelection = {
+  selectSource: () => {},
+  selectRecent: () => {},
+  recentSources: [],
   availableSources: [],
 };
 
@@ -75,37 +72,41 @@ type Story = StoryObj<StoryArgs>;
 
 export const Default: Story = {};
 
-export const FileMenuDark: Story = {
-  args: { testId: "menu-item-open-connection" },
+export const Dark: Story = {
   parameters: { colorScheme: "dark" },
 };
 
-export const FileMenuDarkChinese: Story = {
-  args: { testId: "menu-item-open-connection" },
+export const DarkChinese: Story = {
   parameters: { colorScheme: "dark", forceLanguage: "zh" },
 };
 
-export const FileMenuDarkJapanese: Story = {
-  args: { testId: "menu-item-open-connection" },
+export const DarkJapanese: Story = {
   parameters: { colorScheme: "dark", forceLanguage: "ja" },
 };
 
-export const FileMenuLight: Story = {
-  args: { testId: "menu-item-open-connection" },
+export const Light: Story = {
   parameters: { colorScheme: "light" },
 };
 
-export const FileMenuLightChinese: Story = {
-  args: { testId: "menu-item-open-connection" },
+export const LightChinese: Story = {
   parameters: { colorScheme: "light", forceLanguage: "zh" },
 };
 
-export const FileMenuLightJapanese: Story = {
-  args: { testId: "menu-item-open-connection" },
+export const LightJapanese: Story = {
   parameters: { colorScheme: "light", forceLanguage: "ja" },
 };
 
-export const ViewMenuDark: Story = {
-  args: { testId: "menu-item-open" },
+export const NoRecentSources: Story = {
+  decorators: [
+    (Story: StoryFn, { args }: { args: StoryArgs }): React.JSX.Element => (
+      <MockCurrentLayoutProvider>
+        <WorkspaceContextProvider>
+          <PlayerSelectionContext.Provider value={playerSelectionEmpty}>
+            <Story {...args} />
+          </PlayerSelectionContext.Provider>
+        </WorkspaceContextProvider>
+      </MockCurrentLayoutProvider>
+    ),
+  ],
   parameters: { colorScheme: "dark" },
 };

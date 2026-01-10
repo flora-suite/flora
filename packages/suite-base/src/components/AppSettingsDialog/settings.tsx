@@ -292,7 +292,7 @@ export function MessageFramerate(): React.ReactElement {
       <Select
         value={messageRate ?? 60}
         fullWidth
-        onChange={(event) => void setMessageRate(event.target.value as number)}
+        onChange={(event) => void setMessageRate(event.target.value)}
       >
         {options.map((option) => (
           <MenuItem key={option.key} value={option.key}>
@@ -357,7 +357,7 @@ export function LanguageSettings(): React.ReactElement {
   );
   const onChangeLanguage = useCallback(
     (event: SelectChangeEvent<Language>) => {
-      const lang = event.target.value as Language;
+      const lang = event.target.value;
       void setSelectedLanguage(lang);
       i18n.changeLanguage(lang).catch((error) => {
         console.error("Failed to switch languages", error);
