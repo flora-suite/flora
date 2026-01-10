@@ -19,6 +19,7 @@ import ProblemsContextProvider from "@lichtblick/suite-base/providers/ProblemsCo
 import { StudioLogsSettingsProvider } from "@lichtblick/suite-base/providers/StudioLogsSettingsProvider";
 import TimelineInteractionStateProvider from "@lichtblick/suite-base/providers/TimelineInteractionStateProvider";
 import UserProfileLocalStorageProvider from "@lichtblick/suite-base/providers/UserProfileLocalStorageProvider";
+import WorkspaceContextProvider from "@lichtblick/suite-base/providers/WorkspaceContextProvider";
 
 import Workspace from "./Workspace";
 import DocumentTitleAdapter from "./components/DocumentTitleAdapter";
@@ -113,7 +114,7 @@ export function StudioApp(): JSX.Element {
             <PanelCatalogProvider>
               <BrowserRouter>
                 <Routes>
-                  <Route index element={<Dashboard />} />
+                  <Route index element={<WorkspaceContextProvider><Dashboard /></WorkspaceContextProvider>} />
                   <Route path="/view" element={<Workspace
                     deepLinks={deepLinks}
                     appBarLeftInset={appBarLeftInset}

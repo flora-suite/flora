@@ -160,7 +160,7 @@ const selectHasCurrentLayout = (state: LayoutState) => state.selectedLayout != u
 const selectLeftSidebarOpen = (store: WorkspaceContextStore) => store.sidebars.left.open;
 const selectRightSidebarOpen = (store: WorkspaceContextStore) => store.sidebars.right.open;
 
-export function AppBar(props: AppBarProps): JSX.Element {
+export function AppBar(props: AppBarProps): React.JSX.Element {
   const {
     debugDragRegion,
     isMaximized,
@@ -340,21 +340,61 @@ export function AppBar(props: AppBarProps): JSX.Element {
   );
 }
 
-export function DashboardAppBar({ children }: { children?: ReactElement }): JSX.Element {
-  const { classes } = useStyles({});
-  return (<>
-    <AppBarContainer onDoubleClick={() => { }} leftInset={0}>
-      <div className={classes.toolbar}>
-        <div className={classes.start}>
-        </div>
+export function DashboardAppBar({ children }: { children?: ReactElement }): React.JSX.Element {
+  const { classes, cx } = useStyles({});
+  const { t } = useTranslation("appBar");
 
-        <div className={classes.middle}>
-          {children}
-        </div>
+  const [userAnchorEl, setUserAnchorEl] = useState<undefined | HTMLElement>(undefined);
 
-        <div className={classes.end}>
+  const userMenuOpen = Boolean(userAnchorEl);
+
+  return (
+    <>
+      <AppBarContainer onDoubleClick={() => {}} leftInset={0}>
+        <div className={classes.toolbar}>
+          <div className={classes.start}>
+            <div className={classes.startInner}>
+              <div className={classes.logo}>
+                <FloraLogo fontSize="inherit" color="inherit" />
+              </div>
+            </div>
+          </div>
+
+          <div className={classes.middle}>{children}</div>
+
+          <div className={classes.end}>
+            <div className={classes.endInner}>
+              <Tooltip classes={{ tooltip: classes.tooltip }} title={t("profile")} arrow={false}>
+                <IconButton
+                  className={cx(classes.iconButton, { "Mui-selected": userMenuOpen })}
+                  aria-label="User profile menu button"
+                  color="inherit"
+                  id="user-button"
+                  data-tourid="user-button"
+                  aria-controls={userMenuOpen ? "user-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={userMenuOpen ? "true" : undefined}
+                  onClick={(event) => {
+                    setUserAnchorEl(event.currentTarget);
+                  }}
+                  data-testid="user-button"
+                >
+                  <Avatar className={classes.avatar} variant="rounded">
+                    <SettingsApplicationsIcon />
+                  </Avatar>
+                </IconButton>
+              </Tooltip>
+            </div>
+          </div>
         </div>
-      </div>
-    </AppBarContainer>
-  </>);
+      </AppBarContainer>
+      <SettingsMenu
+        anchorEl={userAnchorEl}
+        open={userMenuOpen}
+        handleClose={() => {
+          setUserAnchorEl(undefined);
+        }}
+      />
+    </>
+  );
 }

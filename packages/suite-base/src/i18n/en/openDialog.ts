@@ -3,6 +3,44 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 export const openDialog = {
+  // Dashboard sidebar
+  openDataSources: "Open data sources",
+  browse: "Browse",
+  dashboard: "Dashboard",
+  devices: "Devices",
+  recordings: "Recordings",
+  events: "Events",
+  timeline: "Timeline",
+  layouts: "Layouts",
+
+  // Dashboard cards
+  inviteMembers: "Invite members",
+  inviteMembersDescription: "Invite members to join your organization",
+  uploadLocalFile: "Upload local file",
+  uploadLocalFileDescription: "Store and share data with your team",
+
+  // Recently viewed
+  recentlyViewed: "Recently viewed",
+  name: "Name",
+  noRecentSources: "No recent data sources",
+
+  // Resources
+  resources: "Resources",
+  exploreExampleDatasets: "Explore example datasets",
+  exploreExampleDatasetsDescription: "Not sure where to start? Explore and visualize a variety of sample datasets to see how Flora can enrich your robotics development workflows.",
+  visualizeExampleData: "Visualize example data",
+  whatIsFlora: "What is Flora?",
+  whatIsFloraDescription: "Flora helps robotics teams explore, collaborate on, and make sense of their robots' data - for more intelligent iteration and accelerated development.",
+  readTheDocs: "Read the docs",
+  gettingStartedWithRos2: "Getting started with ROS 2",
+  gettingStartedWithRos2Description: "Load local and remote MCAP files containing ROS 2 data, or connect directly to a live ROS 2 stack.",
+  writingDataWithSchemas: "Writing data with Flora schemas",
+  writingDataWithSchemasDescription: "Flora often requires incoming messages to conform to specific structures to visualize them properly. Using Flora schemas helps you take full advantage of the platform's built-in visualizations.",
+
+  // Upgrade prompt
+  upgradeYourPlan: "Upgrade your plan",
+  upgradeDescription: "to remove limits and access powerful features like Flora Agent, webhooks, and more.",
+
   canBeShared: "Share data files, visualization layouts, and custom extensions with teammates",
   collaborateTitle: "Accelerate development with Flora Data Platform",
   convenientWebInterface:
@@ -23,7 +61,7 @@ export const openDialog = {
   openConnection: "Open connection",
   openConnectionDescription: "Connect to a live robot or server.",
   openDataSource: "Open data source",
-  openLocalFiles: "Open local file(s)...",
+  openLocalFiles: "Open local file(s)",
   openLocalFileDescription: "Visualize data directly from your local filesystem.",
   openUrl: "Upload and share data",
   openUrlDescription: "Use Foxglove Data Platform to share data with your team.",
