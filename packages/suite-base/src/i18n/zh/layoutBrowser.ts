@@ -18,4 +18,6 @@ export const layoutBrowser = {
   shareWithTeam: "与团队分享…",
   export: "导出…",
   addANewLayoutToGetStartedWithFlora: "添加新布局以开始使用Flora！",
+  cloudSynced: "已同步到云端",
+  localOnly: "仅本地",
 };

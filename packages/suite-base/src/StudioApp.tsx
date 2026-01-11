@@ -83,10 +83,6 @@ export function StudioApp(): JSX.Element {
     /* eslint-enable react/jsx-key */
   ];
 
-  if (extraProviders) {
-    providers.unshift(...extraProviders);
-  }
-
   if (nativeAppMenu) {
     providers.push(<NativeAppMenuContext.Provider value={nativeAppMenu} />);
   }
@@ -108,6 +104,12 @@ export function StudioApp(): JSX.Element {
   const layoutStorage = useMemo(() => new IdbLayoutStorage(), []);
 
   providers.unshift(<LayoutStorageContext.Provider value={layoutStorage} />);
+
+  // extraProviders (ApiClientContext, AuthProvider, RemoteLayoutStorageProvider) must be
+  // at the outermost level so they are available to LayoutManagerProvider
+  if (extraProviders) {
+    providers.unshift(...extraProviders);
+  }
   const MaybeLaunchPreference = enableLaunchPreferenceScreen === true ? LaunchPreference : Fragment;
 
   useEffect(() => {

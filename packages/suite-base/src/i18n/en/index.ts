@@ -4,6 +4,7 @@
 
 export * from "./addPanel";
 export * from "./appBar";
+export * from "./auth";
 export * from "./appSettings";
 export * from "./dataSourceInfo";
 export * from "./desktopWindow";

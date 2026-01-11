@@ -6,6 +6,7 @@ import { TypeOptions } from "i18next";
 
 export const appBar: Partial<TypeOptions["resources"]["appBar"]> = {
   about: "情報",
+  account: "アカウント",
   addPanel: "パネルを追加",
   documentation: "ドキュメンテーション",
   exploreSampleData: "サンプルデータを探索する",

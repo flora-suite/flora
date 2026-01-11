@@ -50,3 +50,24 @@ export { makeWorkspaceContextInitialState } from "./providers/WorkspaceContextPr
 export type { AppBarProps } from "./components/AppBar";
 export { IdbExtensionLoader } from "./services/IdbExtensionLoader";
 export { default as BasicBuilder } from "./testing/builders/BasicBuilder";
+
+// Authentication exports
+export { default as AuthContext, useAuth, useRequireAuth } from "./context/AuthContext";
+export type {
+  AuthUser,
+  AuthState,
+  LoginCredentials,
+  RegisterData,
+  IAuthContext,
+} from "./context/AuthContext";
+export { ApiClient, LocalStorageTokenStorage, ApiError } from "./services/ApiClient";
+export type { ITokenStorage, ApiErrorResponse } from "./services/ApiClient";
+export { AuthService } from "./services/AuthService";
+export type { IAuthService } from "./services/AuthService";
+export { default as AuthProvider } from "./providers/AuthProvider";
+export { AuthDialog } from "./components/AuthDialog";
+export { createAuthService, createAuthServices, getFloraServerUrl } from "./services/createAuthService";
+export type { CreateAuthServiceOptions, AuthServicesResult } from "./services/createAuthService";
+export { default as ApiClientContext, useApiClient } from "./context/ApiClientContext";
+export { default as RemoteLayoutStorageProvider } from "./providers/RemoteLayoutStorageProvider";
+export { FloraRemoteLayoutStorage } from "./services/FloraRemoteLayoutStorage";

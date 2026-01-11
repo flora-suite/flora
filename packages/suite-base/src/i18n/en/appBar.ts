@@ -4,6 +4,7 @@
 
 export const appBar = {
   about: "About",
+  account: "Account",
   addPanel: "Add panel",
   documentation: "Documentation",
   exploreSampleData: "Explore sample data",

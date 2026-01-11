@@ -18,4 +18,6 @@ export const layoutBrowser = {
   shareWithTeam: "Share with team…",
   export: "Export…",
   addANewLayoutToGetStartedWithFlora: "Add a new layout to get started with Flora!",
+  cloudSynced: "Synced to cloud",
+  localOnly: "Local only",
 };

@@ -10,7 +10,7 @@ import {
   PanelRight24Regular,
   SlideAdd24Regular,
 } from "@fluentui/react-icons";
-import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import { Avatar, IconButton, Tooltip } from "@mui/material";
 import { ReactElement, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,6 +22,7 @@ import { FloraLogo } from "@lichtblick/suite-base/components/FloraLogo";
 import { MemoryUseIndicator } from "@lichtblick/suite-base/components/MemoryUseIndicator";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { useAppContext } from "@lichtblick/suite-base/context/AppContext";
+import { useAuth } from "@lichtblick/suite-base/context/AuthContext";
 import {
   LayoutState,
   useCurrentLayoutSelector,
@@ -187,6 +188,8 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
 
   const { sidebarActions } = useWorkspaceActions();
 
+  const { isAuthenticated, user } = useAuth();
+
   const [appMenuEl, setAppMenuEl] = useState<undefined | HTMLElement>(undefined);
   const [userAnchorEl, setUserAnchorEl] = useState<undefined | HTMLElement>(undefined);
   const [panelAnchorEl, setPanelAnchorEl] = useState<undefined | HTMLElement>(undefined);
@@ -289,7 +292,11 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
                   {rightSidebarOpen ? <PanelRight24Filled /> : <PanelRight24Regular />}
                 </AppBarIconButton>
               </Stack>
-              <Tooltip classes={{ tooltip: classes.tooltip }} title="Profile" arrow={false}>
+              <Tooltip
+                classes={{ tooltip: classes.tooltip }}
+                title={isAuthenticated ? t("account") : t("profile")}
+                arrow={false}
+              >
                 <IconButton
                   className={cx(classes.iconButton, { "Mui-selected": userMenuOpen })}
                   aria-label="User profile menu button"
@@ -304,9 +311,15 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
                   }}
                   data-testid="user-button"
                 >
-                  <Avatar className={classes.avatar} variant="rounded">
-                    <SettingsApplicationsIcon />
-                  </Avatar>
+                  {isAuthenticated && user ? (
+                    <Avatar className={classes.avatar} variant="rounded" src={user.avatar}>
+                      {!user.avatar && (user.name?.[0] ?? user.email[0])?.toUpperCase()}
+                    </Avatar>
+                  ) : (
+                    <Avatar className={classes.avatar} variant="rounded">
+                      <PersonOutlineIcon />
+                    </Avatar>
+                  )}
                 </IconButton>
               </Tooltip>
               {showCustomWindowControls && (
@@ -344,6 +357,8 @@ export function DashboardAppBar({ children }: { children?: ReactElement }): Reac
   const { classes, cx } = useStyles({});
   const { t } = useTranslation("appBar");
 
+  const { isAuthenticated, user } = useAuth();
+
   const [userAnchorEl, setUserAnchorEl] = useState<undefined | HTMLElement>(undefined);
 
   const userMenuOpen = Boolean(userAnchorEl);
@@ -364,7 +379,11 @@ export function DashboardAppBar({ children }: { children?: ReactElement }): Reac
 
           <div className={classes.end}>
             <div className={classes.endInner}>
-              <Tooltip classes={{ tooltip: classes.tooltip }} title={t("profile")} arrow={false}>
+              <Tooltip
+                classes={{ tooltip: classes.tooltip }}
+                title={isAuthenticated ? t("account") : t("profile")}
+                arrow={false}
+              >
                 <IconButton
                   className={cx(classes.iconButton, { "Mui-selected": userMenuOpen })}
                   aria-label="User profile menu button"
@@ -379,9 +398,15 @@ export function DashboardAppBar({ children }: { children?: ReactElement }): Reac
                   }}
                   data-testid="user-button"
                 >
-                  <Avatar className={classes.avatar} variant="rounded">
-                    <SettingsApplicationsIcon />
-                  </Avatar>
+                  {isAuthenticated && user ? (
+                    <Avatar className={classes.avatar} variant="rounded" src={user.avatar}>
+                      {!user.avatar && (user.name?.[0] ?? user.email[0])?.toUpperCase()}
+                    </Avatar>
+                  ) : (
+                    <Avatar className={classes.avatar} variant="rounded">
+                      <PersonOutlineIcon />
+                    </Avatar>
+                  )}
                 </IconButton>
               </Tooltip>
             </div>

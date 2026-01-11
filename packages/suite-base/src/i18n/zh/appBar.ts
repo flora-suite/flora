@@ -6,6 +6,7 @@ import { TypeOptions } from "i18next";
 
 export const appBar: Partial<TypeOptions["resources"]["appBar"]> = {
   about: "关于",
+  account: "账户",
   addPanel: "添加面板",
   documentation: "文档",
   exploreSampleData: "探索样本数据",

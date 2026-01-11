@@ -5,13 +5,17 @@
 import { useMemo, useState } from "react";
 
 import {
+  ApiClientContext,
   AppBarProps,
   AppSetting,
+  AuthProvider,
+  createAuthServices,
   FoxgloveWebSocketDataSourceFactory,
   IDataSourceFactory,
   IdbExtensionLoader,
   McapLocalDataSourceFactory,
   RemoteDataSourceFactory,
+  RemoteLayoutStorageProvider,
   Ros1LocalBagDataSourceFactory,
   Ros2LocalBagDataSourceFactory,
   RosbridgeDataSourceFactory,
@@ -45,6 +49,8 @@ export function WebRoot(props: {
     new IdbExtensionLoader("local"),
   ]);
 
+  const [{ authService, apiClient }] = useState(() => createAuthServices());
+
   const dataSources = useMemo(() => {
     const sources = [
       new Ros1LocalBagDataSourceFactory(),
@@ -60,6 +66,23 @@ export function WebRoot(props: {
     return props.dataSources ?? sources;
   }, [props.dataSources]);
 
+  // Combine auth provider with any extra providers
+  // Note: MultiProvider expects a flat list of providers, each will wrap the children
+  // Do NOT nest providers in the array - each element should be a single provider
+  const allProviders = useMemo(() => {
+    const providers: JSX.Element[] = [
+      /* eslint-disable react/jsx-key */
+      <ApiClientContext.Provider value={apiClient} />,
+      <AuthProvider authService={authService} />,
+      <RemoteLayoutStorageProvider />,
+      /* eslint-enable react/jsx-key */
+    ];
+    if (props.extraProviders) {
+      providers.push(...props.extraProviders);
+    }
+    return providers;
+  }, [authService, apiClient, props.extraProviders]);
+
   return (
     <SharedRoot
       enableLaunchPreferenceScreen
@@ -68,7 +91,7 @@ export function WebRoot(props: {
       appConfiguration={appConfiguration}
       extensionLoaders={extensionLoaders}
       enableGlobalCss
-      extraProviders={props.extraProviders}
+      extraProviders={allProviders}
       AppBarComponent={props.AppBarComponent}
     >
       {props.children}
