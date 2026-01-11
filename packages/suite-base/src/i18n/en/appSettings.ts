@@ -6,6 +6,7 @@ export const appSettings = {
   about: "About",
   advanced: "Advanced",
   askEachTime: "Ask each time",
+  backToDashboard: "Back to dashboard",
   colorScheme: "Color scheme",
   dark: "Dark",
   debugModeDescription: "Enable panels and features for debugging Foxglove",
@@ -31,5 +32,6 @@ export const appSettings = {
   ros: "ROS",
   settings: "Settings",
   timestampFormat: "Timestamp format",
+  userSettings: "User Settings",
   webApp: "Web app",
 };

@@ -5,10 +5,8 @@
 import { Divider, Menu, MenuItem, PaperProps, PopoverPosition, PopoverReference } from "@mui/material";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { makeStyles } from "tss-react/mui";
-
-import { AppSettingsTab } from "@lichtblick/suite-base/components/AppSettingsDialog/AppSettingsDialog";
-import { useWorkspaceActions } from "@lichtblick/suite-base/context/Workspace/useWorkspaceActions";
 
 const useStyles = makeStyles()({
   menuList: {
@@ -35,17 +33,15 @@ export function SettingsMenu({
 }: SettingsMenuProps): JSX.Element {
   const { classes } = useStyles();
   const { t } = useTranslation("appBar");
-
-  const { dialogActions } = useWorkspaceActions();
+  const navigate = useNavigate();
 
   const onSettingsClick = useCallback(
-    (tab?: AppSettingsTab) => {
-      dialogActions.preferences.open(tab);
+    (tab?: string) => {
+      const path = tab ? `/settings/${tab}` : "/settings";
+      void navigate(path);
     },
-    [dialogActions.preferences],
+    [navigate],
   );
-
-
 
   const onDocsClick = useCallback(() => {
     window.open("https://flora.fan/docs", "_blank");
