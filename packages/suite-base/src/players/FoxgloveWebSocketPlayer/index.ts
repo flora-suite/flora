@@ -494,7 +494,7 @@ export default class FoxgloveWebSocketPlayer implements Player {
       this.#emitState();
     });
 
-    this.#client.on("message", ({ subscriptionId, data }) => {
+    this.#client.on("message", ({ subscriptionId, data, timestamp }) => {
       const chanInfo = this.#resolvedSubscriptionsById.get(subscriptionId);
       if (!chanInfo) {
         const wasRecentlyCanceled = this.#recentlyCanceledSubscriptions.has(subscriptionId);
@@ -525,6 +525,7 @@ export default class FoxgloveWebSocketPlayer implements Player {
         this.#parsedMessages.push({
           topic,
           receiveTime,
+          publishTime: fromNanoSec(timestamp),
           message: deserializedMessage,
           sizeInBytes,
           schemaName: chanInfo.channel.schemaName,

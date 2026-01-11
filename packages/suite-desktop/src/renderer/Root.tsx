@@ -5,8 +5,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
+  ApiClientContext,
   App,
   AppSetting,
+  AuthProvider,
+  createAuthServices,
   FoxgloveWebSocketDataSourceFactory,
   IAppConfiguration,
   IDataSourceFactory,
@@ -14,6 +17,7 @@ import {
   McapLocalDataSourceFactory,
   OsContext,
   RemoteDataSourceFactory,
+  RemoteLayoutStorageProvider,
   Ros1LocalBagDataSourceFactory,
   Ros1SocketDataSourceFactory,
   Ros2LocalBagDataSourceFactory,
@@ -74,6 +78,8 @@ export default function Root(props: RootProps): React.JSX.Element {
   ]);
 
   const [layoutLoaders] = useState(() => [new DesktopLayoutLoader(desktopBridge)]);
+
+  const [{ authService, apiClient }] = useState(() => createAuthServices());
 
   const nativeAppMenu = useMemo(() => new NativeAppMenu(menuBridge), []);
   const nativeWindow = useMemo(() => new NativeWindow(desktopBridge), []);
@@ -147,6 +153,23 @@ export default function Root(props: RootProps): React.JSX.Element {
     };
   }, []);
 
+  // Combine auth provider with any extra providers
+  // Note: MultiProvider expects a flat list of providers, each will wrap the children
+  // Do NOT nest providers in the array - each element should be a single provider
+  const allProviders = useMemo(() => {
+    const providers: JSX.Element[] = [
+      /* eslint-disable react/jsx-key */
+      <ApiClientContext.Provider value={apiClient} />,
+      <AuthProvider authService={authService} />,
+      <RemoteLayoutStorageProvider />,
+      /* eslint-enable react/jsx-key */
+    ];
+    if (extraProviders) {
+      providers.push(...extraProviders);
+    }
+    return providers;
+  }, [authService, apiClient, extraProviders]);
+
   return (
     <App
       appParameters={appParameters}
@@ -167,7 +190,7 @@ export default function Root(props: RootProps): React.JSX.Element {
       onMaximizeWindow={onMaximizeWindow}
       onUnmaximizeWindow={onUnmaximizeWindow}
       onCloseWindow={onCloseWindow}
-      extraProviders={extraProviders}
+      extraProviders={allProviders}
     />
   );
 }

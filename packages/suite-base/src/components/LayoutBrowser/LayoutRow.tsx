@@ -5,6 +5,8 @@
 /* eslint-disable @foxglove/no-restricted-imports */
 
 
+import CloudDoneIcon from "@mui/icons-material/CloudDone";
+import CloudOffIcon from "@mui/icons-material/CloudOff";
 import ErrorIcon from "@mui/icons-material/Error";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
@@ -17,6 +19,7 @@ import {
   MenuItem,
   SvgIcon,
   TextField,
+  Tooltip,
   Typography,
   styled as muiStyled,
 } from "@mui/material";
@@ -457,9 +460,28 @@ export default React.memo(function LayoutRow({
             variant="inherit"
             color="inherit"
             noWrap
-            style={{ display: editingName ? "none" : "block" }}
+            style={{
+              display: editingName ? "none" : "flex",
+              alignItems: "center",
+              gap: 4,
+            }}
           >
             {layout.name}
+            {layout.syncInfo != undefined && layout.syncInfo.status !== "new" ? (
+              <Tooltip title={t("cloudSynced")} placement="right">
+                <CloudDoneIcon
+                  sx={{ fontSize: 14, opacity: 0.6, flexShrink: 0 }}
+                  color="primary"
+                />
+              </Tooltip>
+            ) : (
+              <Tooltip title={t("localOnly")} placement="right">
+                <CloudOffIcon
+                  sx={{ fontSize: 14, opacity: 0.4, flexShrink: 0 }}
+                  color="disabled"
+                />
+              </Tooltip>
+            )}
           </Typography>
         </ListItemText>
       </ListItemButton>
