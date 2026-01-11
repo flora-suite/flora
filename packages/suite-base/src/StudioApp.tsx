@@ -7,12 +7,25 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { BrowserRouter, Routes, Route } from "react-router";
 
-import { Dashboard } from "@lichtblick/suite-base/Dashboard";
 import { IdbLayoutStorage } from "@lichtblick/suite-base/IdbLayoutStorage";
 import LayoutStorageContext from "@lichtblick/suite-base/context/LayoutStorageContext";
 import NativeAppMenuContext from "@lichtblick/suite-base/context/NativeAppMenuContext";
 import NativeWindowContext from "@lichtblick/suite-base/context/NativeWindowContext";
 import { useSharedRootContext } from "@lichtblick/suite-base/context/SharedRootContext";
+import { DashboardLayout, SettingsLayout } from "@lichtblick/suite-base/layouts";
+import {
+  DashboardPage,
+  DevicesPage,
+  DeviceDetailPage,
+  EventsPage,
+  LayoutsPage,
+  RecordingsPage,
+  GeneralSettings,
+  ExtensionsSettingsPage,
+  ExperimentalSettings,
+  AboutSettings,
+  TimelinePage,
+} from "@lichtblick/suite-base/pages";
 import EventsProvider from "@lichtblick/suite-base/providers/EventsProvider";
 import LayoutManagerProvider from "@lichtblick/suite-base/providers/LayoutManagerProvider";
 import ProblemsContextProvider from "@lichtblick/suite-base/providers/ProblemsContextProvider";
@@ -114,8 +127,23 @@ export function StudioApp(): JSX.Element {
             <PanelCatalogProvider>
               <BrowserRouter>
                 <Routes>
-                  <Route index element={<WorkspaceContextProvider><Dashboard /></WorkspaceContextProvider>} />
-                  <Route path="/view" element={<Workspace
+                  <Route element={<WorkspaceContextProvider><DashboardLayout /></WorkspaceContextProvider>}>
+                    <Route index element={<DashboardPage />} />
+                    <Route path="/devices" element={<DevicesPage />} />
+                    <Route path="/devices/:deviceId" element={<DeviceDetailPage />} />
+                    <Route path="/recordings" element={<RecordingsPage />} />
+                    <Route path="/events" element={<EventsPage />} />
+                    <Route path="/timeline" element={<TimelinePage />} />
+                    <Route path="/layouts" element={<LayoutsPage />} />
+                  </Route>
+                  <Route element={<WorkspaceContextProvider><SettingsLayout /></WorkspaceContextProvider>}>
+                    <Route path="/settings" element={<GeneralSettings />} />
+                    <Route path="/settings/general" element={<GeneralSettings />} />
+                    <Route path="/settings/extensions" element={<ExtensionsSettingsPage />} />
+                    <Route path="/settings/experimental" element={<ExperimentalSettings />} />
+                    <Route path="/settings/about" element={<AboutSettings />} />
+                  </Route>
+                  <Route path="/view" element={<WorkspaceContextProvider><Workspace
                     deepLinks={deepLinks}
                     appBarLeftInset={appBarLeftInset}
                     onAppBarDoubleClick={onAppBarDoubleClick}
@@ -127,7 +155,7 @@ export function StudioApp(): JSX.Element {
                     onUnmaximizeWindow={customWindowControlProps?.onUnmaximizeWindow}
                     onCloseWindow={customWindowControlProps?.onCloseWindow}
                     AppBarComponent={AppBarComponent}
-                  />} />
+                  /></WorkspaceContextProvider>} />
                 </Routes>
               </BrowserRouter>
             </PanelCatalogProvider>

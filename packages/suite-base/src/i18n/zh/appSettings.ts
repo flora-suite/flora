@@ -8,6 +8,7 @@ export const appSettings: Partial<TypeOptions["resources"]["appSettings"]> = {
   about: "关于",
   advanced: "高级",
   askEachTime: "每次询问",
+  backToDashboard: "返回控制面板",
   colorScheme: "配色方案",
   dark: "暗色",
   debugModeDescription: "启用调试 Flora 的面板和功能",
@@ -28,5 +29,6 @@ export const appSettings: Partial<TypeOptions["resources"]["appSettings"]> = {
   ros: "ROS",
   settings: "设置",
   timestampFormat: "时间戳格式",
+  userSettings: "用户设置",
   webApp: "网页应用",
 };

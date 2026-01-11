@@ -27,6 +27,7 @@ import {
 } from "@mui/material";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { makeStyles } from "tss-react/mui";
 
 import TextMiddleTruncate from "@lichtblick/suite-base/components/TextMiddleTruncate";
@@ -113,6 +114,7 @@ export function AppMenu(props: AppMenuProps): React.JSX.Element {
   const { classes } = useStyles();
   const { t } = useTranslation("appBar");
   const { t: tDialog } = useTranslation("openDialog");
+  const navigate = useNavigate();
 
   const { recentSources, selectRecent } = usePlayerSelection();
   const { dialogActions } = useWorkspaceActions();
@@ -133,14 +135,13 @@ export function AppMenu(props: AppMenuProps): React.JSX.Element {
     handleMenuClose();
   }, [dialogActions.dataSource, handleMenuClose]);
 
-  const handleDashboard = useCallback(() => {
-    dialogActions.dataSource.open("start");
-    handleMenuClose();
-  }, [dialogActions.dataSource, handleMenuClose]);
-
-  const handleLayouts = useCallback(() => {
-    handleMenuClose();
-  }, [handleMenuClose]);
+  const handleNavigate = useCallback(
+    (path: string) => {
+      void navigate(path);
+      handleMenuClose();
+    },
+    [navigate, handleMenuClose],
+  );
 
   const handleSelectRecent = useCallback(
     (recentId: string) => {
@@ -228,31 +229,56 @@ export function AppMenu(props: AppMenuProps): React.JSX.Element {
           {tDialog("browse").toUpperCase()}
         </Typography>
       </div>
-      <MenuItem className={classes.menuItem} onClick={handleDashboard}>
+      <MenuItem
+        className={classes.menuItem}
+        onClick={() => {
+          handleNavigate("/");
+        }}
+      >
         <ListItemIcon className={classes.listItemIcon}>
           <HomeRegular />
         </ListItemIcon>
         <ListItemText>{tDialog("dashboard")}</ListItemText>
       </MenuItem>
-      <MenuItem className={classes.menuItem} disabled>
+      <MenuItem
+        className={classes.menuItem}
+        onClick={() => {
+          handleNavigate("/devices");
+        }}
+      >
         <ListItemIcon className={classes.listItemIcon}>
           <GridRegular />
         </ListItemIcon>
         <ListItemText>{tDialog("devices")}</ListItemText>
       </MenuItem>
-      <MenuItem className={classes.menuItem} disabled>
+      <MenuItem
+        className={classes.menuItem}
+        onClick={() => {
+          handleNavigate("/recordings");
+        }}
+      >
         <ListItemIcon className={classes.listItemIcon}>
           <RecordRegular />
         </ListItemIcon>
         <ListItemText>{tDialog("recordings")}</ListItemText>
       </MenuItem>
-      <MenuItem className={classes.menuItem} disabled>
+      <MenuItem
+        className={classes.menuItem}
+        onClick={() => {
+          handleNavigate("/events");
+        }}
+      >
         <ListItemIcon className={classes.listItemIcon}>
           <BookmarkRegular />
         </ListItemIcon>
         <ListItemText>{tDialog("events")}</ListItemText>
       </MenuItem>
-      <MenuItem className={classes.menuItem} disabled>
+      <MenuItem
+        className={classes.menuItem}
+        onClick={() => {
+          handleNavigate("/timeline");
+        }}
+      >
         <ListItemIcon className={classes.listItemIcon}>
           <TextBulletListSquareRegular />
         </ListItemIcon>
@@ -261,7 +287,12 @@ export function AppMenu(props: AppMenuProps): React.JSX.Element {
 
       <Divider />
 
-      <MenuItem className={classes.menuItem} onClick={handleLayouts}>
+      <MenuItem
+        className={classes.menuItem}
+        onClick={() => {
+          handleNavigate("/layouts");
+        }}
+      >
         <ListItemIcon className={classes.listItemIcon}>
           <SlideLayoutRegular />
         </ListItemIcon>
