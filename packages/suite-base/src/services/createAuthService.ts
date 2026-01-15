@@ -4,6 +4,8 @@
 
 import { ApiClient, LocalStorageTokenStorage, ITokenStorage } from "@lichtblick/suite-base/services/ApiClient";
 import { AuthService, IAuthService } from "@lichtblick/suite-base/services/AuthService";
+import { DeviceService } from "@lichtblick/suite-base/services/DeviceService";
+import { IDeviceService } from "@lichtblick/suite-base/services/IDeviceService";
 
 /**
  * Default flora-server URL for development
@@ -29,6 +31,15 @@ export type AuthServicesResult = {
 };
 
 /**
+ * Result of creating all flora services
+ */
+export type FloraServicesResult = {
+  authService: IAuthService;
+  deviceService: IDeviceService;
+  apiClient: ApiClient;
+};
+
+/**
  * Factory function to create a configured AuthService instance
  */
 export function createAuthService(options: CreateAuthServiceOptions = {}): IAuthService {
@@ -50,6 +61,23 @@ export function createAuthServices(options: CreateAuthServiceOptions = {}): Auth
   const authService = new AuthService(apiClient, tokenStorage);
 
   return { authService, apiClient };
+}
+
+/**
+ * Factory function to create all flora services (auth, device, etc.)
+ * Use this when you need access to all services
+ */
+export function createFloraServices(options: CreateAuthServiceOptions = {}): FloraServicesResult {
+  const {
+    serverUrl = process.env.FLORA_SERVER_URL ?? DEFAULT_FLORA_SERVER_URL,
+    tokenStorage = new LocalStorageTokenStorage(),
+  } = options;
+
+  const apiClient = new ApiClient(serverUrl, tokenStorage);
+  const authService = new AuthService(apiClient, tokenStorage);
+  const deviceService = new DeviceService(apiClient);
+
+  return { authService, deviceService, apiClient };
 }
 
 /**

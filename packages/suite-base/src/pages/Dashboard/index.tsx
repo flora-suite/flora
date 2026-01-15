@@ -11,7 +11,6 @@ import {
   SchoolOutlined,
 } from "@mui/icons-material";
 import {
-  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -39,10 +38,13 @@ const useStyles = makeStyles()((theme) => ({
   content: {
     maxWidth: 1000,
   },
-  grid: {
+  quickActionsGrid: {
     display: "grid",
     gap: theme.spacing(2),
-    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    [theme.breakpoints.down("md")]: {
+      gridTemplateColumns: "1fr",
+    },
   },
   actionArea: {
     display: "flex",
@@ -88,20 +90,6 @@ const useStyles = makeStyles()((theme) => ({
     color: theme.palette.text.secondary,
     textAlign: "center",
   },
-  upgradeBanner: {
-    background: `linear-gradient(90deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
-    color: theme.palette.primary.contrastText,
-    padding: theme.spacing(2),
-    borderRadius: theme.shape.borderRadius,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-    gap: theme.spacing(2),
-  },
-  upgradeBannerText: {
-    opacity: 0.9,
-  },
 }));
 
 export function DashboardPage(): React.JSX.Element {
@@ -143,23 +131,8 @@ export function DashboardPage(): React.JSX.Element {
   return (
     <div className={classes.root}>
       <Stack direction="column" gap={4} paddingBottom={4} className={classes.content}>
-        {/* Upgrade Banner */}
-        <div className={classes.upgradeBanner}>
-          <div>
-            <Typography variant="h6" fontWeight="bold">
-              {t("upgradeYourPlan")}
-            </Typography>
-            <Typography variant="body2" className={classes.upgradeBannerText}>
-              {t("upgradeDescription")}
-            </Typography>
-          </div>
-          <Button variant="contained" color="secondary" size="small">
-            {t("learnMore")}
-          </Button>
-        </div>
-
         {/* Quick actions */}
-        <div className={classes.grid}>
+        <div className={classes.quickActionsGrid}>
           <Card variant="outlined">
             <CardActionArea className={classes.actionArea} onClick={handleOpenLocalFile}>
               <Icon component="div" fontSize="large">
@@ -232,7 +205,10 @@ export function DashboardPage(): React.JSX.Element {
           <div className={classes.resourceGrid}>
             {/* Explore Example Datasets */}
             <Card variant="outlined" className={classes.resourceCard}>
-              <CardActionArea onClick={handleExploreSampleData} className={classes.resourceCardAction}>
+              <CardActionArea
+                onClick={handleExploreSampleData}
+                className={classes.resourceCardAction}
+              >
                 <DescriptionOutlined className={classes.resourceIcon} fontSize="large" />
                 <CardContent className={classes.resourceCardContent}>
                   <Typography variant="subtitle1" gutterBottom fontWeight="bold">

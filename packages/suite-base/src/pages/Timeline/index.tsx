@@ -46,12 +46,36 @@ const useStyles = makeStyles()((theme) => ({
     flexDirection: "column",
     backgroundColor: theme.palette.background.default,
   },
+  header: {
+    padding: theme.spacing(3),
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
   toolbar: {
     padding: theme.spacing(1.5, 3),
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     borderBottom: `1px solid ${theme.palette.divider}`,
+    backgroundColor: theme.palette.background.paper,
+  },
+  toolbarLeft: {
+    display: "flex",
+    alignItems: "center",
+    flex: 1,
+  },
+  toolbarCenter: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  toolbarRight: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    flex: 1,
+  },
+  filterInput: {
+    minWidth: 200,
   },
   dateNavigation: {
     display: "flex",
@@ -73,11 +97,20 @@ const useStyles = makeStyles()((theme) => ({
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
+    padding: theme.spacing(3),
+  },
+  timelineContainer: {
+    flex: 1,
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: theme.palette.background.paper,
   },
   timelineHeader: {
     display: "flex",
     borderBottom: `1px solid ${theme.palette.divider}`,
-    backgroundColor: theme.palette.background.paper,
   },
   deviceColumn: {
     width: 150,
@@ -93,10 +126,10 @@ const useStyles = makeStyles()((theme) => ({
     alignItems: "center",
     position: "relative",
     height: 36,
+    overflow: "hidden",
   },
   timeLabel: {
     position: "absolute",
-    transform: "translateX(-50%)",
     fontSize: 11,
     color: theme.palette.text.secondary,
     display: "flex",
@@ -186,9 +219,6 @@ const useStyles = makeStyles()((theme) => ({
     backgroundColor: theme.palette.background.default,
     borderRadius: theme.shape.borderRadius,
   },
-  filterInput: {
-    minWidth: 150,
-  },
   calendarPopover: {
     padding: theme.spacing(1),
   },
@@ -238,6 +268,7 @@ interface TimeLabel {
   key: string;
   label: string;
   position: number;
+  align: "start" | "center" | "end";
 }
 
 // Mock data
@@ -476,24 +507,39 @@ function generateTimeLabels(
   const labels: TimeLabel[] = [];
   const isZh = locale.startsWith("zh");
 
+  // Helper to determine alignment based on position
+  const getAlign = (position: number, index: number, total: number): "start" | "center" | "end" => {
+    if (index === 0 || position <= 5) {
+      return "start";
+    }
+    if (index === total - 1 || position >= 95) {
+      return "end";
+    }
+    return "center";
+  };
+
   switch (viewMode) {
     case "day": {
-      // 24 hours
-      for (let h = 0; h < 24; h++) {
+      // Every 3 hours: 12am, 3am, 6am, 9am, 12pm, 3pm, 6pm, 9pm, 12am
+      const hours = [0, 3, 6, 9, 12, 15, 18, 21, 24];
+      hours.forEach((h, index) => {
         let label: string;
+        const displayH = h % 24;
         if (isZh) {
-          label = `${h}时`;
+          label = `${displayH}时`;
         } else {
-          const ampm = h >= 12 ? "pm" : "am";
-          const displayHour = h % 12 || 12;
+          const ampm = displayH >= 12 ? "pm" : "am";
+          const displayHour = displayH % 12 || 12;
           label = `${displayHour}${ampm}`;
         }
+        const position = (h / 24) * 100;
         labels.push({
           key: `hour-${h}`,
           label,
-          position: (h / 24) * 100,
+          position,
+          align: getAlign(position, index, hours.length),
         });
-      }
+      });
       break;
     }
     case "week": {
@@ -504,10 +550,12 @@ function generateTimeLabels(
       for (let d = 0; d < 7; d++) {
         const dayDate = new Date(rangeStart);
         dayDate.setDate(dayDate.getDate() + d);
+        const position = (d / 7) * 100;
         labels.push({
           key: `day-${d}`,
           label: `${dayNames[d]} ${dayDate.getDate()}`,
-          position: (d / 7) * 100,
+          position,
+          align: getAlign(position, d, 7),
         });
       }
       break;
@@ -523,12 +571,15 @@ function generateTimeLabels(
       if (daysInMonth > 28) {
         dayMarkers.push(daysInMonth);
       }
-      for (const day of dayMarkers) {
+      for (let i = 0; i < dayMarkers.length; i++) {
+        const day = dayMarkers[i]!;
         if (day <= daysInMonth) {
+          const position = ((day - 1) / daysInMonth) * 100;
           labels.push({
             key: `mday-${day}`,
             label: isZh ? `${day}日` : day.toString(),
-            position: ((day - 1) / daysInMonth) * 100,
+            position,
+            align: getAlign(position, i, dayMarkers.length),
           });
         }
       }
@@ -546,10 +597,12 @@ function generateTimeLabels(
       ];
       const monthNames = isZh ? monthNamesZh : monthNamesEn;
       for (let m = 0; m < 12; m++) {
+        const position = (m / 12) * 100;
         labels.push({
           key: `month-${m}`,
           label: monthNames[m]!,
-          position: (m / 12) * 100,
+          position,
+          align: getAlign(position, m, 12),
         });
       }
       break;
@@ -803,99 +856,127 @@ export function TimelinePage(): React.JSX.Element {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={dateLocale}>
       <Stack className={classes.root}>
+        {/* Header */}
+        <div className={classes.header}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack gap={0.5}>
+              <Typography variant="h5">{t("timelineTitle")}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                {t("timelineDescription")}
+              </Typography>
+            </Stack>
+            <Button
+              variant="contained"
+              startIcon={<CloudUploadOutlined />}
+              onClick={handleImportData}
+            >
+              {t("importData")}
+            </Button>
+          </Stack>
+        </div>
+
         {/* Toolbar */}
         <div className={classes.toolbar}>
-          <Button
-            variant="contained"
-            startIcon={<CloudUploadOutlined />}
-            onClick={handleImportData}
-          >
-            {t("importData")}
-          </Button>
-
-          <div className={classes.dateNavigation}>
-            <IconButton onClick={handlePrev} size="small">
-              <ChevronLeftOutlined />
-            </IconButton>
-            <div className={classes.dateButton} onClick={handleDateClick}>
-              <Typography variant="body2">
-                {formatDateDisplay(currentDate, viewMode, locale)}
-              </Typography>
-            </div>
-            <IconButton onClick={handleNext} size="small">
-              <ChevronRightOutlined />
-            </IconButton>
+          <div className={classes.toolbarLeft}>
+            <TextField
+              size="small"
+              placeholder={t("filterByDeviceName")}
+              value={deviceFilter}
+              onChange={(e) => {
+                setDeviceFilter(e.target.value);
+              }}
+              className={classes.filterInput}
+              variant="outlined"
+            />
           </div>
 
-          <Popover
-            open={calendarOpen}
-            anchorEl={calendarAnchor}
-            onClose={handleCalendarClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "center",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-          >
-            <div className={classes.calendarPopover}>{renderCalendar()}</div>
-          </Popover>
+          <div className={classes.toolbarCenter}>
+            <div className={classes.dateNavigation}>
+              <IconButton onClick={handlePrev} size="small">
+                <ChevronLeftOutlined />
+              </IconButton>
+              <div className={classes.dateButton} onClick={handleDateClick}>
+                <Typography variant="body2">
+                  {formatDateDisplay(currentDate, viewMode, locale)}
+                </Typography>
+              </div>
+              <IconButton onClick={handleNext} size="small">
+                <ChevronRightOutlined />
+              </IconButton>
+            </div>
 
-          <ToggleButtonGroup
-            value={viewMode}
-            exclusive
-            onChange={handleViewModeChange}
-            size="small"
-          >
-            <ToggleButton value="day">{t("day")}</ToggleButton>
-            <ToggleButton value="week">{t("week")}</ToggleButton>
-            <ToggleButton value="month">{t("month")}</ToggleButton>
-            <ToggleButton value="year">{t("year")}</ToggleButton>
-          </ToggleButtonGroup>
+            <Popover
+              open={calendarOpen}
+              anchorEl={calendarAnchor}
+              onClose={handleCalendarClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+            >
+              <div className={classes.calendarPopover}>{renderCalendar()}</div>
+            </Popover>
+          </div>
+
+          <div className={classes.toolbarRight}>
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={handleViewModeChange}
+              size="small"
+            >
+              <ToggleButton value="day">{t("day")}</ToggleButton>
+              <ToggleButton value="week">{t("week")}</ToggleButton>
+              <ToggleButton value="month">{t("month")}</ToggleButton>
+              <ToggleButton value="year">{t("year")}</ToggleButton>
+            </ToggleButtonGroup>
+          </div>
         </div>
 
         {/* Timeline Content */}
         <div className={classes.content}>
-          {/* Filter and Time Header */}
-          <div className={classes.timelineHeader}>
-            <div className={classes.deviceColumn}>
-              <TextField
-                size="small"
-                placeholder={t("filterByDeviceName")}
-                value={deviceFilter}
-                onChange={(e) => {
-                  setDeviceFilter(e.target.value);
-                }}
-                className={classes.filterInput}
-                fullWidth
-                variant="standard"
-              />
-            </div>
-            <div className={classes.timeRuler}>
-              {timeLabels.map(({ key, label, position }) => (
-                <div
-                  key={key}
-                  className={classes.timeLabel}
-                  style={{ left: `${position}%` }}
-                >
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Timeline Body */}
-          <div className={classes.timelineBody}>
-            {isEmpty ? (
-              <div className={classes.emptyState}>
-                <TimelineOutlined className={classes.emptyIcon} />
-                <Typography variant="h6" color="text.secondary">
-                  {t("noTimelineData")}
+          <div className={classes.timelineContainer}>
+            {/* Time Header */}
+            <div className={classes.timelineHeader}>
+              <div className={classes.deviceColumn}>
+                <Typography variant="body2" color="text.secondary">
+                  {t("device")}
                 </Typography>
-                <Typography
-                  variant="body2"
+              </div>
+              <div className={classes.timeRuler}>
+                {timeLabels.map(({ key, label, position, align }) => {
+                  const transform = align === "start"
+                    ? "translateX(0)"
+                    : align === "end"
+                      ? "translateX(-100%)"
+                      : "translateX(-50%)";
+                  return (
+                    <div
+                      key={key}
+                      className={classes.timeLabel}
+                      style={{ left: `${position}%`, transform }}
+                    >
+                      <span>{label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Timeline Body */}
+            <div className={classes.timelineBody}>
+              {isEmpty ? (
+                <div className={classes.emptyState}>
+                  <TimelineOutlined className={classes.emptyIcon} />
+                  <Typography variant="h6" color="text.secondary">
+                    {t("noTimelineData")}
+                  </Typography>
+                  <Typography
+                    variant="body2"
                   color="text.secondary"
                   maxWidth={400}
                 >
@@ -959,6 +1040,7 @@ export function TimelinePage(): React.JSX.Element {
                 );
               })
             )}
+          </div>
           </div>
         </div>
 

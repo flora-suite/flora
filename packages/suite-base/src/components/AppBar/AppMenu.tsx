@@ -15,7 +15,6 @@ import {
 } from "@fluentui/react-icons";
 import {
   Divider,
-  Link,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -86,20 +85,6 @@ const useStyles = makeStyles()((theme) => ({
   listItemIcon: {
     minWidth: "unset",
     color: theme.palette.primary.main,
-  },
-  upgradeBox: {
-    margin: theme.spacing(1, 2),
-    padding: theme.spacing(1.5),
-    backgroundColor: theme.palette.action.hover,
-    borderRadius: theme.shape.borderRadius,
-  },
-  upgradeLink: {
-    color: theme.palette.primary.main,
-    textDecoration: "none",
-    fontWeight: 500,
-    "&:hover": {
-      textDecoration: "underline",
-    },
   },
   truncate: {
     alignSelf: "center !important",
@@ -324,16 +309,6 @@ export function AppMenu(props: AppMenuProps): React.JSX.Element {
           ))}
         </>
       )}
-
-      {/* Upgrade Prompt */}
-      <div className={classes.upgradeBox}>
-        <Typography variant="body2">
-          <Link href="#" target="_blank" rel="noopener noreferrer" className={classes.upgradeLink}>
-            {tDialog("upgradeYourPlan")}
-          </Link>{" "}
-          {tDialog("upgradeDescription")}
-        </Typography>
-      </div>
     </Menu>
   );
 }

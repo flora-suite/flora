@@ -66,8 +66,32 @@ export { AuthService } from "./services/AuthService";
 export type { IAuthService } from "./services/AuthService";
 export { default as AuthProvider } from "./providers/AuthProvider";
 export { AuthDialog } from "./components/AuthDialog";
-export { createAuthService, createAuthServices, getFloraServerUrl } from "./services/createAuthService";
-export type { CreateAuthServiceOptions, AuthServicesResult } from "./services/createAuthService";
+export { createAuthService, createAuthServices, createFloraServices, getFloraServerUrl } from "./services/createAuthService";
+export type { CreateAuthServiceOptions, AuthServicesResult, FloraServicesResult } from "./services/createAuthService";
 export { default as ApiClientContext, useApiClient } from "./context/ApiClientContext";
 export { default as RemoteLayoutStorageProvider } from "./providers/RemoteLayoutStorageProvider";
 export { FloraRemoteLayoutStorage } from "./services/FloraRemoteLayoutStorage";
+
+// Device management exports
+export { default as DeviceContext, useDevices, useSelectedDevice, useRequireSelectedDevice } from "./context/DeviceContext";
+export type { DeviceState, IDeviceContext } from "./context/DeviceContext";
+export { DeviceService } from "./services/DeviceService";
+export type {
+  Device,
+  DeviceStatus,
+  AgentStatus,
+  DeviceTopic,
+  DeviceListResponse,
+  DeviceListQuery,
+  CreateDeviceParams,
+  UpdateDeviceParams,
+  DeviceTokenResponse,
+  DeviceEventType,
+  DeviceEvent,
+  DeviceEventListResponse,
+  DeviceEventListQuery,
+  CreateDeviceEventParams,
+  UpdateDeviceEventParams,
+  IDeviceService,
+} from "./services/IDeviceService";
+export { default as DeviceProvider } from "./providers/DeviceProvider";

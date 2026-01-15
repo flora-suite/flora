@@ -9,7 +9,8 @@ import {
   AppBarProps,
   AppSetting,
   AuthProvider,
-  createAuthServices,
+  createFloraServices,
+  DeviceProvider,
   FoxgloveWebSocketDataSourceFactory,
   IDataSourceFactory,
   IdbExtensionLoader,
@@ -49,7 +50,7 @@ export function WebRoot(props: {
     new IdbExtensionLoader("local"),
   ]);
 
-  const [{ authService, apiClient }] = useState(() => createAuthServices());
+  const [{ authService, deviceService, apiClient }] = useState(() => createFloraServices());
 
   const dataSources = useMemo(() => {
     const sources = [
@@ -74,6 +75,7 @@ export function WebRoot(props: {
       /* eslint-disable react/jsx-key */
       <ApiClientContext.Provider value={apiClient} />,
       <AuthProvider authService={authService} />,
+      <DeviceProvider deviceService={deviceService} />,
       <RemoteLayoutStorageProvider />,
       /* eslint-enable react/jsx-key */
     ];
@@ -81,7 +83,7 @@ export function WebRoot(props: {
       providers.push(...props.extraProviders);
     }
     return providers;
-  }, [authService, apiClient, props.extraProviders]);
+  }, [authService, deviceService, apiClient, props.extraProviders]);
 
   return (
     <SharedRoot

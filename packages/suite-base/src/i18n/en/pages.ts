@@ -3,6 +3,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 export const pages = {
+  // Dashboard page
+  dashboardTitle: "Dashboard",
+
   // Recordings page
   recordingsTitle: "Recordings",
   recordingsDescription: "Manage and browse your recording files",
