@@ -2,7 +2,11 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { AuthUser, LoginCredentials, RegisterData } from "@lichtblick/suite-base/context/AuthContext";
+import {
+  AuthUser,
+  LoginCredentials,
+  RegisterData,
+} from "@lichtblick/suite-base/context/AuthContext";
 import { ApiClient, ITokenStorage } from "@lichtblick/suite-base/services/ApiClient";
 
 /**
@@ -45,22 +49,18 @@ export class AuthService implements IAuthService {
   }
 
   public async login(credentials: LoginCredentials): Promise<AuthUser> {
-    const response = await this.apiClient.post<AuthResponse>(
-      "/api/auth/login",
-      credentials,
-      { skipAuth: true },
-    );
+    const response = await this.apiClient.post<AuthResponse>("/api/auth/login", credentials, {
+      skipAuth: true,
+    });
 
     this.tokenStorage.setTokens(response.accessToken, response.refreshToken);
     return response.user;
   }
 
   public async register(data: RegisterData): Promise<AuthUser> {
-    const response = await this.apiClient.post<AuthResponse>(
-      "/api/auth/register",
-      data,
-      { skipAuth: true },
-    );
+    const response = await this.apiClient.post<AuthResponse>("/api/auth/register", data, {
+      skipAuth: true,
+    });
 
     this.tokenStorage.setTokens(response.accessToken, response.refreshToken);
     return response.user;
@@ -81,7 +81,7 @@ export class AuthService implements IAuthService {
   }
 
   public async getCurrentUser(): Promise<AuthUser> {
-    return this.apiClient.get<AuthUser>("/api/auth/me");
+    return await this.apiClient.get<AuthUser>("/api/auth/me");
   }
 
   public async refreshTokens(): Promise<void> {

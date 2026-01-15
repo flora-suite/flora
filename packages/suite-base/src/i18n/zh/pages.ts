@@ -5,6 +5,9 @@
 import { TypeOptions } from "i18next";
 
 export const pages: Partial<TypeOptions["resources"]["pages"]> = {
+  // Dashboard page
+  dashboardTitle: "控制台",
+
   // Recordings page
   recordingsTitle: "数据",
   recordingsDescription: "管理和浏览您的数据文件",

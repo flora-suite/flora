@@ -12,8 +12,9 @@ import {
 } from "@fluentui/react-icons";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import { Avatar, IconButton, Tooltip } from "@mui/material";
-import { ReactElement, useState } from "react";
+import { ReactElement, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import tc from "tinycolor2";
 import { makeStyles } from "tss-react/mui";
 
@@ -231,6 +232,15 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
                   setAppMenuEl(undefined);
                 }}
               />
+            </div>
+          </div>
+
+          <div className={classes.middle}>
+            <DataSource />
+          </div>
+
+          <div className={classes.end}>
+            <div className={classes.endInner}>
               <AppBarIconButton
                 className={cx({ "Mui-selected": panelMenuOpen })}
                 color="inherit"
@@ -249,15 +259,6 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
               >
                 <SlideAdd24Regular />
               </AppBarIconButton>
-            </div>
-          </div>
-
-          <div className={classes.middle}>
-            <DataSource />
-          </div>
-
-          <div className={classes.end}>
-            <div className={classes.endInner}>
               {enableMemoryUseIndicator && <MemoryUseIndicator />}
               {appBarLayoutButton}
               <Stack direction="row" alignItems="center" data-tourid="sidebar-button-group">
@@ -356,6 +357,7 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
 export function DashboardAppBar({ children }: { children?: ReactElement }): React.JSX.Element {
   const { classes, cx } = useStyles({});
   const { t } = useTranslation("appBar");
+  const navigate = useNavigate();
 
   const { isAuthenticated, user } = useAuth();
 
@@ -363,15 +365,24 @@ export function DashboardAppBar({ children }: { children?: ReactElement }): Reac
 
   const userMenuOpen = Boolean(userAnchorEl);
 
+  const handleLogoClick = useCallback(() => {
+    void navigate("/");
+  }, [navigate]);
+
   return (
     <>
       <AppBarContainer onDoubleClick={() => {}} leftInset={0}>
         <div className={classes.toolbar}>
           <div className={classes.start}>
             <div className={classes.startInner}>
-              <div className={classes.logo}>
+              <IconButton
+                className={classes.logo}
+                color="inherit"
+                onClick={handleLogoClick}
+                title="Dashboard"
+              >
                 <FloraLogo fontSize="inherit" color="inherit" />
-              </div>
+              </IconButton>
             </div>
           </div>
 

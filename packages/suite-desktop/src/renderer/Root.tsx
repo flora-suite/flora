@@ -9,7 +9,8 @@ import {
   App,
   AppSetting,
   AuthProvider,
-  createAuthServices,
+  createFloraServices,
+  DeviceProvider,
   FoxgloveWebSocketDataSourceFactory,
   IAppConfiguration,
   IDataSourceFactory,
@@ -79,7 +80,7 @@ export default function Root(props: RootProps): React.JSX.Element {
 
   const [layoutLoaders] = useState(() => [new DesktopLayoutLoader(desktopBridge)]);
 
-  const [{ authService, apiClient }] = useState(() => createAuthServices());
+  const [{ authService, deviceService, apiClient }] = useState(() => createFloraServices());
 
   const nativeAppMenu = useMemo(() => new NativeAppMenu(menuBridge), []);
   const nativeWindow = useMemo(() => new NativeWindow(desktopBridge), []);
@@ -161,6 +162,7 @@ export default function Root(props: RootProps): React.JSX.Element {
       /* eslint-disable react/jsx-key */
       <ApiClientContext.Provider value={apiClient} />,
       <AuthProvider authService={authService} />,
+      <DeviceProvider deviceService={deviceService} />,
       <RemoteLayoutStorageProvider />,
       /* eslint-enable react/jsx-key */
     ];
@@ -168,7 +170,7 @@ export default function Root(props: RootProps): React.JSX.Element {
       providers.push(...extraProviders);
     }
     return providers;
-  }, [authService, apiClient, extraProviders]);
+  }, [authService, deviceService, apiClient, extraProviders]);
 
   return (
     <App
