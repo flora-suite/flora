@@ -268,6 +268,7 @@ export function makeConfig(
               jsx: isDev ? "react-jsxdev" : "react-jsx",
             },
           },
+          memoryLimit: 4096,
         },
       }),
     ],
