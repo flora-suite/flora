@@ -184,40 +184,55 @@ export function makeConfig(
           // https://github.com/microsoft/TypeScript/issues/39436
           // Prettier's TS parser also bundles the same code: https://github.com/prettier/prettier/issues/11076
           test: /[\\/]node_modules[\\/]typescript[\\/]lib[\\/]typescript\.js$|[\\/]node_modules[\\/]prettier[\\/]plugins[\\/]typescript\.m?js$/,
-          loader: "string-replace-loader", // foxglove-depcheck-used: string-replace-loader
-          options: {
-            multiple: [
-              {
-                search: /etwModule\s*=\s*require\(etwModulePath\);/,
-                replace:
-                  "throw new Error('[Foxglove] This module is not supported in the browser.');",
-              },
-              {
-                search: `typescript-etw";r=require(i)`,
-                replace: `typescript-etw";throw new Error('[Foxglove] This module is not supported in the browser.');`,
-              },
-              {
-                search:
-                  "return { module: require(modulePath), modulePath: modulePath, error: undefined };",
-                replace:
-                  "throw new Error('[Foxglove] This module is not supported in the browser.');",
-              },
-              {
-                search: `return{module:require(n),modulePath:n,error:void 0}`,
-                replace:
-                  "throw new Error('[Foxglove] This module is not supported in the browser.');",
-              },
-              {
-                search: `return { module:   require(modulePath), modulePath, error: void 0 };`,
-                replace: `throw new Error('[Foxglove] This module is not supported in the browser.');`,
-              },
-              {
-                search: `getModuleResolver=function(e){let t;try{t=require(e)}`,
-                replace:
-                  "getModuleResolver=function(e){let t;try{throw new Error('[Foxglove] This module is not supported in the browser.')}",
-              },
-            ],
+          // Disable webpack's parsing of dynamic require() expressions to prevent
+          // "Critical dependency" warnings. These requires are Node.js-specific and
+          // are replaced with errors by the string-replace-loader below.
+          parser: {
+            requireDynamic: false,
           },
+          use: [
+            {
+              loader: "string-replace-loader", // foxglove-depcheck-used: string-replace-loader
+              options: {
+                multiple: [
+                  {
+                    search: /etwModule\s*=\s*require\(etwModulePath\);/,
+                    replace:
+                      "throw new Error('[Foxglove] This module is not supported in the browser.');",
+                  },
+                  {
+                    search: `typescript-etw";r=require(i)`,
+                    replace: `typescript-etw";throw new Error('[Foxglove] This module is not supported in the browser.');`,
+                  },
+                  {
+                    search:
+                      "return { module: require(modulePath), modulePath: modulePath, error: undefined };",
+                    replace:
+                      "throw new Error('[Foxglove] This module is not supported in the browser.');",
+                  },
+                  {
+                    search: `return{module:require(n),modulePath:n,error:void 0}`,
+                    replace:
+                      "throw new Error('[Foxglove] This module is not supported in the browser.');",
+                  },
+                  {
+                    search: `return { module:   require(modulePath), modulePath, error: void 0 };`,
+                    replace: `throw new Error('[Foxglove] This module is not supported in the browser.');`,
+                  },
+                  {
+                    // TypeScript 5.9+ pattern
+                    search: `return { module: require(modulePath), modulePath, error: void 0 };`,
+                    replace: `throw new Error('[Foxglove] This module is not supported in the browser.');`,
+                  },
+                  {
+                    search: `getModuleResolver=function(e){let t;try{t=require(e)}`,
+                    replace:
+                      "getModuleResolver=function(e){let t;try{throw new Error('[Foxglove] This module is not supported in the browser.')}",
+                  },
+                ],
+              },
+            },
+          ],
         },
       ],
     },

@@ -6,7 +6,7 @@ import * as R from "ramda";
 
 import { TypedData, ObjectData } from "./types";
 
-export type Point = { index: number; x: number; y: number; label?: string | undefined };
+export type Point = { index: number; x: number | null; y: number | null; label?: string | undefined };
 
 /**
  * iterateObjects iterates over ObjectData, yielding a `Point` for each entry.

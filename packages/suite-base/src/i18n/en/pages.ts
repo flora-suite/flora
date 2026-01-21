@@ -111,6 +111,12 @@ export const pages = {
   key: "Key",
   value: "Value",
   add: "Add",
+  timestamp: "Timestamp",
+  message: "Message",
+  source: "Source",
+  severity: "Severity",
+  info: "Info",
+  warning: "Warning",
 
   // Timeline page
   timelineTitle: "Timeline",
@@ -151,7 +157,6 @@ export const pages = {
   lastOpened: "Last Opened",
   panelCount: "Panels",
   duplicate: "Duplicate",
-  rename: "Rename",
   searchLayouts: "Search layouts...",
   localLayouts: "Local Layouts",
   sharedLayouts: "Shared Layouts",

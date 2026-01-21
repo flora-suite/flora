@@ -14,9 +14,9 @@
 import { InputBase, MenuItem, Select, Typography } from "@mui/material";
 import { produce } from "immer";
 import * as _ from "lodash-es";
-import { CSSProperties, useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { AutoSizer } from "react-virtualized";
-import { FixedSizeList as List } from "react-window";
+import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 
 import { filterMap } from "@lichtblick/den/collection";
 import { SettingsTreeAction } from "@lichtblick/suite";
@@ -92,11 +92,11 @@ const DiagnosticSummary = (props: DiagnosticSummaryProps): React.JSX.Element => 
   );
 
   const renderRow = useCallback(
-    (renderProps: { data: DiagnosticInfo[]; index: number; style: CSSProperties }) => {
+    (renderProps: ListChildComponentProps<DiagnosticInfo[]>) => {
       const item = renderProps.data[renderProps.index]!;
       return (
         <div
-          style={{ ...renderProps.style }}
+          style={{ ...(renderProps.style as React.CSSProperties) }}
           data-testid={`diagnostic-summary-node-row-${renderProps.index}`}
         >
           <DiagnosticNodeRow

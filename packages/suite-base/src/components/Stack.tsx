@@ -2,10 +2,11 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
+import { CSSObject } from "@emotion/react";
 import { CSSProperties, PropsWithChildren, forwardRef } from "react";
 import { makeStyles } from "tss-react/mui";
 
-const useStyles = makeStyles<StackProps>({ name: "FoxgloveStack" })((theme, props) => ({
+const useStyles = makeStyles<StackProps, "root">({ name: "FoxgloveStack" })((theme, props) => ({
   root: {
     display: props.inline === true ? "inline-flex" : "flex",
     flexDirection: props.direction,
@@ -83,7 +84,7 @@ const useStyles = makeStyles<StackProps>({ name: "FoxgloveStack" })((theme, prop
     ...(props.paddingInlineEnd != undefined && {
       paddingInlineEnd: theme.spacing(props.paddingInlineEnd),
     }),
-  },
+  } as CSSObject,
 }));
 
 export default forwardRef<HTMLDivElement, PropsWithChildren<StackProps>>(

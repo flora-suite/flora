@@ -70,7 +70,7 @@ export type UpdateDataAction =
 // we do not grow the memory for accumulated current data indefinitely
 const MAX_CURRENT_DATUMS_PER_SERIES = 50_000;
 
-const compareDatum = (a: Datum, b: Datum) => a.x - b.x;
+const compareDatum = (a: Datum, b: Datum) => (a.x ?? 0) - (b.x ?? 0);
 
 export class TimestampDatasetsBuilderImpl {
   #seriesByKey = new Map<SeriesConfigKey, Series>();
@@ -110,8 +110,8 @@ export class TimestampDatasetsBuilderImpl {
       const yBounds: Bounds1D = { min: Number.MAX_VALUE, max: Number.MIN_VALUE };
 
       // Keep previous original values for computing derivative
-      let prevX = NaN;
-      let prevY = NaN;
+      let prevX: number | null = NaN;
+      let prevY: number | null = NaN;
 
       const derivative = series.config.parsed.modifier === "derivative";
 
@@ -130,8 +130,10 @@ export class TimestampDatasetsBuilderImpl {
             continue;
           }
           // calculate derivative and replace existing datum
-          const dx = item.x - prevX;
-          const newY = dx === 0 ? NaN : (item.y - prevY) / dx;
+          const itemX = item.x ?? 0;
+          const itemY = item.y ?? 0;
+          const dx = itemX - (prevX ?? 0);
+          const newY = dx === 0 ? NaN : (itemY - (prevY ?? 0)) / dx;
           allData[i] = {
             ...item,
             y: newY,
@@ -141,20 +143,23 @@ export class TimestampDatasetsBuilderImpl {
           prevY = item.y;
         }
 
-        if (viewport.bounds.x?.min != undefined && item.x < viewport.bounds.x.min) {
+        const itemX = item.x ?? NaN;
+        const itemY = item.y ?? NaN;
+
+        if (viewport.bounds.x?.min != undefined && itemX < viewport.bounds.x.min) {
           startIdx = i;
           continue;
         }
 
-        if (!isNaN(item.x)) {
-          extendBounds1D(xBounds, item.x);
+        if (!isNaN(itemX)) {
+          extendBounds1D(xBounds, itemX);
         }
 
-        if (!isNaN(item.y)) {
-          extendBounds1D(yBounds, item.y);
+        if (!isNaN(itemY)) {
+          extendBounds1D(yBounds, itemY);
         }
 
-        if (viewport.bounds.x?.max != undefined && item.x > viewport.bounds.x.max) {
+        if (viewport.bounds.x?.max != undefined && itemX > viewport.bounds.x.max) {
           endIdx = i;
           break;
         }
@@ -312,7 +317,7 @@ export class TimestampDatasetsBuilderImpl {
             : action.items;
 
         for (const item of sorted) {
-          if (lastX != undefined && item.x <= lastX) {
+          if (item.x == undefined || (lastX != undefined && item.x <= lastX)) {
             continue;
           }
 
@@ -359,7 +364,7 @@ export class TimestampDatasetsBuilderImpl {
         if (lastX != undefined) {
           let idx = 0;
           for (const item of series.current) {
-            if (item.x > lastX) {
+            if (item.x != undefined && item.x > lastX) {
               break;
             }
             idx += 1;
