@@ -36,4 +36,5 @@ export const appBar = {
   viewOurDocs: "View our docs",
   profile: "Profile",
   getDesktopApp: "Get desktop app",
+  unsavedChanges: "Unsaved changes",
 };

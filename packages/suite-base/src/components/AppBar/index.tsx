@@ -9,9 +9,10 @@ import {
   PanelRight24Filled,
   PanelRight24Regular,
   SlideAdd24Regular,
+  Board20Regular,
 } from "@fluentui/react-icons";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import { Avatar, IconButton, Tooltip } from "@mui/material";
+import { Avatar, IconButton, SvgIcon, Tooltip } from "@mui/material";
 import { ReactElement, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -41,6 +42,7 @@ import { AppBarIconButton } from "./AppBarIconButton";
 import { AppMenu } from "./AppMenu";
 import { CustomWindowControls, CustomWindowControlsProps } from "./CustomWindowControls";
 import { DataSource } from "./DataSource";
+import { LayoutMenu } from "./LayoutMenu";
 import { SettingsMenu } from "./SettingsMenu";
 
 const useStyles = makeStyles<{ debugDragRegion?: boolean }, "avatar">()((
@@ -149,6 +151,47 @@ const useStyles = makeStyles<{ debugDragRegion?: boolean }, "avatar">()((
         },
       },
     },
+    layoutButton: {
+      display: "flex",
+      alignItems: "center",
+      gap: theme.spacing(0.5),
+      padding: theme.spacing(1.25, 1),
+      borderRadius: 0,
+      color: theme.palette.common.white,
+      fontSize: "0.875rem",
+      fontWeight: 500,
+      cursor: "pointer",
+      border: "none",
+      background: "transparent",
+      whiteSpace: "nowrap",
+      maxWidth: 200,
+
+      "&:hover": {
+        backgroundColor: tc(theme.palette.common.white).setAlpha(0.08).toString(),
+      },
+      "&.Mui-selected": {
+        backgroundColor: theme.palette.appBar.primary,
+      },
+    },
+    layoutName: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
+    layoutIconWrapper: {
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
+    },
+    unsavedIndicator: {
+      position: "absolute",
+      top: -2,
+      right: -2,
+      width: 8,
+      height: 8,
+      minWidth: 8,
+      minHeight: 8,
+    },
   };
 });
 
@@ -159,6 +202,8 @@ export type AppBarProps = CustomWindowControlsProps & {
 };
 
 const selectHasCurrentLayout = (state: LayoutState) => state.selectedLayout != undefined;
+const selectCurrentLayoutName = (state: LayoutState) => state.selectedLayout?.name;
+const selectHasUnsavedChanges = (state: LayoutState) => state.selectedLayout?.edited === true;
 const selectLeftSidebarOpen = (store: WorkspaceContextStore) => store.sidebars.left.open;
 const selectRightSidebarOpen = (store: WorkspaceContextStore) => store.sidebars.right.open;
 
@@ -183,6 +228,8 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
   );
 
   const hasCurrentLayout = useCurrentLayoutSelector(selectHasCurrentLayout);
+  const currentLayoutName = useCurrentLayoutSelector(selectCurrentLayoutName);
+  const hasUnsavedChanges = useCurrentLayoutSelector(selectHasUnsavedChanges);
 
   const leftSidebarOpen = useWorkspaceStore(selectLeftSidebarOpen);
   const rightSidebarOpen = useWorkspaceStore(selectRightSidebarOpen);
@@ -194,10 +241,12 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
   const [appMenuEl, setAppMenuEl] = useState<undefined | HTMLElement>(undefined);
   const [userAnchorEl, setUserAnchorEl] = useState<undefined | HTMLElement>(undefined);
   const [panelAnchorEl, setPanelAnchorEl] = useState<undefined | HTMLElement>(undefined);
+  const [layoutAnchorEl, setLayoutAnchorEl] = useState<undefined | HTMLElement>(undefined);
 
   const appMenuOpen = Boolean(appMenuEl);
   const userMenuOpen = Boolean(userAnchorEl);
   const panelMenuOpen = Boolean(panelAnchorEl);
+  const layoutMenuOpen = Boolean(layoutAnchorEl);
 
   return (
     <>
@@ -241,6 +290,45 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
 
           <div className={classes.end}>
             <div className={classes.endInner}>
+              <button
+                className={cx(classes.layoutButton, { "Mui-selected": layoutMenuOpen })}
+                id="layout-menu-button"
+                data-testid="LayoutMenuButton"
+                aria-label="Layouts button"
+                aria-controls={layoutMenuOpen ? "layout-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={layoutMenuOpen ? "true" : undefined}
+                onClick={(event) => {
+                  setLayoutAnchorEl(event.currentTarget);
+                }}
+                disabled={!hasCurrentLayout}
+              >
+                <Tooltip
+                  title={hasUnsavedChanges ? t("unsavedChanges") : ""}
+                  placement="bottom"
+                  disableHoverListener={!hasUnsavedChanges}
+                >
+                  <span className={classes.layoutIconWrapper}>
+                    <Board20Regular />
+                    {hasUnsavedChanges && (
+                      <SvgIcon
+                        className={classes.unsavedIndicator}
+                        color="primary"
+                        viewBox="0 0 8 8"
+                      >
+                        <circle cx={4} cy={4} r={4} />
+                      </SvgIcon>
+                    )}
+                  </span>
+                </Tooltip>
+                <span className={classes.layoutName}>
+                  {currentLayoutName ?? t("layouts", "Layouts")}
+                </span>
+                <ChevronDown12Regular
+                  className={classes.dropDownIcon}
+                  primaryFill={theme.palette.common.white}
+                />
+              </button>
               <AppBarIconButton
                 className={cx({ "Mui-selected": panelMenuOpen })}
                 color="inherit"
@@ -341,6 +429,13 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
         open={panelMenuOpen}
         handleClose={() => {
           setPanelAnchorEl(undefined);
+        }}
+      />
+      <LayoutMenu
+        anchorEl={layoutAnchorEl}
+        open={layoutMenuOpen}
+        handleClose={() => {
+          setLayoutAnchorEl(undefined);
         }}
       />
       <SettingsMenu

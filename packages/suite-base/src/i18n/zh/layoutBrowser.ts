@@ -3,6 +3,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 export const layoutBrowser = {
+  layouts: "布局",
+  searchLayouts: "搜索布局...",
+  noLayoutsFound: "未找到布局",
   createNewLayout: "创建新布局",
   importFromFile: "从文件导入…",
   importLayout: "导入布局",
@@ -20,4 +23,8 @@ export const layoutBrowser = {
   addANewLayoutToGetStartedWithFlora: "添加新布局以开始使用Flora！",
   cloudSynced: "已同步到云端",
   localOnly: "仅本地",
+  shareACopyWithYourOrganization: "与组织分享副本",
+  sharedLayoutsCanBeUsedAndChangedByOtherMembersOfYourOrganization:
+    "共享布局可以被组织中的其他成员使用和修改。",
+  layoutName: "布局名称",
 };
