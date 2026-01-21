@@ -37,7 +37,7 @@ import { defaultPlaybackConfig } from "@lichtblick/suite-base/providers/CurrentL
 import { AppEvent } from "@lichtblick/suite-base/services/IAnalytics";
 import { Layout, layoutIsShared } from "@lichtblick/suite-base/services/ILayoutStorage";
 
-const RECENT_LAYOUTS_KEY = "flora.recentLayouts";
+const RECENT_LAYOUTS_KEY: string = "flora.recentLayouts";
 const MAX_RECENT_LAYOUTS = 5;
 
 const useStyles = makeStyles()((theme) => ({
@@ -74,7 +74,8 @@ function getRecentLayoutIds(): string[] {
 // Helper to save recent layout IDs to localStorage
 function saveRecentLayoutIds(ids: string[]): void {
   try {
-    localStorage.setItem(RECENT_LAYOUTS_KEY, JSON.stringify(ids.slice(0, MAX_RECENT_LAYOUTS)));
+    const value = JSON.stringify(ids.slice(0, MAX_RECENT_LAYOUTS))!;
+    localStorage.setItem(RECENT_LAYOUTS_KEY, value);
   } catch {
     // Ignore storage errors
   }

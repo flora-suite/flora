@@ -138,10 +138,17 @@ export function downsampleStates(
   };
 
   for (const datum of points) {
-    const { index, label, x } = datum;
+    const { index, label } = datum;
+
+    // Skip points with null x values
+    if (datum.x == undefined) {
+      continue;
+    }
+
+    const x = datum.x;
 
     // track the first point before our bounds
-    if (datum.x < minX) {
+    if (x < minX) {
       const point = {
         index,
         x,
@@ -155,7 +162,7 @@ export function downsampleStates(
     }
 
     // track the first point outside of our bounds
-    if (datum.x > maxX) {
+    if (x > maxX) {
       firstPastBounds = index;
       continue;
     }

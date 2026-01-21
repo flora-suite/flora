@@ -68,6 +68,10 @@ const usePlotInteractionHandlers = ({
         const value = element.data.value ?? element.data.y;
         const tooltipValue = typeof value === "object" && isTime(value) ? toSec(value) : value;
 
+        if (tooltipValue == undefined) {
+          continue;
+        }
+
         tooltipItems.push({
           configIndex: element.configIndex,
           value: tooltipValue,

@@ -109,9 +109,11 @@ export class ModelCache {
     if (STL_MIME_TYPES.includes(contentType) || /\.stl$/i.test(url)) {
       // Create a copy of the array buffer to respect the `byteOffset` and `byteLength` value as
       // the underlying three.js STLLoader only accepts an ArrayBuffer instance.
+      // Use Uint8Array.slice() to always get a proper ArrayBuffer
+      const stlBuffer = buffer.slice().buffer as ArrayBuffer;
       return this.#loadSTL(
         url,
-        buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
+        stlBuffer,
         this.options.meshUpAxis,
       );
     }
@@ -219,8 +221,10 @@ export class ModelCache {
           continue;
         }
         const textureAsset = await this.#fetchAsset(textureUrl);
+        // Create a copy of the data to ensure it's backed by a regular ArrayBuffer
+        const blobData = textureAsset.data.slice();
         const objectUrl = URL.createObjectURL(
-          new Blob([textureAsset.data], { type: textureAsset.mediaType }),
+          new Blob([blobData], { type: textureAsset.mediaType }),
         );
         this.#colladaTextureObjectUrls.set(textureUrl, objectUrl);
       } catch (e) {

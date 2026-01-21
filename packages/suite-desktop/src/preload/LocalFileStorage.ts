@@ -36,7 +36,7 @@ export default class LocalFileStorage implements Storage {
       for (const entry of await this.list(datastore)) {
         const filePath = path.join(datastoreDir, entry);
         const content = await fs.readFile(filePath);
-        result.push(content);
+        result.push(new Uint8Array(content.buffer, content.byteOffset, content.byteLength));
       }
     } catch (err) {
       if (err.code !== "ENOENT") {
@@ -68,6 +68,15 @@ export default class LocalFileStorage implements Storage {
         throw err;
       }
       return undefined;
+    }).then((content) => {
+      if (content == undefined) {
+        return undefined;
+      }
+      // If content is a Buffer (no encoding specified), convert to Uint8Array
+      if (typeof content !== "string") {
+        return new Uint8Array(content.buffer, content.byteOffset, content.byteLength);
+      }
+      return content;
     });
   }
 

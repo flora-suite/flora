@@ -110,6 +110,12 @@ export const pages: Partial<TypeOptions["resources"]["pages"]> = {
   key: "键",
   value: "值",
   add: "添加",
+  timestamp: "时间戳",
+  message: "消息",
+  source: "来源",
+  severity: "严重性",
+  info: "信息",
+  warning: "警告",
 
   // Timeline page
   timelineTitle: "时间线",
@@ -150,7 +156,6 @@ export const pages: Partial<TypeOptions["resources"]["pages"]> = {
   lastOpened: "最后打开",
   panelCount: "面板",
   duplicate: "复制",
-  rename: "重命名",
   searchLayouts: "搜索布局...",
   localLayouts: "本地布局",
   sharedLayouts: "共享布局",

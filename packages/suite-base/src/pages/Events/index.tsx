@@ -618,7 +618,7 @@ export function EventsPage(): React.JSX.Element {
           </Stack>
         </MenuItem>
         <MenuItem onClick={handleDeleteClick}>
-          <Stack direction="row" alignItems="center" gap={1} color="error.main">
+          <Stack direction="row" alignItems="center" gap={1} style={{ color: "error.main" }}>
             <DeleteOutlined fontSize="small" color="error" />
             {t("delete")}
           </Stack>

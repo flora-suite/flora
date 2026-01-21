@@ -20,7 +20,6 @@ import {
   SignalWifi4BarOutlined,
   SignalWifiOffOutlined,
   SmartToyOutlined,
-  VisibilityOutlined,
   WarningAmberOutlined,
 } from "@mui/icons-material";
 import {
@@ -28,8 +27,6 @@ import {
   Button,
   Chip,
   IconButton,
-  ListItemIcon,
-  ListItemText,
   Menu,
   MenuItem,
   Paper,
@@ -609,7 +606,7 @@ export function DeviceDetailPage(): React.JSX.Element {
                   <TableCell>
                     <Chip
                       icon={<SeverityIcon severity={event.severity} />}
-                      label={t(event.severity)}
+                      label={t(event.severity as "info" | "warning" | "error")}
                       size="small"
                       color={getSeverityChipColor(event.severity)}
                       className={classes.severityChip}
@@ -739,7 +736,7 @@ export function DeviceDetailPage(): React.JSX.Element {
             <ArrowBackOutlined />
           </IconButton>
           <StatusIcon status={device.status} />
-          <Stack gap={0.25} sx={{ ml: 2 }}>
+          <Stack gap={0.25} style={{ marginLeft: 16 }}>
             <Typography variant="h5">{deviceName}</Typography>
             <Typography variant="body2" color="text.secondary">
               {device.type} • {device.ipAddress}
@@ -773,7 +770,7 @@ export function DeviceDetailPage(): React.JSX.Element {
           </Stack>
         </MenuItem>
         <MenuItem onClick={handleDeleteDevice}>
-          <Stack direction="row" alignItems="center" gap={1} color="error.main">
+          <Stack direction="row" alignItems="center" gap={1} style={{ color: "error.main" }}>
             <DeleteOutlined fontSize="small" color="error" />
             {t("delete")}
           </Stack>

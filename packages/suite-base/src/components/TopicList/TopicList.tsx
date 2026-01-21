@@ -114,7 +114,7 @@ export function TopicList(): React.JSX.Element {
         case "topic":
           return (
             <TopicRow
-              style={style}
+              style={style as React.CSSProperties}
               topicResult={treeItem.item}
               selected={selected}
               onClick={onClick}
@@ -126,7 +126,7 @@ export function TopicList(): React.JSX.Element {
         case "schema":
           return (
             <MessagePathRow
-              style={style}
+              style={style as React.CSSProperties}
               messagePathResult={treeItem.item}
               selected={selected}
               onClick={onClick}
