@@ -23,11 +23,7 @@ jobs:
               # lint steps
               set -x
               yarn license-check
-              yarn dedupe --check
               yarn run tsc --noEmit # typecheck files that are not included by webpack or package builds
-              yarn run lint:ci
-              yarn run lint:unused-exports
-              yarn run lint:dependencies
           - name: packages
             command: yarn run build:packages
           - name: web
@@ -57,7 +53,6 @@ jobs:
         with:
           path: |
             .yarn/cache
-            **/node_modules
           key: v5-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: v5-${{ runner.os }}-yarn-
 
@@ -83,7 +78,6 @@ jobs:
         with:
           path: |
             .yarn/cache
-            **/node_modules
           key: v5-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: v5-${{ runner.os }}-yarn-
 

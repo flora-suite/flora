@@ -24,15 +24,18 @@ export default async (): Promise<void> => {
 
   const webpackConfig = target === "desktop" ? webpackConfigDesktop : webpackConfigWeb;
 
-  const compiler = webpack(
-    webpackConfig.map((config) => {
-      if (typeof config === "function") {
-        return config(undefined, { mode: "production" });
-      }
+  const webpackOptions = webpackConfig.map((config) => {
+    if (typeof config === "function") {
+      return config(undefined, { mode: "production" });
+    }
 
-      return config;
-    }),
-  );
+    return config;
+  }) as unknown as webpack.MultiConfiguration;
+
+  const compiler = webpack(webpackOptions);
+  if (!compiler) {
+    throw new Error("webpack failed to create a compiler");
+  }
 
   await new Promise<void>((resolve, reject) => {
     // eslint-disable-next-line no-restricted-syntax
