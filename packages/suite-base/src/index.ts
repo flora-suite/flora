@@ -50,3 +50,80 @@ export { makeWorkspaceContextInitialState } from "./providers/WorkspaceContextPr
 export type { AppBarProps } from "./components/AppBar";
 export { IdbExtensionLoader } from "./services/IdbExtensionLoader";
 export { default as BasicBuilder } from "./testing/builders/BasicBuilder";
+
+// Authentication exports
+export { default as AuthContext, useAuth, useRequireAuth } from "./context/AuthContext";
+export type {
+  AuthUser,
+  AuthState,
+  LoginCredentials,
+  RegisterData,
+  IAuthContext,
+} from "./context/AuthContext";
+export { ApiClient, LocalStorageTokenStorage, ApiError } from "./services/ApiClient";
+export type { ITokenStorage, ApiErrorResponse, SessionExpiredCallback } from "./services/ApiClient";
+export { AuthService } from "./services/AuthService";
+export type { IAuthService } from "./services/AuthService";
+export { default as AuthProvider } from "./providers/AuthProvider";
+export { AuthDialog } from "./components/AuthDialog";
+export { createAuthService, createAuthServices, createFloraServices, getFloraServerUrl } from "./services/createAuthService";
+export type { CreateAuthServiceOptions, AuthServicesResult, FloraServicesResult } from "./services/createAuthService";
+export { default as ApiClientContext, useApiClient } from "./context/ApiClientContext";
+export { default as RemoteLayoutStorageProvider } from "./providers/RemoteLayoutStorageProvider";
+export { FloraRemoteLayoutStorage } from "./services/FloraRemoteLayoutStorage";
+
+// Device management exports
+export { default as DeviceContext, useDevices, useSelectedDevice, useRequireSelectedDevice } from "./context/DeviceContext";
+export type { DeviceState, IDeviceContext } from "./context/DeviceContext";
+export { DeviceService } from "./services/DeviceService";
+export type {
+  Device,
+  DeviceStatus,
+  AgentStatus,
+  DeviceTopic,
+  DeviceListResponse,
+  DeviceListQuery,
+  UpdateDeviceParams,
+  DeviceTokenResponse,
+  DeviceAgentInfo,
+  DeviceEventType,
+  DeviceEvent,
+  DeviceEventListResponse,
+  DeviceEventListQuery,
+  CreateDeviceEventParams,
+  UpdateDeviceEventParams,
+  IDeviceService,
+} from "./services/IDeviceService";
+export { default as DeviceProvider } from "./providers/DeviceProvider";
+export { default as RecordingProvider } from "./providers/RecordingProvider";
+
+// Event management exports
+export { default as EventContext, useEvents } from "./context/EventContext";
+export type { IEventContext } from "./context/EventContext";
+export { EventService } from "./services/EventService";
+export type {
+  EventType,
+  DeviceEvent as EventServiceDeviceEvent,
+  EventListQuery,
+  EventListResponse,
+  CreateEventInput,
+  UpdateEventInput,
+  IEventService,
+} from "./services/IEventService";
+export { default as EventProvider } from "./providers/EventProvider";
+
+// Organization management exports
+export { default as OrganizationContext, useOrganizations, useCurrentOrganization, useIsOrganizationMode } from "./context/OrganizationContext";
+export type { OrganizationState, IOrganizationContext } from "./context/OrganizationContext";
+export { OrganizationService } from "./services/OrganizationService";
+export type {
+  OrgRole,
+  Organization,
+  OrgMember,
+  CreateOrganizationInput,
+  UpdateOrganizationInput,
+  AddMemberInput,
+  UpdateMemberRoleInput,
+  IOrganizationService,
+} from "./services/IOrganizationService";
+export { default as OrganizationProvider } from "./providers/OrganizationProvider";

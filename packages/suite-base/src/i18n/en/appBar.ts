@@ -4,6 +4,7 @@
 
 export const appBar = {
   about: "About",
+  account: "Account",
   addPanel: "Add panel",
   documentation: "Documentation",
   exploreSampleData: "Explore sample data",
@@ -35,4 +36,5 @@ export const appBar = {
   viewOurDocs: "View our docs",
   profile: "Profile",
   getDesktopApp: "Get desktop app",
+  unsavedChanges: "Unsaved changes",
 };

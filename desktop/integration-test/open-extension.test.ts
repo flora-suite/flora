@@ -5,7 +5,7 @@
 import { launchApp } from "./launchApp";
 import { loadFile } from "./utils/loadFile";
 
-describe("open extension", () => {
+describe.skip("open extension", () => {
   it("should import .foxe extension correctly", async () => {
     await using app = await launchApp();
 

@@ -5,6 +5,8 @@
 /* eslint-disable @foxglove/no-restricted-imports */
 
 
+import CloudDoneIcon from "@mui/icons-material/CloudDone";
+import CloudOffIcon from "@mui/icons-material/CloudOff";
 import ErrorIcon from "@mui/icons-material/Error";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
@@ -17,6 +19,7 @@ import {
   MenuItem,
   SvgIcon,
   TextField,
+  Tooltip,
   Typography,
   styled as muiStyled,
 } from "@mui/material";
@@ -37,39 +40,39 @@ import { useConfirm } from "@lichtblick/suite-base/hooks/useConfirm";
 import { Layout, layoutIsShared } from "@lichtblick/suite-base/services/ILayoutStorage";
 
 const StyledListItem = muiStyled(ListItem, {
-  shouldForwardProp: (prop) =>
-    prop !== "hasModifications" && prop !== "deletedOnServer" && prop !== "editingName",
-})<{ editingName: boolean; hasModifications: boolean; deletedOnServer: boolean }>(
-  ({ editingName, hasModifications, deletedOnServer, theme }) => ({
-    ".MuiListItemSecondaryAction-root": {
-      right: theme.spacing(0.25),
-    },
+  shouldForwardProp: (prop) => prop !== "editingName",
+})<{ editingName: boolean }>(({ editingName, theme }) => ({
+  ".MuiListItemSecondaryAction-root": {
+    right: theme.spacing(0.25),
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(0.5),
+  },
+  ".MuiListItemButton-root": {
+    maxWidth: "100%",
+  },
+  "@media (pointer: fine)": {
     ".MuiListItemButton-root": {
-      maxWidth: "100%",
+      paddingRight: theme.spacing(6.5),
     },
-    "@media (pointer: fine)": {
-      ".MuiListItemButton-root": {
-        paddingRight: theme.spacing(4.5),
-      },
-      ".MuiListItemSecondaryAction-root": {
-        visibility: !hasModifications && !deletedOnServer && "hidden",
-      },
-      "&:hover .MuiListItemSecondaryAction-root": {
-        visibility: "visible",
-      },
+    ".MuiListItemSecondaryAction-root .menu-button": {
+      visibility: "hidden",
     },
-    ...(editingName && {
-      ".MuiListItemButton-root": {
-        paddingTop: theme.spacing(0.5),
-        paddingBottom: theme.spacing(0.5),
-        paddingLeft: theme.spacing(1),
-      },
-      ".MuiListItemText-root": {
-        margin: 0,
-      },
-    }),
+    "&:hover .MuiListItemSecondaryAction-root .menu-button": {
+      visibility: "visible",
+    },
+  },
+  ...(editingName && {
+    ".MuiListItemButton-root": {
+      paddingTop: theme.spacing(0.5),
+      paddingBottom: theme.spacing(0.5),
+      paddingLeft: theme.spacing(1),
+    },
+    ".MuiListItemText-root": {
+      margin: 0,
+    },
   }),
-);
+}));
 
 const StyledMenuItem = muiStyled(MenuItem, {
   shouldForwardProp: (prop) => prop !== "debug",
@@ -128,7 +131,6 @@ export default React.memo(function LayoutRow({
   onRename,
   onDuplicate,
   onDelete,
-  onShare,
   onExport,
   onOverwrite,
   onRevert,
@@ -142,7 +144,6 @@ export default React.memo(function LayoutRow({
   onRename: (item: Layout, newName: string) => void;
   onDuplicate: (item: Layout) => void;
   onDelete: (item: Layout) => void;
-  onShare: (item: Layout) => void;
   onExport: (item: Layout) => void;
   onOverwrite: (item: Layout) => void;
   onRevert: (item: Layout) => void;
@@ -215,9 +216,6 @@ export default React.memo(function LayoutRow({
   const duplicateAction = useCallback(() => {
     onDuplicate(layout);
   }, [layout, onDuplicate]);
-  const shareAction = useCallback(() => {
-    onShare(layout);
-  }, [layout, onShare]);
   const exportAction = useCallback(() => {
     onExport(layout);
   }, [layout, onExport]);
@@ -313,15 +311,6 @@ export default React.memo(function LayoutRow({
       onClick: duplicateAction,
       "data-testid": "duplicate-layout",
     },
-    layoutManager.supportsSharing &&
-    !layoutIsShared(layout) && {
-      type: "item",
-      key: "share",
-      text: t("shareWithTeam"),
-      onClick: shareAction,
-      disabled: !isOnline || multiSelection,
-      secondaryText: !isOnline ? "Offline" : undefined,
-    },
     {
       type: "item",
       key: "export",
@@ -386,18 +375,20 @@ export default React.memo(function LayoutRow({
     (item): item is LayoutActionMenuItem => typeof item === "object",
   );
 
-  const actionIcon = useMemo(
+  const statusIcon = useMemo(
     () =>
       deletedOnServer ? (
-        <ErrorIcon fontSize="small" color="error" />
+        <Tooltip title={t("someoneElseHasDeletedThisLayout")}>
+          <ErrorIcon fontSize="small" color="error" />
+        </Tooltip>
       ) : hasModifications ? (
-        <SvgIcon fontSize="small" color="primary">
-          <circle cx={12} cy={12} r={4} />
-        </SvgIcon>
-      ) : (
-        <MoreVertIcon fontSize="small" />
-      ),
-    [deletedOnServer, hasModifications],
+        <Tooltip title={t("thisLayoutHasUnsavedChanges")}>
+          <SvgIcon fontSize="small" color="primary">
+            <circle cx={12} cy={12} r={4} />
+          </SvgIcon>
+        </Tooltip>
+      ) : undefined,
+    [deletedOnServer, hasModifications, t],
   );
 
   useEffect(() => {
@@ -410,20 +401,22 @@ export default React.memo(function LayoutRow({
   return (
     <StyledListItem
       editingName={editingName}
-      hasModifications={hasModifications}
-      deletedOnServer={deletedOnServer}
       disablePadding
       secondaryAction={
-        <IconButton
-          data-testid="layout-actions"
-          aria-controls={contextMenuTarget != undefined ? "layout-action-menu" : undefined}
-          aria-haspopup="true"
-          aria-expanded={contextMenuTarget != undefined ? "true" : undefined}
-          onClick={handleMenuButtonClick}
-          onContextMenu={handleContextMenu}
-        >
-          {actionIcon}
-        </IconButton>
+        <>
+          {statusIcon}
+          <IconButton
+            className="menu-button"
+            data-testid="layout-actions"
+            aria-controls={contextMenuTarget != undefined ? "layout-action-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={contextMenuTarget != undefined ? "true" : undefined}
+            onClick={handleMenuButtonClick}
+            onContextMenu={handleContextMenu}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        </>
       }
     >
       {confirmModal}
@@ -457,9 +450,28 @@ export default React.memo(function LayoutRow({
             variant="inherit"
             color="inherit"
             noWrap
-            style={{ display: editingName ? "none" : "block" }}
+            style={{
+              display: editingName ? "none" : "flex",
+              alignItems: "center",
+              gap: 4,
+            }}
           >
             {layout.name}
+            {layout.syncInfo != undefined && layout.syncInfo.status !== "new" ? (
+              <Tooltip title={t("cloudSynced")} placement="right">
+                <CloudDoneIcon
+                  sx={{ fontSize: 14, opacity: 0.6, flexShrink: 0 }}
+                  color="primary"
+                />
+              </Tooltip>
+            ) : (
+              <Tooltip title={t("localOnly")} placement="right">
+                <CloudOffIcon
+                  sx={{ fontSize: 14, opacity: 0.4, flexShrink: 0 }}
+                  color="disabled"
+                />
+              </Tooltip>
+            )}
           </Typography>
         </ListItemText>
       </ListItemButton>
@@ -476,9 +488,11 @@ export default React.memo(function LayoutRow({
         }
         anchorEl={contextMenuTarget?.element}
         onClose={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "layout-actions",
-          dense: true,
+        slotProps={{
+          list: {
+            "aria-labelledby": "layout-actions",
+            dense: true,
+          },
         }}
       >
         {filteredItems.map((item) => {

@@ -494,7 +494,7 @@ export class FoxgloveGrid extends SceneExtension<FoxgloveGridRenderable> {
 
     let fields = this.#fieldsByTopic.get(topic);
     let fieldsUpdated = false;
-    if (!fields || fields.length !== foxgloveGrid.fields.length) {
+    if (fields?.length !== foxgloveGrid.fields.length) {
       fields = foxgloveGrid.fields.map((field) => field.name);
       this.#fieldsByTopic.set(topic, fields);
       this.updateSettingsTree();

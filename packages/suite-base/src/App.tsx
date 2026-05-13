@@ -5,6 +5,7 @@
 import { Fragment, Suspense, useEffect, useMemo } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { BrowserRouter } from "react-router";
 
 import { IdbLayoutStorage } from "@lichtblick/suite-base/IdbLayoutStorage";
 import GlobalCss from "@lichtblick/suite-base/components/GlobalCss";
@@ -70,7 +71,7 @@ function contextMenuHandler(event: MouseEvent) {
 export function App(props: AppProps): JSX.Element {
   const {
     appConfiguration,
-    appParameters = {},
+    appParameters,
     dataSources,
     extensionLoaders,
     layoutLoaders,
@@ -136,25 +137,27 @@ export function App(props: AppProps): JSX.Element {
             <ErrorBoundary>
               <MaybeLaunchPreference>
                 <MultiProvider providers={providers}>
-                  <DocumentTitleAdapter />
-                  <SendNotificationToastAdapter />
-                  <DndProvider backend={HTML5Backend}>
-                    <Suspense fallback={<></>}>
-                      <PanelCatalogProvider>
-                        <Workspace
-                          deepLinks={deepLinks}
-                          appBarLeftInset={props.appBarLeftInset}
-                          onAppBarDoubleClick={props.onAppBarDoubleClick}
-                          showCustomWindowControls={props.showCustomWindowControls}
-                          isMaximized={props.isMaximized}
-                          onMinimizeWindow={props.onMinimizeWindow}
-                          onMaximizeWindow={props.onMaximizeWindow}
-                          onUnmaximizeWindow={props.onUnmaximizeWindow}
-                          onCloseWindow={props.onCloseWindow}
-                        />
-                      </PanelCatalogProvider>
-                    </Suspense>
-                  </DndProvider>
+                  <BrowserRouter>
+                    <DocumentTitleAdapter />
+                    <SendNotificationToastAdapter />
+                    <DndProvider backend={HTML5Backend}>
+                      <Suspense fallback={<></>}>
+                        <PanelCatalogProvider>
+                          <Workspace
+                            deepLinks={deepLinks}
+                            appBarLeftInset={props.appBarLeftInset}
+                            onAppBarDoubleClick={props.onAppBarDoubleClick}
+                            showCustomWindowControls={props.showCustomWindowControls}
+                            isMaximized={props.isMaximized}
+                            onMinimizeWindow={props.onMinimizeWindow}
+                            onMaximizeWindow={props.onMaximizeWindow}
+                            onUnmaximizeWindow={props.onUnmaximizeWindow}
+                            onCloseWindow={props.onCloseWindow}
+                          />
+                        </PanelCatalogProvider>
+                      </Suspense>
+                    </DndProvider>
+                  </BrowserRouter>
                 </MultiProvider>
               </MaybeLaunchPreference>
             </ErrorBoundary>

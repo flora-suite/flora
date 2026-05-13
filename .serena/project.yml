@@ -1,0 +1,44 @@
+# Flora Desktop/Web Application - Serena Project Configuration
+# React 18 + TypeScript + Electron + Webpack
+
+languages:
+- typescript
+
+encoding: "utf-8"
+
+ignore_all_files_in_gitignore: true
+
+ignored_paths:
+- node_modules
+- dist
+- .webpack
+
+read_only: false
+
+excluded_tools: []
+
+initial_prompt: |
+  Flora is the main desktop/web application of Flora Suite, built with:
+  - Framework: React 18 with TypeScript
+  - Desktop: Electron (for desktop builds)
+  - Bundler: Webpack
+  - Styling: tss-react/mui (NEVER use sx prop, Box, or @emotion/styled)
+  - i18n: react-i18next (all user-visible strings must be translated)
+  - State: React Context + custom hooks
+
+  Key commands:
+  - yarn install: Install dependencies
+  - yarn desktop:serve: Start desktop development server
+  - yarn web:serve: Start web development server
+  - yarn test: Run tests
+  - yarn lint: Run ESLint
+  - yarn storybook: Start Storybook
+
+  Code conventions:
+  - Use undefined over null (except React refs use ReactNull)
+  - Use @lichtblick/den/async race instead of Promise.race
+  - Use console.warn/error/debug, never console.log/info
+  - No useEffectOnce, no property getters/setters
+
+project_name: "flora"
+included_optional_tools: []

@@ -64,7 +64,7 @@ export function TopicList(): React.JSX.Element {
   const getSelectedItemsAsDraggedMessagePaths = useCallback(() => {
     return filterMap(Array.from(getSelectedIndexes()).sort(), (index) =>
       latestTreeItems.current[index]
-        ? getDraggedMessagePath(latestTreeItems.current[index]!)
+        ? getDraggedMessagePath(latestTreeItems.current[index])
         : undefined,
     );
   }, [getSelectedIndexes, latestTreeItems]);
@@ -114,7 +114,7 @@ export function TopicList(): React.JSX.Element {
         case "topic":
           return (
             <TopicRow
-              style={style}
+              style={style as React.CSSProperties}
               topicResult={treeItem.item}
               selected={selected}
               onClick={onClick}
@@ -126,7 +126,7 @@ export function TopicList(): React.JSX.Element {
         case "schema":
           return (
             <MessagePathRow
-              style={style}
+              style={style as React.CSSProperties}
               messagePathResult={treeItem.item}
               selected={selected}
               onClick={onClick}

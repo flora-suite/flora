@@ -5,15 +5,23 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
+  ApiClientContext,
   App,
   AppSetting,
+  AuthProvider,
+  createFloraServices,
+  DeviceProvider,
+  EventProvider,
   FoxgloveWebSocketDataSourceFactory,
   IAppConfiguration,
   IDataSourceFactory,
   IdbExtensionLoader,
   McapLocalDataSourceFactory,
+  OrganizationProvider,
   OsContext,
+  RecordingProvider,
   RemoteDataSourceFactory,
+  RemoteLayoutStorageProvider,
   Ros1LocalBagDataSourceFactory,
   Ros1SocketDataSourceFactory,
   Ros2LocalBagDataSourceFactory,
@@ -74,6 +82,24 @@ export default function Root(props: RootProps): React.JSX.Element {
   ]);
 
   const [layoutLoaders] = useState(() => [new DesktopLayoutLoader(desktopBridge)]);
+
+  // Track session expiry to force re-render and update auth state
+  const [sessionExpiredCount, setSessionExpiredCount] = useState(0);
+
+  // Callback when API client detects session expired
+  const handleSessionExpired = useCallback(() => {
+    // Increment counter to signal AuthProvider that session expired
+    setSessionExpiredCount((prev) => prev + 1);
+  }, []);
+
+  // Create services once, but set up session expired callback
+  const services = useMemo(() => {
+    return createFloraServices({
+      onSessionExpired: handleSessionExpired,
+    });
+  }, [handleSessionExpired]);
+
+  const { authService, deviceService, recordingService, eventService, organizationService, apiClient } = services;
 
   const nativeAppMenu = useMemo(() => new NativeAppMenu(menuBridge), []);
   const nativeWindow = useMemo(() => new NativeWindow(desktopBridge), []);
@@ -147,6 +173,27 @@ export default function Root(props: RootProps): React.JSX.Element {
     };
   }, []);
 
+  // Combine auth provider with any extra providers
+  // Note: MultiProvider expects a flat list of providers, each will wrap the children
+  // Do NOT nest providers in the array - each element should be a single provider
+  const allProviders = useMemo(() => {
+    const providers: JSX.Element[] = [
+      /* eslint-disable react/jsx-key */
+      <ApiClientContext.Provider value={apiClient} />,
+      <AuthProvider authService={authService} sessionExpiredSignal={sessionExpiredCount} />,
+      <OrganizationProvider organizationService={organizationService} />,
+      <DeviceProvider deviceService={deviceService} />,
+      <RecordingProvider recordingService={recordingService} />,
+      <EventProvider eventService={eventService} />,
+      <RemoteLayoutStorageProvider />,
+      /* eslint-enable react/jsx-key */
+    ];
+    if (extraProviders) {
+      providers.push(...extraProviders);
+    }
+    return providers;
+  }, [authService, deviceService, recordingService, eventService, organizationService, apiClient, sessionExpiredCount, extraProviders]);
+
   return (
     <App
       appParameters={appParameters}
@@ -167,7 +214,7 @@ export default function Root(props: RootProps): React.JSX.Element {
       onMaximizeWindow={onMaximizeWindow}
       onUnmaximizeWindow={onUnmaximizeWindow}
       onCloseWindow={onCloseWindow}
-      extraProviders={extraProviders}
+      extraProviders={allProviders}
     />
   );
 }

@@ -6,6 +6,7 @@ import { TypeOptions } from "i18next";
 
 export const appBar: Partial<TypeOptions["resources"]["appBar"]> = {
   about: "关于",
+  account: "账户",
   addPanel: "添加面板",
   documentation: "文档",
   exploreSampleData: "探索样本数据",
@@ -36,4 +37,5 @@ export const appBar: Partial<TypeOptions["resources"]["appBar"]> = {
   viewOurDocs: "查看我们的文档",
   profile: "个人资料",
   getDesktopApp: "获取桌面应用",
+  unsavedChanges: "未保存的更改",
 };

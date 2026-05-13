@@ -30,7 +30,9 @@ export async function decodeCompressedImageToBitmap(
   image: CompressedImageTypes,
   resizeWidth?: number,
 ): Promise<TransparencyImage<ImageBitmap>> {
-  const bitmapData = new Blob([image.data], { type: `image/${image.format}` });
+  // Create a copy of the data to ensure it's backed by a regular ArrayBuffer
+  const blobData = image.data.slice();
+  const bitmapData = new Blob([blobData], { type: `image/${image.format}` });
   transparency.usesTransparency = false;
   transparency.imageData = await createImageBitmap(bitmapData, { resizeWidth });
   return transparency;

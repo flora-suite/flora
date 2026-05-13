@@ -9,19 +9,23 @@ import {
   PanelRight24Filled,
   PanelRight24Regular,
   SlideAdd24Regular,
+  Board20Regular,
 } from "@fluentui/react-icons";
-import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
-import { Avatar, IconButton, Tooltip } from "@mui/material";
-import { useState } from "react";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import { Avatar, IconButton, SvgIcon, Tooltip } from "@mui/material";
+import { ReactElement, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import tc from "tinycolor2";
 import { makeStyles } from "tss-react/mui";
 
 import { AppSetting } from "@lichtblick/suite-base/AppSetting";
 import { FloraLogo } from "@lichtblick/suite-base/components/FloraLogo";
 import { MemoryUseIndicator } from "@lichtblick/suite-base/components/MemoryUseIndicator";
+import { OrganizationSwitcher } from "@lichtblick/suite-base/components/OrganizationSwitcher";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { useAppContext } from "@lichtblick/suite-base/context/AppContext";
+import { useAuth } from "@lichtblick/suite-base/context/AuthContext";
 import {
   LayoutState,
   useCurrentLayoutSelector,
@@ -39,6 +43,7 @@ import { AppBarIconButton } from "./AppBarIconButton";
 import { AppMenu } from "./AppMenu";
 import { CustomWindowControls, CustomWindowControlsProps } from "./CustomWindowControls";
 import { DataSource } from "./DataSource";
+import { LayoutMenu } from "./LayoutMenu";
 import { SettingsMenu } from "./SettingsMenu";
 
 const useStyles = makeStyles<{ debugDragRegion?: boolean }, "avatar">()((
@@ -147,6 +152,47 @@ const useStyles = makeStyles<{ debugDragRegion?: boolean }, "avatar">()((
         },
       },
     },
+    layoutButton: {
+      display: "flex",
+      alignItems: "center",
+      gap: theme.spacing(0.5),
+      padding: theme.spacing(1.25, 1),
+      borderRadius: 0,
+      color: theme.palette.common.white,
+      fontSize: "0.875rem",
+      fontWeight: 500,
+      cursor: "pointer",
+      border: "none",
+      background: "transparent",
+      whiteSpace: "nowrap",
+      maxWidth: 200,
+
+      "&:hover": {
+        backgroundColor: tc(theme.palette.common.white).setAlpha(0.08).toString(),
+      },
+      "&.Mui-selected": {
+        backgroundColor: theme.palette.appBar.primary,
+      },
+    },
+    layoutName: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
+    layoutIconWrapper: {
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
+    },
+    unsavedIndicator: {
+      position: "absolute",
+      top: -2,
+      right: -2,
+      width: 8,
+      height: 8,
+      minWidth: 8,
+      minHeight: 8,
+    },
   };
 });
 
@@ -157,10 +203,12 @@ export type AppBarProps = CustomWindowControlsProps & {
 };
 
 const selectHasCurrentLayout = (state: LayoutState) => state.selectedLayout != undefined;
+const selectCurrentLayoutName = (state: LayoutState) => state.selectedLayout?.name;
+const selectHasUnsavedChanges = (state: LayoutState) => state.selectedLayout?.edited === true;
 const selectLeftSidebarOpen = (store: WorkspaceContextStore) => store.sidebars.left.open;
 const selectRightSidebarOpen = (store: WorkspaceContextStore) => store.sidebars.right.open;
 
-export function AppBar(props: AppBarProps): JSX.Element {
+export function AppBar(props: AppBarProps): React.JSX.Element {
   const {
     debugDragRegion,
     isMaximized,
@@ -181,19 +229,25 @@ export function AppBar(props: AppBarProps): JSX.Element {
   );
 
   const hasCurrentLayout = useCurrentLayoutSelector(selectHasCurrentLayout);
+  const currentLayoutName = useCurrentLayoutSelector(selectCurrentLayoutName);
+  const hasUnsavedChanges = useCurrentLayoutSelector(selectHasUnsavedChanges);
 
   const leftSidebarOpen = useWorkspaceStore(selectLeftSidebarOpen);
   const rightSidebarOpen = useWorkspaceStore(selectRightSidebarOpen);
 
   const { sidebarActions } = useWorkspaceActions();
 
+  const { isAuthenticated, user } = useAuth();
+
   const [appMenuEl, setAppMenuEl] = useState<undefined | HTMLElement>(undefined);
   const [userAnchorEl, setUserAnchorEl] = useState<undefined | HTMLElement>(undefined);
   const [panelAnchorEl, setPanelAnchorEl] = useState<undefined | HTMLElement>(undefined);
+  const [layoutAnchorEl, setLayoutAnchorEl] = useState<undefined | HTMLElement>(undefined);
 
   const appMenuOpen = Boolean(appMenuEl);
   const userMenuOpen = Boolean(userAnchorEl);
   const panelMenuOpen = Boolean(panelAnchorEl);
+  const layoutMenuOpen = Boolean(layoutAnchorEl);
 
   return (
     <>
@@ -228,6 +282,54 @@ export function AppBar(props: AppBarProps): JSX.Element {
                   setAppMenuEl(undefined);
                 }}
               />
+            </div>
+          </div>
+
+          <div className={classes.middle}>
+            <DataSource />
+          </div>
+
+          <div className={classes.end}>
+            <div className={classes.endInner}>
+              <Tooltip
+                title={hasUnsavedChanges ? t("unsavedChanges") : ""}
+                placement="bottom"
+                disableHoverListener={!hasUnsavedChanges}
+              >
+                <button
+                  className={cx(classes.layoutButton, { "Mui-selected": layoutMenuOpen })}
+                  id="layout-menu-button"
+                  data-testid="LayoutMenuButton"
+                  aria-label="Layouts button"
+                  aria-controls={layoutMenuOpen ? "layout-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={layoutMenuOpen ? "true" : undefined}
+                  onClick={(event) => {
+                    setLayoutAnchorEl(event.currentTarget);
+                  }}
+                  disabled={!hasCurrentLayout}
+                >
+                  <span className={classes.layoutIconWrapper}>
+                    <Board20Regular />
+                    {hasUnsavedChanges && (
+                      <SvgIcon
+                        className={classes.unsavedIndicator}
+                        color="primary"
+                        viewBox="0 0 8 8"
+                      >
+                        <circle cx={4} cy={4} r={4} />
+                      </SvgIcon>
+                    )}
+                  </span>
+                  <span className={classes.layoutName}>
+                    {currentLayoutName ?? t("layouts", "Layouts")}
+                  </span>
+                  <ChevronDown12Regular
+                    className={classes.dropDownIcon}
+                    primaryFill={theme.palette.common.white}
+                  />
+                </button>
+              </Tooltip>
               <AppBarIconButton
                 className={cx({ "Mui-selected": panelMenuOpen })}
                 color="inherit"
@@ -246,15 +348,6 @@ export function AppBar(props: AppBarProps): JSX.Element {
               >
                 <SlideAdd24Regular />
               </AppBarIconButton>
-            </div>
-          </div>
-
-          <div className={classes.middle}>
-            <DataSource />
-          </div>
-
-          <div className={classes.end}>
-            <div className={classes.endInner}>
               {enableMemoryUseIndicator && <MemoryUseIndicator />}
               {appBarLayoutButton}
               <Stack direction="row" alignItems="center" data-tourid="sidebar-button-group">
@@ -289,7 +382,11 @@ export function AppBar(props: AppBarProps): JSX.Element {
                   {rightSidebarOpen ? <PanelRight24Filled /> : <PanelRight24Regular />}
                 </AppBarIconButton>
               </Stack>
-              <Tooltip classes={{ tooltip: classes.tooltip }} title="Profile" arrow={false}>
+              <Tooltip
+                classes={{ tooltip: classes.tooltip }}
+                title={isAuthenticated ? t("account") : t("profile")}
+                arrow={false}
+              >
                 <IconButton
                   className={cx(classes.iconButton, { "Mui-selected": userMenuOpen })}
                   aria-label="User profile menu button"
@@ -304,9 +401,15 @@ export function AppBar(props: AppBarProps): JSX.Element {
                   }}
                   data-testid="user-button"
                 >
-                  <Avatar className={classes.avatar} variant="rounded">
-                    <SettingsApplicationsIcon />
-                  </Avatar>
+                  {isAuthenticated && user ? (
+                    <Avatar className={classes.avatar} variant="rounded" src={user.avatar}>
+                      {!user.avatar && (user.name?.[0] ?? user.email[0])?.toUpperCase()}
+                    </Avatar>
+                  ) : (
+                    <Avatar className={classes.avatar} variant="rounded">
+                      <PersonOutlineIcon />
+                    </Avatar>
+                  )}
                 </IconButton>
               </Tooltip>
               {showCustomWindowControls && (
@@ -329,6 +432,95 @@ export function AppBar(props: AppBarProps): JSX.Element {
           setPanelAnchorEl(undefined);
         }}
       />
+      <LayoutMenu
+        anchorEl={layoutAnchorEl}
+        open={layoutMenuOpen}
+        handleClose={() => {
+          setLayoutAnchorEl(undefined);
+        }}
+      />
+      <SettingsMenu
+        anchorEl={userAnchorEl}
+        open={userMenuOpen}
+        handleClose={() => {
+          setUserAnchorEl(undefined);
+        }}
+      />
+    </>
+  );
+}
+
+export function DashboardAppBar({ children }: { children?: ReactElement }): React.JSX.Element {
+  const { classes, cx } = useStyles({});
+  const { t } = useTranslation("appBar");
+  const navigate = useNavigate();
+
+  const { isAuthenticated, user } = useAuth();
+
+  const [userAnchorEl, setUserAnchorEl] = useState<undefined | HTMLElement>(undefined);
+
+  const userMenuOpen = Boolean(userAnchorEl);
+
+  const handleLogoClick = useCallback(() => {
+    void navigate("/");
+  }, [navigate]);
+
+  return (
+    <>
+      <AppBarContainer onDoubleClick={() => {}} leftInset={0}>
+        <div className={classes.toolbar}>
+          <div className={classes.start}>
+            <div className={classes.startInner}>
+              <IconButton
+                className={classes.logo}
+                color="inherit"
+                onClick={handleLogoClick}
+                title="Dashboard"
+              >
+                <FloraLogo fontSize="inherit" color="inherit" />
+              </IconButton>
+              <OrganizationSwitcher />
+            </div>
+          </div>
+
+          <div className={classes.middle}>{children}</div>
+
+          <div className={classes.end}>
+            <div className={classes.endInner}>
+              <Tooltip
+                classes={{ tooltip: classes.tooltip }}
+                title={isAuthenticated ? t("account") : t("profile")}
+                arrow={false}
+              >
+                <IconButton
+                  className={cx(classes.iconButton, { "Mui-selected": userMenuOpen })}
+                  aria-label="User profile menu button"
+                  color="inherit"
+                  id="user-button"
+                  data-tourid="user-button"
+                  aria-controls={userMenuOpen ? "user-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={userMenuOpen ? "true" : undefined}
+                  onClick={(event) => {
+                    setUserAnchorEl(event.currentTarget);
+                  }}
+                  data-testid="user-button"
+                >
+                  {isAuthenticated && user ? (
+                    <Avatar className={classes.avatar} variant="rounded" src={user.avatar}>
+                      {!user.avatar && (user.name?.[0] ?? user.email[0])?.toUpperCase()}
+                    </Avatar>
+                  ) : (
+                    <Avatar className={classes.avatar} variant="rounded">
+                      <PersonOutlineIcon />
+                    </Avatar>
+                  )}
+                </IconButton>
+              </Tooltip>
+            </div>
+          </div>
+        </div>
+      </AppBarContainer>
       <SettingsMenu
         anchorEl={userAnchorEl}
         open={userMenuOpen}

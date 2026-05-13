@@ -46,9 +46,6 @@ async function createMockFoxeFile(): Promise<Uint8Array> {
   return new Uint8Array(arrayBuffer);
 }
 
-const EXT_FILE_TURTLESIM = `${__dirname}/../test/fixtures/lichtblick.suite-extension-turtlesim-0.0.1.foxe`;
-const EXT_FILE_PREFIXED = `${__dirname}/../test/fixtures/prefixed-name-extension.foxe`;
-
 jest.mock("@lichtblick/log", () => ({
   getLogger: jest.fn(() => ({
     debug: jest.fn(),

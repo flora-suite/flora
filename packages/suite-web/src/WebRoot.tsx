@@ -2,16 +2,24 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import {
+  ApiClientContext,
   AppBarProps,
   AppSetting,
+  AuthProvider,
+  createFloraServices,
+  DeviceProvider,
+  EventProvider,
   FoxgloveWebSocketDataSourceFactory,
   IDataSourceFactory,
   IdbExtensionLoader,
   McapLocalDataSourceFactory,
+  OrganizationProvider,
+  RecordingProvider,
   RemoteDataSourceFactory,
+  RemoteLayoutStorageProvider,
   Ros1LocalBagDataSourceFactory,
   Ros2LocalBagDataSourceFactory,
   RosbridgeDataSourceFactory,
@@ -45,6 +53,24 @@ export function WebRoot(props: {
     new IdbExtensionLoader("local"),
   ]);
 
+  // Track session expiry to force re-render and update auth state
+  const [sessionExpiredCount, setSessionExpiredCount] = useState(0);
+
+  // Callback when API client detects session expired
+  const handleSessionExpired = useCallback(() => {
+    // Increment counter to signal AuthProvider that session expired
+    setSessionExpiredCount((prev) => prev + 1);
+  }, []);
+
+  // Create services once, but set up session expired callback
+  const services = useMemo(() => {
+    return createFloraServices({
+      onSessionExpired: handleSessionExpired,
+    });
+  }, [handleSessionExpired]);
+
+  const { authService, deviceService, recordingService, eventService, organizationService, apiClient } = services;
+
   const dataSources = useMemo(() => {
     const sources = [
       new Ros1LocalBagDataSourceFactory(),
@@ -60,6 +86,27 @@ export function WebRoot(props: {
     return props.dataSources ?? sources;
   }, [props.dataSources]);
 
+  // Combine auth provider with any extra providers
+  // Note: MultiProvider expects a flat list of providers, each will wrap the children
+  // Do NOT nest providers in the array - each element should be a single provider
+  const allProviders = useMemo(() => {
+    const providers: JSX.Element[] = [
+      /* eslint-disable react/jsx-key */
+      <ApiClientContext.Provider value={apiClient} />,
+      <AuthProvider authService={authService} sessionExpiredSignal={sessionExpiredCount} />,
+      <OrganizationProvider organizationService={organizationService} />,
+      <DeviceProvider deviceService={deviceService} />,
+      <RecordingProvider recordingService={recordingService} />,
+      <EventProvider eventService={eventService} />,
+      <RemoteLayoutStorageProvider />,
+      /* eslint-enable react/jsx-key */
+    ];
+    if (props.extraProviders) {
+      providers.push(...props.extraProviders);
+    }
+    return providers;
+  }, [authService, deviceService, recordingService, eventService, organizationService, apiClient, sessionExpiredCount, props.extraProviders]);
+
   return (
     <SharedRoot
       enableLaunchPreferenceScreen
@@ -68,7 +115,7 @@ export function WebRoot(props: {
       appConfiguration={appConfiguration}
       extensionLoaders={extensionLoaders}
       enableGlobalCss
-      extraProviders={props.extraProviders}
+      extraProviders={allProviders}
       AppBarComponent={props.AppBarComponent}
     >
       {props.children}

@@ -14,8 +14,8 @@ import type { Dataset } from "../types";
 import { OriginalValue } from "../utils/datum";
 
 type CsvDatum = {
-  x: number;
-  y: number;
+  x: number | null;
+  y: number | null;
   receiveTime: Time;
   headerStamp?: Time;
   value: OriginalValue;

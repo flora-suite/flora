@@ -13,11 +13,11 @@
 
 import DoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import { Fab } from "@mui/material";
-import { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { useLatest } from "react-use";
 import { AutoSizer } from "react-virtualized";
-import { VariableSizeList as List } from "react-window";
+import { VariableSizeList as List, ListChildComponentProps } from "react-window";
 import { makeStyles } from "tss-react/mui";
 
 import { useAppTimeFormat } from "@lichtblick/suite-base/hooks";
@@ -43,7 +43,7 @@ type ListItemData = {
   setRowHeight: (index: number, height: number) => void;
 };
 
-function Row(props: { data: ListItemData; index: number; style: CSSProperties }): JSX.Element {
+function Row(props: ListChildComponentProps<ListItemData>): JSX.Element {
   const { timeFormat, timeZone } = useAppTimeFormat();
   const ref = useRef<HTMLDivElement>(ReactNull);
 
@@ -56,7 +56,7 @@ function Row(props: { data: ListItemData; index: number; style: CSSProperties })
   const item = props.data.items[props.index]!;
 
   return (
-    <div style={{ ...props.style, height: "auto" }} ref={ref}>
+    <div style={{ ...(props.style as React.CSSProperties), height: "auto" }} ref={ref}>
       <LogMessage value={item} timestampFormat={timeFormat} timeZone={timeZone} />
     </div>
   );

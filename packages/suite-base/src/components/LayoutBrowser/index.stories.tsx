@@ -84,7 +84,7 @@ function makeUnsavedLayout(id: number): Layout {
 async function clickMenuButtonAction(index: number) {
   const actions = await screen.findAllByTestId("layout-actions");
   if (actions[index]) {
-    fireEvent.click(actions[index]!);
+    fireEvent.click(actions[index]);
   }
 }
 
