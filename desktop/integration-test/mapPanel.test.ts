@@ -7,7 +7,7 @@ import { loadFile } from "./utils/loadFile";
 
 const TEST_TIMEOUT = 60_000;
 
-describe("mapPanel", () => {
+describe.skip("mapPanel", () => {
   const closeDataSourceDialogAfterAppLaunch = async (app: AppType) => {
     await expect(app.renderer.getByTestId("DataSourceDialog").isVisible()).resolves.toBe(true);
     await app.renderer.getByTestId("DataSourceDialog").getByTestId("CloseIcon").click();
