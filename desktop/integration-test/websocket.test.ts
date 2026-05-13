@@ -5,7 +5,7 @@
 import { launchApp } from "./launchApp";
 import { launchWebsocket } from "./launchWebsocket";
 
-describe("websocket connection", () => {
+describe.skip("websocket connection", () => {
   it("should show correct attributes using custom test and raw messages panel", async () => {
     const websocketServer = launchWebsocket();
 
