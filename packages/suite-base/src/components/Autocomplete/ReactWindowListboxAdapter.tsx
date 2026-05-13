@@ -106,8 +106,8 @@ function FixedSizeListRenderRow(props: ListChildComponentProps<ListboxAdapterChi
     return ReactNull;
   }
 
-  const inlineStyle = {
-    ...style,
+  const inlineStyle: React.CSSProperties = {
+    ...(style as React.CSSProperties),
     top: (style.top as number) + Constants.LISTBOX_PADDING,
   };
 

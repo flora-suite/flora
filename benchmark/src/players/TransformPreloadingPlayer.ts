@@ -248,7 +248,9 @@ class TransformPreloadingPlayer implements Player {
         seekFramesMs.push(endFrame - startFrame);
       }
       // eslint-disable-next-line no-loop-func
-      seekFramesMs.forEach((ms, i) => (seekFramesMsTotals[i] += ms));
+      seekFramesMs.forEach((ms, i) => {
+        seekFramesMsTotals[i] = (seekFramesMsTotals[i] ?? 0) + ms;
+      });
     }
 
     log.info(`Number of messages: ${allMessages.length}`);
@@ -292,7 +294,9 @@ class TransformPreloadingPlayer implements Player {
         const endFrame = performance.now();
         seekFramesMs.push(endFrame - startFrame);
       }
-      seekFramesMs.forEach((ms, i) => (seekFramesMsTotals[i] += ms));
+      seekFramesMs.forEach((ms, i) => {
+        seekFramesMsTotals[i] = (seekFramesMsTotals[i] ?? 0) + ms;
+      });
     }
 
     log.info(

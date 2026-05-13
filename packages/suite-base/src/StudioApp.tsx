@@ -5,18 +5,39 @@
 import { Fragment, Suspense, useEffect, useMemo } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { BrowserRouter, Routes, Route } from "react-router";
 
 import { IdbLayoutStorage } from "@lichtblick/suite-base/IdbLayoutStorage";
 import LayoutStorageContext from "@lichtblick/suite-base/context/LayoutStorageContext";
 import NativeAppMenuContext from "@lichtblick/suite-base/context/NativeAppMenuContext";
 import NativeWindowContext from "@lichtblick/suite-base/context/NativeWindowContext";
 import { useSharedRootContext } from "@lichtblick/suite-base/context/SharedRootContext";
+import { DashboardLayout, SettingsLayout } from "@lichtblick/suite-base/layouts";
+import {
+  DashboardPage,
+  DevicesPage,
+  DeviceDetailPage,
+  DeviceRegisterPage,
+  EventsPage,
+  LayoutsPage,
+  RecordingsPage,
+  GeneralSettings,
+  ExtensionsSettingsPage,
+  ExperimentalSettings,
+  AboutSettings,
+  OrganizationGeneralSettings,
+  OrganizationMembersSettings,
+  OrganizationApiKeysSettings,
+  OrganizationExtensionsSettings,
+  TimelinePage,
+} from "@lichtblick/suite-base/pages";
 import EventsProvider from "@lichtblick/suite-base/providers/EventsProvider";
 import LayoutManagerProvider from "@lichtblick/suite-base/providers/LayoutManagerProvider";
 import ProblemsContextProvider from "@lichtblick/suite-base/providers/ProblemsContextProvider";
 import { StudioLogsSettingsProvider } from "@lichtblick/suite-base/providers/StudioLogsSettingsProvider";
 import TimelineInteractionStateProvider from "@lichtblick/suite-base/providers/TimelineInteractionStateProvider";
 import UserProfileLocalStorageProvider from "@lichtblick/suite-base/providers/UserProfileLocalStorageProvider";
+import WorkspaceContextProvider from "@lichtblick/suite-base/providers/WorkspaceContextProvider";
 
 import Workspace from "./Workspace";
 import DocumentTitleAdapter from "./components/DocumentTitleAdapter";
@@ -67,10 +88,6 @@ export function StudioApp(): JSX.Element {
     /* eslint-enable react/jsx-key */
   ];
 
-  if (extraProviders) {
-    providers.unshift(...extraProviders);
-  }
-
   if (nativeAppMenu) {
     providers.push(<NativeAppMenuContext.Provider value={nativeAppMenu} />);
   }
@@ -92,6 +109,12 @@ export function StudioApp(): JSX.Element {
   const layoutStorage = useMemo(() => new IdbLayoutStorage(), []);
 
   providers.unshift(<LayoutStorageContext.Provider value={layoutStorage} />);
+
+  // extraProviders (ApiClientContext, AuthProvider, RemoteLayoutStorageProvider) must be
+  // at the outermost level so they are available to LayoutManagerProvider
+  if (extraProviders) {
+    providers.unshift(...extraProviders);
+  }
   const MaybeLaunchPreference = enableLaunchPreferenceScreen === true ? LaunchPreference : Fragment;
 
   useEffect(() => {
@@ -109,19 +132,48 @@ export function StudioApp(): JSX.Element {
         <DndProvider backend={HTML5Backend}>
           <Suspense fallback={<></>}>
             <PanelCatalogProvider>
-              <Workspace
-                deepLinks={deepLinks}
-                appBarLeftInset={appBarLeftInset}
-                onAppBarDoubleClick={onAppBarDoubleClick}
-                showCustomWindowControls={customWindowControlProps?.showCustomWindowControls}
-                isMaximized={customWindowControlProps?.isMaximized}
-                initialZoomFactor={customWindowControlProps?.initialZoomFactor}
-                onMinimizeWindow={customWindowControlProps?.onMinimizeWindow}
-                onMaximizeWindow={customWindowControlProps?.onMaximizeWindow}
-                onUnmaximizeWindow={customWindowControlProps?.onUnmaximizeWindow}
-                onCloseWindow={customWindowControlProps?.onCloseWindow}
-                AppBarComponent={AppBarComponent}
-              />
+                <BrowserRouter>
+                <Routes>
+                  {/* Standalone device registration page (no dashboard layout) */}
+                  <Route path="devices/register" element={<DeviceRegisterPage />} />
+
+                  {/* Dashboard pages */}
+                  <Route element={<WorkspaceContextProvider><DashboardLayout /></WorkspaceContextProvider>}>
+                    <Route index element={<DashboardPage />} />
+                    <Route path="devices" element={<DevicesPage />} />
+                    <Route path="devices/:deviceId" element={<DeviceDetailPage />} />
+                    <Route path="recordings" element={<RecordingsPage />} />
+                    <Route path="events" element={<EventsPage />} />
+                    <Route path="timeline" element={<TimelinePage />} />
+                    <Route path="layouts" element={<LayoutsPage />} />
+                  </Route>
+                  <Route element={<WorkspaceContextProvider><SettingsLayout /></WorkspaceContextProvider>}>
+                    <Route path="settings" element={<GeneralSettings />} />
+                    <Route path="settings/general" element={<GeneralSettings />} />
+                    <Route path="settings/extensions" element={<ExtensionsSettingsPage />} />
+                    <Route path="settings/experimental" element={<ExperimentalSettings />} />
+                    <Route path="settings/about" element={<AboutSettings />} />
+                    {/* Organization settings routes */}
+                    <Route path="settings/organization" element={<OrganizationGeneralSettings />} />
+                    <Route path="settings/organization/members" element={<OrganizationMembersSettings />} />
+                    <Route path="settings/organization/api-keys" element={<OrganizationApiKeysSettings />} />
+                    <Route path="settings/organization/extensions" element={<OrganizationExtensionsSettings />} />
+                  </Route>
+                  <Route path="view" element={<WorkspaceContextProvider><Workspace
+                    deepLinks={deepLinks}
+                    appBarLeftInset={appBarLeftInset}
+                    onAppBarDoubleClick={onAppBarDoubleClick}
+                    showCustomWindowControls={customWindowControlProps?.showCustomWindowControls}
+                    isMaximized={customWindowControlProps?.isMaximized}
+                    initialZoomFactor={customWindowControlProps?.initialZoomFactor}
+                    onMinimizeWindow={customWindowControlProps?.onMinimizeWindow}
+                    onMaximizeWindow={customWindowControlProps?.onMaximizeWindow}
+                    onUnmaximizeWindow={customWindowControlProps?.onUnmaximizeWindow}
+                    onCloseWindow={customWindowControlProps?.onCloseWindow}
+                    AppBarComponent={AppBarComponent}
+                  /></WorkspaceContextProvider>} />
+                </Routes>
+              </BrowserRouter>
             </PanelCatalogProvider>
           </Suspense>
         </DndProvider>

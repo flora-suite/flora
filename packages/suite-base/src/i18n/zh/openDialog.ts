@@ -5,6 +5,44 @@
 import { TypeOptions } from "i18next";
 
 export const openDialog: Partial<TypeOptions["resources"]["openDialog"]> = {
+  // Dashboard sidebar
+  openDataSources: "打开数据源",
+  browse: "浏览",
+  dashboard: "仪表盘",
+  devices: "设备",
+  recordings: "录制",
+  events: "事件",
+  timeline: "时间线",
+  layouts: "布局",
+
+  // Dashboard cards
+  inviteMembers: "邀请成员",
+  inviteMembersDescription: "邀请成员加入您的组织",
+  uploadLocalFile: "上传本地文件",
+  uploadLocalFileDescription: "与团队存储和共享数据",
+
+  // Recently viewed
+  recentlyViewed: "最近查看",
+  name: "名称",
+  noRecentSources: "暂无最近使用的数据源",
+
+  // Resources
+  resources: "资源",
+  exploreExampleDatasets: "探索示例数据集",
+  exploreExampleDatasetsDescription: "不知道从哪里开始？探索和可视化各种示例数据集，了解 Flora 如何丰富您的机器人开发工作流程。",
+  visualizeExampleData: "可视化示例数据",
+  whatIsFlora: "什么是 Flora？",
+  whatIsFloraDescription: "Flora 帮助机器人团队探索、协作和理解机器人数据 - 实现更智能的迭代和加速开发。",
+  readTheDocs: "阅读文档",
+  gettingStartedWithRos2: "ROS 2 入门",
+  gettingStartedWithRos2Description: "加载包含 ROS 2 数据的本地和远程 MCAP 文件，或直接连接到实时 ROS 2 堆栈。",
+  writingDataWithSchemas: "使用 Flora 模式写入数据",
+  writingDataWithSchemasDescription: "Flora 通常要求传入的消息符合特定结构才能正确可视化。使用 Flora 模式可以充分利用平台内置的可视化功能。",
+
+  // Upgrade prompt
+  upgradeYourPlan: "升级您的计划",
+  upgradeDescription: "以解除限制并访问 Flora Agent、Webhooks 等强大功能。",
+
   canBeShared: "与队友分享数据文件、可视化布局和自定义扩展程序",
   collaborateTitle: "使用 Foxglove 数据平台加速开发",
   convenientWebInterface: "使用一个方便的网络界面，以闪电般的速度标记、搜索和检索数据",

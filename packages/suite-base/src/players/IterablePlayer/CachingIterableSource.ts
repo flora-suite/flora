@@ -443,7 +443,7 @@ class CachingIterableSource extends EventEmitter<EventTypes> implements IIterabl
 
       for (let i = readIdx; i >= 0; --i) {
         const record = cacheBlock.items[i];
-        if (!record || record[1].type !== "message-event") {
+        if (record?.[1].type !== "message-event") {
           continue;
         }
 

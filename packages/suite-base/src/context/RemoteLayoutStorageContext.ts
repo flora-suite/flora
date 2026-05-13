@@ -12,3 +12,5 @@ RemoteLayoutStorageContext.displayName = "RemoteLayoutStorageContext";
 export function useRemoteLayoutStorage(): IRemoteLayoutStorage | undefined {
   return useContext(RemoteLayoutStorageContext);
 }
+
+export default RemoteLayoutStorageContext;

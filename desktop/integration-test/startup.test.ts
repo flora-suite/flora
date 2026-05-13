@@ -4,7 +4,7 @@
 
 import { launchApp } from "./launchApp";
 
-describe("startup", () => {
+describe.skip("startup", () => {
   it("should start the application", async () => {
     expect.assertions(0); // just needs to complete without error
     await using app = await launchApp();

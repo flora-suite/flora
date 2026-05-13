@@ -4,6 +4,7 @@
 
 export * from "./addPanel";
 export * from "./appBar";
+export * from "./auth";
 export * from "./appSettings";
 export * from "./dataSourceInfo";
 export * from "./desktopWindow";
@@ -23,3 +24,4 @@ export * from "./stateTransitions";
 export * from "./threeDee";
 export * from "./topicList";
 export * from "./workspace";
+export * from "./pages";

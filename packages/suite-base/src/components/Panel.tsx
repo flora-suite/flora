@@ -168,7 +168,7 @@ export default function Panel<
 
     const mosaicPath = useContext(MosaicPathContext);
     const isTopLevelPanel =
-      mosaicPath != undefined && mosaicPath.length === 0 && tabId == undefined;
+      mosaicPath?.length === 0 && tabId == undefined;
 
     // There may be a parent panel (when a panel is in a tab).
     const parentPanelContext = useContext(PanelContext);

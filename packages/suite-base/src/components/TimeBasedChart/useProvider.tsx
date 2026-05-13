@@ -31,12 +31,12 @@ export function getBounds(data: Datasets<ObjectData>): Bounds | undefined {
 
   for (const dataset of data) {
     for (const item of iterateObjects(dataset.data)) {
-      if (!isNaN(item.x)) {
+      if (item.x != undefined && !isNaN(item.x)) {
         xMin = Math.min(xMin ?? item.x, item.x);
         xMax = Math.max(xMax ?? item.x, item.x);
       }
 
-      if (!isNaN(item.y)) {
+      if (item.y != undefined && !isNaN(item.y)) {
         yMin = Math.min(yMin ?? item.y, item.y);
         yMax = Math.max(yMax ?? item.y, item.y);
       }

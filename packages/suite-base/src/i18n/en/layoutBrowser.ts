@@ -3,6 +3,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 export const layoutBrowser = {
+  layouts: "Layouts",
+  searchLayouts: "Search layouts...",
+  noLayoutsFound: "No layouts found",
   createNewLayout: "Create new layout",
   importFromFile: "Import from file…",
   importLayout: "Import layout",
@@ -15,7 +18,14 @@ export const layoutBrowser = {
   someoneElseHasDeletedThisLayout: "Someone else has deleted this layout",
   theseLayoutsHaveUnsavedChanges: "These layouts have unsaved changes",
   thisLayoutHasUnsavedChanges: "This layout has unsaved changes",
-  shareWithTeam: "Share with team…",
   export: "Export…",
   addANewLayoutToGetStartedWithFlora: "Add a new layout to get started with Flora!",
+  cloudSynced: "Synced to cloud",
+  localOnly: "Local only",
+  layoutName: "Layout name",
+  personal: "Personal",
+  organization: "Organization",
+  recent: "Recent",
+  allLayouts: "All Layouts",
+  showMore: "Show more",
 };

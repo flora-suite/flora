@@ -18,4 +18,6 @@ export const layoutBrowser = {
   shareWithTeam: "チームと共有…",
   export: "エクスポート…",
   addANewLayoutToGetStartedWithFlora: "Floraを始めるには新しいレイアウトを追加してください！",
+  cloudSynced: "クラウドに同期済み",
+  localOnly: "ローカルのみ",
 };

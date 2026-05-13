@@ -136,6 +136,11 @@ export function continueDownsample(
     const index = cursor + relativeIndex;
     numPoints++;
 
+    // Skip points with null x or y values
+    if (datum.x == undefined || datum.y == undefined) {
+      continue;
+    }
+
     // Benchmarking shows, at least as of the time of this writing, that Math.trunc is
     // *much* faster than Math.round on this data.
     const x = Math.trunc(datum.x * pixelPerXValue);
@@ -253,6 +258,11 @@ export function downsampleScatter(points: Iterable<Point>, view: PlotViewport): 
   const sparse: boolean[] = [];
 
   for (const datum of points) {
+    // Skip points with null x or y values
+    if (datum.x == undefined || datum.y == undefined) {
+      continue;
+    }
+
     // Out-of-bounds scatter points are ignored. We don't filter on y
     // because y values are needed to allow chart to auto scale to the correct
     // height.

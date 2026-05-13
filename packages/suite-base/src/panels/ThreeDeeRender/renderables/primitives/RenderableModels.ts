@@ -166,7 +166,11 @@ export class RenderableModels extends RenderablePrimitive {
           try {
             renderable = await this.#createRenderable(
               primitive,
-              (model) => URL.createObjectURL(new Blob([model.data], { type: model.media_type })),
+              (model) => {
+                // Create a copy of the data to ensure it's backed by a regular ArrayBuffer
+                const blobData = model.data.slice();
+                return URL.createObjectURL(new Blob([blobData], { type: model.media_type }));
+              },
               (url) => {
                 URL.revokeObjectURL(url);
               },

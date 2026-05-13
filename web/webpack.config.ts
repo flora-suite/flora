@@ -18,6 +18,10 @@ const params: ConfigParams = {
   entrypoint: "./entrypoint.tsx",
   prodSourceMap: "source-map",
   version: packageJson.version,
+  publicPath: "/",
+  historyApiFallback: {
+    index: "/index.html",
+  },
 };
 
 // foxglove-depcheck-used: webpack-dev-server

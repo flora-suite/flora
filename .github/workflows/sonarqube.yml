@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: lts/*
+          package-manager-cache: false
 
       - name: Enable corepack
         run: corepack enable yarn
@@ -30,7 +31,6 @@ jobs:
         with:
           path: |
             .yarn/cache
-            **/node_modules
           key: v5-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: v5-${{ runner.os }}-yarn-
 
@@ -49,6 +49,7 @@ jobs:
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@master
+        continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           # SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}

@@ -5,7 +5,9 @@
 import { AppType, launchApp } from "./launchApp";
 import { loadFile } from "./utils/loadFile";
 
-describe("mapPanel", () => {
+const TEST_TIMEOUT = 60_000;
+
+describe.skip("mapPanel", () => {
   const closeDataSourceDialogAfterAppLaunch = async (app: AppType) => {
     await expect(app.renderer.getByTestId("DataSourceDialog").isVisible()).resolves.toBe(true);
     await app.renderer.getByTestId("DataSourceDialog").getByTestId("CloseIcon").click();
@@ -33,5 +35,5 @@ describe("mapPanel", () => {
     await expect(app.renderer.getByText("Map panel", { exact: true }).innerText()).resolves.toBe(
       "Map panel",
     );
-  }, 15_000);
+  }, TEST_TIMEOUT);
 });

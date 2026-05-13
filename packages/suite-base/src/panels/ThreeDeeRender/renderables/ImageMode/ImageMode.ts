@@ -812,7 +812,7 @@ export class ImageMode
 
     renderable.setOnImageDecode(() => {
       if (this.#fallbackCameraModelActive()) {
-        this.#updateFallbackCameraModel(renderable!);
+        this.#updateFallbackCameraModel(renderable);
         this.#updateViewAndRenderables();
       }
     });

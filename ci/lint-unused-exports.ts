@@ -4,7 +4,7 @@
 
 import { info } from "@actions/core";
 import path from "path";
-import tsUnusedExports from "ts-unused-exports";
+import { analyzeTsConfig } from "ts-unused-exports";
 
 // Identify unused exports
 //
@@ -13,7 +13,7 @@ import tsUnusedExports from "ts-unused-exports";
 // Note: use the "// ts-unused-exports:disable-next-line" comment above an export if you would like to mark it
 // as used even though it appears unused. This might happen for exports which are injected via webpack.
 async function main(): Promise<void> {
-  const results = tsUnusedExports(path.join(__dirname, "../packages/suite-base/tsconfig.json"), [
+  const results = analyzeTsConfig(path.join(__dirname, "../packages/suite-base/tsconfig.json"), [
     "--findCompletelyUnusedFiles",
     "--ignoreLocallyUsed",
   ]);
@@ -28,17 +28,13 @@ async function main(): Promise<void> {
 
   const repoRootPath = path.resolve(__dirname, "..");
   let hasUnusedExports = false;
-  for (const [filePath, items] of Object.entries(results)) {
-    if (filePath === "unusedFiles") {
-      continue;
-    }
+  for (const [filePath, items] of Object.entries(results.unusedExports)) {
     const pathFromRepoRoot = path.relative(repoRootPath, filePath);
     if (ignorePathsRegex.test(pathFromRepoRoot)) {
       continue;
     }
     for (const item of items) {
       // In reality, sometimes item.location is undefined
-       
       if (item.location == undefined) {
         info(
           `::error file=${pathFromRepoRoot}::Unused export ${item.exportName} in ${pathFromRepoRoot}`,

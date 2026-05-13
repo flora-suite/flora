@@ -4,6 +4,7 @@
 
 export * from "./addPanel";
 export * from "./appBar";
+export * from "./auth";
 export * from "./appSettings";
 export * from "./dataSourceInfo";
 export * from "./desktopWindow";
@@ -12,6 +13,7 @@ export * from "./incompatibleLayoutVersion";
 export * from "./layoutBrowser";
 export * from "./log";
 export * from "./openDialog";
+export * from "./organization";
 export * from "./panelConfigVersionGuard";
 export * from "./panels";
 export * from "./panelSettings";
@@ -23,3 +25,4 @@ export * from "./stateTransitions";
 export * from "./threeDee";
 export * from "./topicList";
 export * from "./workspace";
+export * from "./pages";
