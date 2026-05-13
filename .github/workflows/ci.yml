@@ -32,12 +32,6 @@ jobs:
             command: yarn run benchmark:build:prod
           - name: test
             command: yarn run test --maxWorkers=100%
-        include:
-          - os: windows-2019
-            config:
-              name: packages
-              command: echo complete
-
     name: ${{ matrix.config.name }} (${{ matrix.os }})
 
     steps:
