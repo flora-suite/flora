@@ -1,6 +1,5 @@
 /** @jest-environment jsdom */
 
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -184,8 +183,8 @@ describe("useMessagesByPath", () => {
     rerender({ ...initialProps, historySize: 2 });
     expect(result.current.messagesByPath).toEqual({
       "/some/topic": [
-        { messageEvent: fixture.messages[1]!, queriedData: [] },
-        { messageEvent: fixture.messages[2]!, queriedData: [] },
+        queriedMessage(1),
+        queriedMessage(2),
       ],
     });
     unmount();
