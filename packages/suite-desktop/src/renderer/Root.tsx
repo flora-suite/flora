@@ -11,12 +11,15 @@ import {
   AuthProvider,
   createFloraServices,
   DeviceProvider,
+  EventProvider,
   FoxgloveWebSocketDataSourceFactory,
   IAppConfiguration,
   IDataSourceFactory,
   IdbExtensionLoader,
   McapLocalDataSourceFactory,
+  OrganizationProvider,
   OsContext,
+  RecordingProvider,
   RemoteDataSourceFactory,
   RemoteLayoutStorageProvider,
   Ros1LocalBagDataSourceFactory,
@@ -80,7 +83,23 @@ export default function Root(props: RootProps): React.JSX.Element {
 
   const [layoutLoaders] = useState(() => [new DesktopLayoutLoader(desktopBridge)]);
 
-  const [{ authService, deviceService, apiClient }] = useState(() => createFloraServices());
+  // Track session expiry to force re-render and update auth state
+  const [sessionExpiredCount, setSessionExpiredCount] = useState(0);
+
+  // Callback when API client detects session expired
+  const handleSessionExpired = useCallback(() => {
+    // Increment counter to signal AuthProvider that session expired
+    setSessionExpiredCount((prev) => prev + 1);
+  }, []);
+
+  // Create services once, but set up session expired callback
+  const services = useMemo(() => {
+    return createFloraServices({
+      onSessionExpired: handleSessionExpired,
+    });
+  }, [handleSessionExpired]);
+
+  const { authService, deviceService, recordingService, eventService, organizationService, apiClient } = services;
 
   const nativeAppMenu = useMemo(() => new NativeAppMenu(menuBridge), []);
   const nativeWindow = useMemo(() => new NativeWindow(desktopBridge), []);
@@ -161,8 +180,11 @@ export default function Root(props: RootProps): React.JSX.Element {
     const providers: JSX.Element[] = [
       /* eslint-disable react/jsx-key */
       <ApiClientContext.Provider value={apiClient} />,
-      <AuthProvider authService={authService} />,
+      <AuthProvider authService={authService} sessionExpiredSignal={sessionExpiredCount} />,
+      <OrganizationProvider organizationService={organizationService} />,
       <DeviceProvider deviceService={deviceService} />,
+      <RecordingProvider recordingService={recordingService} />,
+      <EventProvider eventService={eventService} />,
       <RemoteLayoutStorageProvider />,
       /* eslint-enable react/jsx-key */
     ];
@@ -170,7 +192,7 @@ export default function Root(props: RootProps): React.JSX.Element {
       providers.push(...extraProviders);
     }
     return providers;
-  }, [authService, deviceService, apiClient, extraProviders]);
+  }, [authService, deviceService, recordingService, eventService, organizationService, apiClient, sessionExpiredCount, extraProviders]);
 
   return (
     <App

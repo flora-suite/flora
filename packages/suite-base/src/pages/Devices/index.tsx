@@ -3,11 +3,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import {
-  AddOutlined,
+  BlockOutlined,
+  CheckCircleOutlined,
   DeleteOutlined,
   DevicesOutlined,
   EditOutlined,
-  LinkOutlined,
   MoreVertOutlined,
   RefreshOutlined,
   SearchOutlined,
@@ -18,27 +18,35 @@ import {
   WarningAmberOutlined,
 } from "@mui/icons-material";
 import {
+  Alert,
   Button,
   Card,
   CardContent,
   Chip,
+  CircularProgress,
   IconButton,
   InputAdornment,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
+  Pagination,
+  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
-import { useCallback, useMemo, useState, MouseEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, MouseEvent, ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { makeStyles } from "tss-react/mui";
 
+import { LoginRequiredPlaceholder } from "@lichtblick/suite-base/components/LoginRequiredPlaceholder";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { ConfirmDialog, RenameDialog } from "@lichtblick/suite-base/components/dialogs";
-import { useWorkspaceActions } from "@lichtblick/suite-base/context/Workspace/useWorkspaceActions";
+import { useAuth } from "@lichtblick/suite-base/context/AuthContext";
+import { useDevices } from "@lichtblick/suite-base/context/DeviceContext";
+import { useCurrentOrganizationId } from "@lichtblick/suite-base/context/OrganizationContext";
+import { Device, DeviceStatus } from "@lichtblick/suite-base/services/IDeviceService";
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -55,6 +63,15 @@ const useStyles = makeStyles()((theme) => ({
     flex: 1,
     overflow: "auto",
     padding: theme.spacing(3),
+  },
+  loadingState: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    minHeight: 400,
+    gap: theme.spacing(2),
   },
   emptyState: {
     display: "flex",
@@ -82,6 +99,9 @@ const useStyles = makeStyles()((theme) => ({
       boxShadow: theme.shadows[4],
     },
   },
+  deviceCardDisabled: {
+    opacity: 0.6,
+  },
   deviceCardOnline: {
     borderLeft: `4px solid ${theme.palette.success.main}`,
   },
@@ -102,58 +122,12 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-type DeviceStatus = "online" | "offline" | "error";
+function formatLastSeen(dateString: string | undefined): string {
+  if (!dateString) {
+    return "Never";
+  }
 
-interface Device {
-  id: string;
-  name: string;
-  type: string;
-  status: DeviceStatus;
-  ipAddress: string;
-  lastSeen: Date;
-  topics?: number;
-}
-
-const mockDevices: Device[] = [
-  {
-    id: "1",
-    name: "Robot-01",
-    type: "ROS 2",
-    status: "online",
-    ipAddress: "192.168.1.101",
-    lastSeen: new Date(),
-    topics: 24,
-  },
-  {
-    id: "2",
-    name: "Sensor-Hub-A",
-    type: "WebSocket",
-    status: "online",
-    ipAddress: "192.168.1.102",
-    lastSeen: new Date(),
-    topics: 8,
-  },
-  {
-    id: "3",
-    name: "Navigation-Unit",
-    type: "ROS 1",
-    status: "offline",
-    ipAddress: "192.168.1.103",
-    lastSeen: new Date(Date.now() - 3600000),
-    topics: 12,
-  },
-  {
-    id: "4",
-    name: "Camera-System",
-    type: "Velodyne",
-    status: "error",
-    ipAddress: "192.168.1.104",
-    lastSeen: new Date(Date.now() - 1800000),
-    topics: 4,
-  },
-];
-
-function formatLastSeen(date: Date): string {
+  const date = new Date(dateString);
   const now = new Date();
   const diff = now.getTime() - date.getTime();
 
@@ -186,14 +160,42 @@ export function DevicesPage(): React.JSX.Element {
   const { classes, cx } = useStyles();
   const { t } = useTranslation("pages");
   const navigate = useNavigate();
-  const { dialogActions } = useWorkspaceActions();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const currentOrganizationId = useCurrentOrganizationId();
+
+  const {
+    devices,
+    isLoading,
+    error,
+    fetchDevices,
+    updateDevice,
+    enableDevice,
+    disableDevice,
+    deleteDevice,
+    refreshDevices,
+    clearError,
+  } = useDevices();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [devices, setDevices] = useState<Device[]>(mockDevices);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | undefined>(undefined);
   const [selectedDevice, setSelectedDevice] = useState<Device | undefined>(undefined);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string | undefined>(undefined);
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 12;
+
+  // Fetch devices on mount and when organization changes (only if authenticated)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+    fetchDevices({ orgId: currentOrganizationId }).catch(() => {
+      // Errors are handled by DeviceProvider, nothing to do here
+    });
+  }, [fetchDevices, isAuthenticated, currentOrganizationId]);
 
   const filteredDevices = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -204,14 +206,30 @@ export function DevicesPage(): React.JSX.Element {
       (device) =>
         device.name.toLowerCase().includes(query) ||
         device.type.toLowerCase().includes(query) ||
-        device.ipAddress.includes(query),
+        (device.ipAddress?.includes(query) ?? false),
     );
   }, [devices, searchQuery]);
 
-  const handleOpenConnection = useCallback(() => {
-    dialogActions.dataSource.open("connection");
-    void navigate("/view");
-  }, [dialogActions.dataSource, navigate]);
+  // Paginated devices
+  const paginatedDevices = useMemo(() => {
+    const start = (page - 1) * itemsPerPage;
+    return filteredDevices.slice(start, start + itemsPerPage);
+  }, [filteredDevices, page, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredDevices.length / itemsPerPage);
+
+  const handleChangePage = useCallback((_event: ChangeEvent<unknown>, newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const handleRefresh = useCallback(async () => {
+    try {
+      await refreshDevices();
+      setSnackbarMessage(t("devicesRefreshed"));
+    } catch {
+      // Error is handled by context
+    }
+  }, [refreshDevices, t]);
 
   const handleMenuOpen = useCallback((event: MouseEvent<HTMLElement>, device: Device) => {
     event.stopPropagation();
@@ -237,16 +255,19 @@ export function DevicesPage(): React.JSX.Element {
   }, []);
 
   const handleRenameConfirm = useCallback(
-    (newName: string) => {
+    async (newName: string) => {
       if (selectedDevice) {
-        setDevices((prev) =>
-          prev.map((d) => (d.id === selectedDevice.id ? { ...d, name: newName } : d)),
-        );
+        try {
+          await updateDevice(selectedDevice.id, { name: newName });
+          setSnackbarMessage(t("deviceRenamed"));
+        } catch {
+          // Error is handled by context
+        }
       }
       setRenameDialogOpen(false);
       setSelectedDevice(undefined);
     },
-    [selectedDevice],
+    [selectedDevice, updateDevice, t],
   );
 
   const handleRenameCancel = useCallback(() => {
@@ -254,23 +275,53 @@ export function DevicesPage(): React.JSX.Element {
     setSelectedDevice(undefined);
   }, []);
 
+  const handleToggleEnabled = useCallback(async () => {
+    if (selectedDevice) {
+      try {
+        if (selectedDevice.enabled) {
+          await disableDevice(selectedDevice.id);
+          setSnackbarMessage(t("deviceDisabled"));
+        } else {
+          await enableDevice(selectedDevice.id);
+          setSnackbarMessage(t("deviceEnabled"));
+        }
+      } catch {
+        // Error is handled by context
+      }
+    }
+    handleMenuClose();
+  }, [selectedDevice, enableDevice, disableDevice, handleMenuClose, t]);
+
   const handleDeleteClick = useCallback(() => {
     setDeleteDialogOpen(true);
     setMenuAnchor(undefined);
   }, []);
 
-  const handleDeleteConfirm = useCallback(() => {
+  const handleDeleteConfirm = useCallback(async () => {
     if (selectedDevice) {
-      setDevices((prev) => prev.filter((d) => d.id !== selectedDevice.id));
+      try {
+        await deleteDevice(selectedDevice.id);
+        setSnackbarMessage(t("deviceDeleted"));
+      } catch {
+        // Error is handled by context
+      }
     }
     setDeleteDialogOpen(false);
     setSelectedDevice(undefined);
-  }, [selectedDevice]);
+  }, [selectedDevice, deleteDevice, t]);
 
   const handleDeleteCancel = useCallback(() => {
     setDeleteDialogOpen(false);
     setSelectedDevice(undefined);
   }, []);
+
+  const handleCloseSnackbar = useCallback(() => {
+    setSnackbarMessage(undefined);
+  }, []);
+
+  const handleCloseError = useCallback(() => {
+    clearError();
+  }, [clearError]);
 
   const isEmpty = devices.length === 0;
 
@@ -285,6 +336,15 @@ export function DevicesPage(): React.JSX.Element {
     }
   };
 
+  // Show login required placeholder if not authenticated
+  if (!authLoading && !isAuthenticated) {
+    return (
+      <Stack className={classes.root}>
+        <LoginRequiredPlaceholder />
+      </Stack>
+    );
+  }
+
   return (
     <Stack className={classes.root}>
       <div className={classes.header}>
@@ -296,22 +356,27 @@ export function DevicesPage(): React.JSX.Element {
             </Typography>
           </Stack>
           <Stack direction="row" className={classes.actionButtons}>
-            <Button variant="outlined" startIcon={<RefreshOutlined />}>
-              {t("refresh")}
-            </Button>
             <Button
-              variant="contained"
-              startIcon={<AddOutlined />}
-              onClick={handleOpenConnection}
+              variant="outlined"
+              startIcon={<RefreshOutlined />}
+              onClick={handleRefresh}
+              disabled={isLoading}
             >
-              {t("addDevice")}
+              {t("refresh")}
             </Button>
           </Stack>
         </Stack>
       </div>
 
       <div className={classes.content}>
-        {isEmpty ? (
+        {isLoading && isEmpty ? (
+          <div className={classes.loadingState}>
+            <CircularProgress />
+            <Typography variant="body2" color="text.secondary">
+              {t("loadingDevices")}
+            </Typography>
+          </div>
+        ) : isEmpty ? (
           <div className={classes.emptyState}>
             <DevicesOutlined className={classes.emptyIcon} />
             <Typography variant="h6" color="text.secondary">
@@ -320,13 +385,6 @@ export function DevicesPage(): React.JSX.Element {
             <Typography variant="body2" color="text.secondary" maxWidth={400}>
               {t("noDevicesDescription")}
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<LinkOutlined />}
-              onClick={handleOpenConnection}
-            >
-              {t("addDevice")}
-            </Button>
           </div>
         ) : (
           <Stack gap={3}>
@@ -337,6 +395,7 @@ export function DevicesPage(): React.JSX.Element {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
+                setPage(1);
               }}
               slotProps={{
                 input: {
@@ -350,10 +409,11 @@ export function DevicesPage(): React.JSX.Element {
             />
 
             <div className={classes.deviceGrid}>
-              {filteredDevices.map((device) => (
+              {paginatedDevices.map((device) => (
                 <Card
                   key={device.id}
                   className={cx(classes.deviceCard, {
+                    [classes.deviceCardDisabled]: !device.enabled,
                     [classes.deviceCardOnline]: device.status === "online",
                     [classes.deviceCardOffline]: device.status === "offline",
                     [classes.deviceCardError]: device.status === "error",
@@ -391,13 +451,13 @@ export function DevicesPage(): React.JSX.Element {
                           <Typography variant="body2" color="text.secondary">
                             {t("ipAddress")}
                           </Typography>
-                          <Typography variant="body2">{device.ipAddress}</Typography>
+                          <Typography variant="body2">{device.ipAddress ?? "-"}</Typography>
                         </Stack>
                         <Stack direction="row" justifyContent="space-between">
                           <Typography variant="body2" color="text.secondary">
                             {t("topics")}
                           </Typography>
-                          <Typography variant="body2">{device.topics ?? "-"}</Typography>
+                          <Typography variant="body2">{device.rosTopicCount ?? "-"}</Typography>
                         </Stack>
                         <Stack direction="row" justifyContent="space-between">
                           <Typography variant="body2" color="text.secondary">
@@ -407,17 +467,33 @@ export function DevicesPage(): React.JSX.Element {
                         </Stack>
                       </Stack>
 
-                      <Chip
-                        label={t(device.status)}
-                        size="small"
-                        color={getStatusChipColor(device.status)}
-                        className={classes.statusChip}
-                      />
+                      <Stack direction="row" gap={1}>
+                        <Chip
+                          label={t(device.status)}
+                          size="small"
+                          color={getStatusChipColor(device.status)}
+                          className={classes.statusChip}
+                        />
+                        {!device.enabled && (
+                          <Chip label={t("disabled")} size="small" color="warning" />
+                        )}
+                      </Stack>
                     </Stack>
                   </CardContent>
                 </Card>
               ))}
             </div>
+
+            {totalPages > 1 && (
+              <Stack direction="row" justifyContent="center" padding={2}>
+                <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={handleChangePage}
+                  color="primary"
+                />
+              </Stack>
+            )}
           </Stack>
         )}
       </div>
@@ -448,6 +524,18 @@ export function DevicesPage(): React.JSX.Element {
           </ListItemIcon>
           <ListItemText>{t("configure")}</ListItemText>
         </MenuItem>
+        <MenuItem onClick={handleToggleEnabled}>
+          <ListItemIcon>
+            {selectedDevice?.enabled ? (
+              <BlockOutlined fontSize="small" color="warning" />
+            ) : (
+              <CheckCircleOutlined fontSize="small" color="success" />
+            )}
+          </ListItemIcon>
+          <ListItemText>
+            {selectedDevice?.enabled ? t("disableDevice") : t("enableDevice")}
+          </ListItemText>
+        </MenuItem>
         <MenuItem onClick={handleDeleteClick}>
           <ListItemIcon>
             <DeleteOutlined fontSize="small" color="error" />
@@ -474,6 +562,19 @@ export function DevicesPage(): React.JSX.Element {
         onConfirm={handleRenameConfirm}
         onCancel={handleRenameCancel}
       />
+
+      <Snackbar
+        open={snackbarMessage != undefined}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        message={snackbarMessage}
+      />
+
+      <Snackbar open={error != undefined} autoHideDuration={6000} onClose={handleCloseError}>
+        <Alert onClose={handleCloseError} severity="error" variant="filled">
+          {error}
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 }

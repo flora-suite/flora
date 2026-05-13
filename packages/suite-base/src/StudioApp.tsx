@@ -17,6 +17,7 @@ import {
   DashboardPage,
   DevicesPage,
   DeviceDetailPage,
+  DeviceRegisterPage,
   EventsPage,
   LayoutsPage,
   RecordingsPage,
@@ -24,6 +25,10 @@ import {
   ExtensionsSettingsPage,
   ExperimentalSettings,
   AboutSettings,
+  OrganizationGeneralSettings,
+  OrganizationMembersSettings,
+  OrganizationApiKeysSettings,
+  OrganizationExtensionsSettings,
   TimelinePage,
 } from "@lichtblick/suite-base/pages";
 import EventsProvider from "@lichtblick/suite-base/providers/EventsProvider";
@@ -127,25 +132,34 @@ export function StudioApp(): JSX.Element {
         <DndProvider backend={HTML5Backend}>
           <Suspense fallback={<></>}>
             <PanelCatalogProvider>
-              <BrowserRouter>
+                <BrowserRouter>
                 <Routes>
+                  {/* Standalone device registration page (no dashboard layout) */}
+                  <Route path="devices/register" element={<DeviceRegisterPage />} />
+
+                  {/* Dashboard pages */}
                   <Route element={<WorkspaceContextProvider><DashboardLayout /></WorkspaceContextProvider>}>
                     <Route index element={<DashboardPage />} />
-                    <Route path="/devices" element={<DevicesPage />} />
-                    <Route path="/devices/:deviceId" element={<DeviceDetailPage />} />
-                    <Route path="/recordings" element={<RecordingsPage />} />
-                    <Route path="/events" element={<EventsPage />} />
-                    <Route path="/timeline" element={<TimelinePage />} />
-                    <Route path="/layouts" element={<LayoutsPage />} />
+                    <Route path="devices" element={<DevicesPage />} />
+                    <Route path="devices/:deviceId" element={<DeviceDetailPage />} />
+                    <Route path="recordings" element={<RecordingsPage />} />
+                    <Route path="events" element={<EventsPage />} />
+                    <Route path="timeline" element={<TimelinePage />} />
+                    <Route path="layouts" element={<LayoutsPage />} />
                   </Route>
                   <Route element={<WorkspaceContextProvider><SettingsLayout /></WorkspaceContextProvider>}>
-                    <Route path="/settings" element={<GeneralSettings />} />
-                    <Route path="/settings/general" element={<GeneralSettings />} />
-                    <Route path="/settings/extensions" element={<ExtensionsSettingsPage />} />
-                    <Route path="/settings/experimental" element={<ExperimentalSettings />} />
-                    <Route path="/settings/about" element={<AboutSettings />} />
+                    <Route path="settings" element={<GeneralSettings />} />
+                    <Route path="settings/general" element={<GeneralSettings />} />
+                    <Route path="settings/extensions" element={<ExtensionsSettingsPage />} />
+                    <Route path="settings/experimental" element={<ExperimentalSettings />} />
+                    <Route path="settings/about" element={<AboutSettings />} />
+                    {/* Organization settings routes */}
+                    <Route path="settings/organization" element={<OrganizationGeneralSettings />} />
+                    <Route path="settings/organization/members" element={<OrganizationMembersSettings />} />
+                    <Route path="settings/organization/api-keys" element={<OrganizationApiKeysSettings />} />
+                    <Route path="settings/organization/extensions" element={<OrganizationExtensionsSettings />} />
                   </Route>
-                  <Route path="/view" element={<WorkspaceContextProvider><Workspace
+                  <Route path="view" element={<WorkspaceContextProvider><Workspace
                     deepLinks={deepLinks}
                     appBarLeftInset={appBarLeftInset}
                     onAppBarDoubleClick={onAppBarDoubleClick}

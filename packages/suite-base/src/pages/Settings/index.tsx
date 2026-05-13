@@ -7,5 +7,14 @@ export { ExtensionsSettingsPage } from "./ExtensionsSettings";
 export { ExperimentalSettings } from "./ExperimentalSettings";
 export { AboutSettings } from "./AboutSettings";
 
+// Organization settings pages
+export { OrganizationGeneralSettings } from "./OrganizationGeneralSettings";
+export { OrganizationMembersSettings } from "./OrganizationMembersSettings";
+export { OrganizationApiKeysSettings } from "./OrganizationApiKeysSettings";
+export { OrganizationExtensionsSettings } from "./OrganizationExtensionsSettings";
+
+// Legacy export for backward compatibility
+export { OrganizationGeneralSettings as OrganizationSettings } from "./OrganizationGeneralSettings";
+
 // Default export for backward compatibility - redirects to general settings
 export { GeneralSettings as SettingsPage } from "./GeneralSettings";

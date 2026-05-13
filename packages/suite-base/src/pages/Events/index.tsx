@@ -17,8 +17,10 @@ import {
   WarningAmberOutlined,
 } from "@mui/icons-material";
 import {
+  Alert,
   Button,
   Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -37,18 +39,26 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useCallback, useMemo, useState, MouseEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, MouseEvent, ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { makeStyles } from "tss-react/mui";
 
+import { LoginRequiredPlaceholder } from "@lichtblick/suite-base/components/LoginRequiredPlaceholder";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { ConfirmDialog } from "@lichtblick/suite-base/components/dialogs";
+import { useAuth } from "@lichtblick/suite-base/context/AuthContext";
+import { useDevices } from "@lichtblick/suite-base/context/DeviceContext";
+import { useEvents } from "@lichtblick/suite-base/context/EventContext";
+import { useCurrentOrganizationId } from "@lichtblick/suite-base/context/OrganizationContext";
+import type { Device } from "@lichtblick/suite-base/services/IDeviceService";
+import type { DeviceEvent, EventType } from "@lichtblick/suite-base/services/IEventService";
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -65,6 +75,13 @@ const useStyles = makeStyles()((theme) => ({
     flex: 1,
     overflow: "auto",
     padding: theme.spacing(3),
+  },
+  loadingState: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    minHeight: 400,
   },
   emptyState: {
     display: "flex",
@@ -121,97 +138,8 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-type EventType = "maintenance" | "upgrade" | "repair" | "replacement" | "inspection" | "other";
-
-interface DeviceEvent {
-  id: string;
-  deviceId: string;
-  deviceName: string;
-  eventType: EventType;
-  description: string;
-  startTime: Date;
-  duration: number; // in minutes
-  metadata: Record<string, string>;
-  createdBy: string;
-  createdAt: Date;
-}
-
-interface Device {
-  id: string;
-  name: string;
-}
-
-const mockDevices: Device[] = [
-  { id: "1", name: "Robot-01" },
-  { id: "2", name: "Sensor-Hub-A" },
-  { id: "3", name: "Navigation-Unit" },
-  { id: "4", name: "Camera-System" },
-];
-
-const mockEvents: DeviceEvent[] = [
-  {
-    id: "1",
-    deviceId: "1",
-    deviceName: "Robot-01",
-    eventType: "maintenance",
-    description: "Routine maintenance - cleaned sensors and checked connections",
-    startTime: new Date(Date.now() - 86400000),
-    duration: 60,
-    metadata: { technician: "John Doe", location: "Lab A" },
-    createdBy: "admin",
-    createdAt: new Date(Date.now() - 86400000),
-  },
-  {
-    id: "2",
-    deviceId: "1",
-    deviceName: "Robot-01",
-    eventType: "upgrade",
-    description: "Firmware upgrade to v2.1.0",
-    startTime: new Date(Date.now() - 172800000),
-    duration: 30,
-    metadata: { previousVersion: "v2.0.5", newVersion: "v2.1.0" },
-    createdBy: "admin",
-    createdAt: new Date(Date.now() - 172800000),
-  },
-  {
-    id: "3",
-    deviceId: "2",
-    deviceName: "Sensor-Hub-A",
-    eventType: "replacement",
-    description: "Replaced faulty temperature sensor",
-    startTime: new Date(Date.now() - 259200000),
-    duration: 45,
-    metadata: { partNumber: "TEMP-001", serialNumber: "SN12345" },
-    createdBy: "technician1",
-    createdAt: new Date(Date.now() - 259200000),
-  },
-  {
-    id: "4",
-    deviceId: "3",
-    deviceName: "Navigation-Unit",
-    eventType: "repair",
-    description: "Fixed GPS antenna connection issue",
-    startTime: new Date(Date.now() - 345600000),
-    duration: 90,
-    metadata: { issueType: "Connection", resolution: "Re-soldered connection" },
-    createdBy: "technician2",
-    createdAt: new Date(Date.now() - 345600000),
-  },
-  {
-    id: "5",
-    deviceId: "4",
-    deviceName: "Camera-System",
-    eventType: "inspection",
-    description: "Annual safety inspection completed",
-    startTime: new Date(Date.now() - 432000000),
-    duration: 120,
-    metadata: { inspector: "Safety Team", result: "Passed" },
-    createdBy: "admin",
-    createdAt: new Date(Date.now() - 432000000),
-  },
-];
-
-function formatDateTime(date: Date): string {
+function formatDateTime(dateStr: string): string {
+  const date = new Date(dateStr);
   return date.toLocaleString(undefined, {
     year: "numeric",
     month: "short",
@@ -254,15 +182,24 @@ export function EventsPage(): React.JSX.Element {
   const { classes } = useStyles();
   const { t } = useTranslation("pages");
   const navigate = useNavigate();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const currentOrganizationId = useCurrentOrganizationId();
+
+  const { eventService } = useEvents();
+  const { fetchDevices } = useDevices();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<EventType | "all">("all");
   const [deviceFilter, setDeviceFilter] = useState<string>("all");
-  const [events, setEvents] = useState<DeviceEvent[]>(mockEvents);
+  const [events, setEvents] = useState<DeviceEvent[]>([]);
+  const [devices, setDevices] = useState<{ id: string; name: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | undefined>(undefined);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | undefined>(undefined);
   const [selectedEvent, setSelectedEvent] = useState<DeviceEvent | undefined>(undefined);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   // Form state for create/edit
   const [formDeviceId, setFormDeviceId] = useState("");
@@ -274,25 +211,91 @@ export function EventsPage(): React.JSX.Element {
   const [formMetadataValue, setFormMetadataValue] = useState("");
   const [formMetadata, setFormMetadata] = useState<Record<string, string>>({});
 
-  const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
-      if (typeFilter !== "all" && event.eventType !== typeFilter) {
-        return false;
+  // Pagination state
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  // Load devices (only if authenticated)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+    const loadDevices = async () => {
+      try {
+        const response = await fetchDevices({ orgId: currentOrganizationId, pageSize: 100 });
+        setDevices(response.data.map((d: Device) => ({ id: d.id, name: d.name })));
+      } catch (err) {
+        console.warn("Failed to load devices:", err);
       }
-      if (deviceFilter !== "all" && event.deviceId !== deviceFilter) {
-        return false;
+    };
+    void loadDevices();
+  }, [fetchDevices, isAuthenticated, currentOrganizationId]);
+
+  // Load events
+  const loadEvents = useCallback(async () => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(undefined);
+    try {
+      const query: Parameters<typeof eventService.getEvents>[0] = {
+        orgId: currentOrganizationId,
+        pageSize: 100,
+      };
+      if (deviceFilter !== "all") {
+        query.deviceId = deviceFilter;
+      }
+      if (typeFilter !== "all") {
+        query.eventType = typeFilter;
       }
       if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        return (
-          event.description.toLowerCase().includes(query) ||
-          event.deviceName.toLowerCase().includes(query) ||
-          event.createdBy.toLowerCase().includes(query)
-        );
+        query.search = searchQuery.trim();
       }
-      return true;
-    });
-  }, [events, typeFilter, deviceFilter, searchQuery]);
+      const response = await eventService.getEvents(query);
+      setEvents(response.events);
+    } catch (err) {
+      console.warn("Failed to load events:", err);
+      setError(err instanceof Error ? err.message : "Failed to load events");
+    } finally {
+      setLoading(false);
+    }
+  }, [eventService, deviceFilter, typeFilter, searchQuery, isAuthenticated, currentOrganizationId]);
+
+  useEffect(() => {
+    void loadEvents();
+  }, [loadEvents, currentOrganizationId]);
+
+  const filteredEvents = useMemo(() => {
+    // Since we're filtering server-side now, just return the events
+    // But keep client-side search for faster UX
+    if (!searchQuery.trim()) {
+      return events;
+    }
+    const query = searchQuery.toLowerCase();
+    return events.filter(
+      (event) =>
+        event.description.toLowerCase().includes(query) ||
+        (event.deviceName?.toLowerCase().includes(query) ?? false) ||
+        event.createdBy.toLowerCase().includes(query),
+    );
+  }, [events, searchQuery]);
+
+  // Paginated events
+  const paginatedEvents = useMemo(() => {
+    const start = page * rowsPerPage;
+    return filteredEvents.slice(start, start + rowsPerPage);
+  }, [filteredEvents, page, rowsPerPage]);
+
+  const handleChangePage = useCallback((_event: unknown, newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const handleChangeRowsPerPage = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  }, []);
 
   const handleMenuOpen = useCallback((e: MouseEvent<HTMLElement>, event: DeviceEvent) => {
     e.stopPropagation();
@@ -340,41 +343,60 @@ export function EventsPage(): React.JSX.Element {
     });
   }, []);
 
-  const handleCreateEvent = useCallback(() => {
-    const device = mockDevices.find((d) => d.id === formDeviceId);
-    if (!device) {
+  const handleCreateEvent = useCallback(async () => {
+    if (!formDeviceId || !formDescription.trim()) {
       return;
     }
 
-    const newEvent: DeviceEvent = {
-      id: String(Date.now()),
-      deviceId: formDeviceId,
-      deviceName: device.name,
-      eventType: formEventType,
-      description: formDescription,
-      startTime: new Date(formStartTime),
-      duration: parseInt(formDuration, 10) || 30,
-      metadata: formMetadata,
-      createdBy: "current_user",
-      createdAt: new Date(),
-    };
-
-    setEvents((prev) => [newEvent, ...prev]);
-    setCreateDialogOpen(false);
-  }, [formDeviceId, formEventType, formDescription, formStartTime, formDuration, formMetadata]);
+    setCreating(true);
+    try {
+      await eventService.createEvent({
+        deviceId: formDeviceId,
+        eventType: formEventType,
+        description: formDescription,
+        startTime: new Date(formStartTime).toISOString(),
+        duration: parseInt(formDuration, 10) || 30,
+        metadata: formMetadata,
+      });
+      setCreateDialogOpen(false);
+      void loadEvents();
+    } catch (err) {
+      console.warn("Failed to create event:", err);
+      setError(err instanceof Error ? err.message : "Failed to create event");
+    } finally {
+      setCreating(false);
+    }
+  }, [
+    eventService,
+    formDeviceId,
+    formEventType,
+    formDescription,
+    formStartTime,
+    formDuration,
+    formMetadata,
+    loadEvents,
+  ]);
 
   const handleDeleteClick = useCallback(() => {
     setDeleteDialogOpen(true);
     setMenuAnchor(undefined);
   }, []);
 
-  const handleDeleteConfirm = useCallback(() => {
-    if (selectedEvent) {
-      setEvents((prev) => prev.filter((e) => e.id !== selectedEvent.id));
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!selectedEvent) {
+      return;
     }
-    setDeleteDialogOpen(false);
-    setSelectedEvent(undefined);
-  }, [selectedEvent]);
+
+    try {
+      await eventService.deleteEvent(selectedEvent.id);
+      setDeleteDialogOpen(false);
+      setSelectedEvent(undefined);
+      void loadEvents();
+    } catch (err) {
+      console.warn("Failed to delete event:", err);
+      setError(err instanceof Error ? err.message : "Failed to delete event");
+    }
+  }, [eventService, selectedEvent, loadEvents]);
 
   const handleDeleteCancel = useCallback(() => {
     setDeleteDialogOpen(false);
@@ -400,7 +422,16 @@ export function EventsPage(): React.JSX.Element {
     }
   };
 
-  const isEmpty = events.length === 0;
+  const isEmpty = events.length === 0 && !loading;
+
+  // Show login required placeholder if not authenticated
+  if (!authLoading && !isAuthenticated) {
+    return (
+      <Stack className={classes.root}>
+        <LoginRequiredPlaceholder />
+      </Stack>
+    );
+  }
 
   return (
     <Stack className={classes.root}>
@@ -423,7 +454,17 @@ export function EventsPage(): React.JSX.Element {
       </div>
 
       <div className={classes.content}>
-        {isEmpty ? (
+        {error && (
+          <Alert severity="error" onClose={() => { setError(undefined); }} sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        {loading ? (
+          <div className={classes.loadingState}>
+            <CircularProgress />
+          </div>
+        ) : isEmpty ? (
           <div className={classes.emptyState}>
             <EventNoteOutlined className={classes.emptyIcon} />
             <Typography variant="h6" color="text.secondary">
@@ -450,6 +491,7 @@ export function EventsPage(): React.JSX.Element {
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
+                  setPage(0);
                 }}
                 slotProps={{
                   input: {
@@ -469,10 +511,11 @@ export function EventsPage(): React.JSX.Element {
                   label={t("device")}
                   onChange={(e) => {
                     setDeviceFilter(e.target.value);
+                    setPage(0);
                   }}
                 >
                   <MenuItem value="all">{t("allDevices")}</MenuItem>
-                  {mockDevices.map((device) => (
+                  {devices.map((device) => (
                     <MenuItem key={device.id} value={device.id}>
                       {device.name}
                     </MenuItem>
@@ -487,6 +530,7 @@ export function EventsPage(): React.JSX.Element {
                   label={t("eventType")}
                   onChange={(e) => {
                     setTypeFilter(e.target.value as EventType | "all");
+                    setPage(0);
                   }}
                 >
                   <MenuItem value="all">{t("allTypes")}</MenuItem>
@@ -515,7 +559,7 @@ export function EventsPage(): React.JSX.Element {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredEvents.map((event) => (
+                  {paginatedEvents.map((event) => (
                     <TableRow key={event.id} hover>
                       <TableCell>
                         <Chip
@@ -535,7 +579,7 @@ export function EventsPage(): React.JSX.Element {
                           }}
                           sx={{ cursor: "pointer" }}
                         >
-                          {event.deviceName}
+                          {event.deviceName ?? "Unknown Device"}
                         </Link>
                       </TableCell>
                       <TableCell className={classes.descriptionCell}>
@@ -598,6 +642,16 @@ export function EventsPage(): React.JSX.Element {
                   ))}
                 </TableBody>
               </Table>
+              <TablePagination
+                component="div"
+                count={filteredEvents.length}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={[5, 10, 25, 50]}
+                labelRowsPerPage={t("rowsPerPage")}
+              />
             </TableContainer>
 
             {filteredEvents.length === 0 && (
@@ -631,7 +685,7 @@ export function EventsPage(): React.JSX.Element {
         message={t("deleteEventConfirm")}
         confirmLabel={t("delete")}
         variant="error"
-        onConfirm={handleDeleteConfirm}
+        onConfirm={() => void handleDeleteConfirm()}
         onCancel={handleDeleteCancel}
       />
 
@@ -656,7 +710,7 @@ export function EventsPage(): React.JSX.Element {
                   setFormDeviceId(e.target.value);
                 }}
               >
-                {mockDevices.map((device) => (
+                {devices.map((device) => (
                   <MenuItem key={device.id} value={device.id}>
                     {device.name}
                   </MenuItem>
@@ -764,10 +818,10 @@ export function EventsPage(): React.JSX.Element {
           <Button onClick={handleCloseCreateDialog}>{t("cancel")}</Button>
           <Button
             variant="contained"
-            onClick={handleCreateEvent}
-            disabled={!formDeviceId || !formDescription.trim()}
+            onClick={() => void handleCreateEvent()}
+            disabled={!formDeviceId || !formDescription.trim() || creating}
           >
-            {t("create")}
+            {creating ? <CircularProgress size={20} /> : t("create")}
           </Button>
         </DialogActions>
       </Dialog>

@@ -224,7 +224,7 @@ export default React.memo<MessagePathInputBaseProps>(function MessagePathInput(
       const completedPath = completeStart + rawValue + completeEnd;
       const completedField = allStructureItemsByPath.get(completedPath);
       const isSimpleField =
-        completedField != undefined && completedField.structureType === "primitive";
+        completedField?.structureType === "primitive";
 
       // If we're dealing with a topic name, and we cannot validly end in a message type,
       // add a "." so the user can keep typing to autocomplete the message path.

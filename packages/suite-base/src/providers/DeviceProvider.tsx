@@ -13,8 +13,8 @@ import DeviceContext, {
 import { ApiError } from "@lichtblick/suite-base/services/ApiClient";
 import {
   CreateDeviceEventParams,
-  CreateDeviceParams,
   Device,
+  DeviceAgentInfo,
   DeviceEvent,
   DeviceEventListQuery,
   DeviceEventListResponse,
@@ -28,6 +28,14 @@ import {
 } from "@lichtblick/suite-base/services/IDeviceService";
 
 const log = Logger.getLogger(__filename);
+
+/**
+ * Check if error is a session expired error (401)
+ * These errors are handled by AuthProvider and should not show error messages
+ */
+function isSessionExpiredError(error: unknown): boolean {
+  return error instanceof ApiError && error.statusCode === 401;
+}
 
 type DeviceProviderProps = React.PropsWithChildren<{
   deviceService: IDeviceService;
@@ -70,6 +78,11 @@ export default function DeviceProvider({
         }));
         return result;
       } catch (error) {
+        // Don't show error for 401 - AuthProvider will handle sign out
+        if (isSessionExpiredError(error)) {
+          setState((prev) => ({ ...prev, isLoading: false }));
+          throw error;
+        }
         const message =
           error instanceof ApiError ? error.message : "Failed to fetch devices. Please try again.";
         log.error("Failed to fetch devices:", error);
@@ -89,39 +102,13 @@ export default function DeviceProvider({
       try {
         return await deviceService.getDevice(id);
       } catch (error) {
+        if (isSessionExpiredError(error)) {
+          throw error;
+        }
         const message =
           error instanceof ApiError ? error.message : "Failed to fetch device. Please try again.";
         log.error("Failed to fetch device:", error);
         setState((prev) => ({ ...prev, error: message }));
-        throw error;
-      }
-    },
-    [deviceService],
-  );
-
-  const createDevice = useCallback(
-    async (params: CreateDeviceParams): Promise<Device> => {
-      setState((prev) => ({ ...prev, isLoading: true, error: undefined }));
-
-      try {
-        const device = await deviceService.createDevice(params);
-        // Add the new device to the list
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          devices: [device, ...prev.devices],
-          totalDevices: prev.totalDevices + 1,
-        }));
-        return device;
-      } catch (error) {
-        const message =
-          error instanceof ApiError ? error.message : "Failed to create device. Please try again.";
-        log.error("Failed to create device:", error);
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          error: message,
-        }));
         throw error;
       }
     },
@@ -143,6 +130,10 @@ export default function DeviceProvider({
         }));
         return device;
       } catch (error) {
+        if (isSessionExpiredError(error)) {
+          setState((prev) => ({ ...prev, isLoading: false }));
+          throw error;
+        }
         const message =
           error instanceof ApiError ? error.message : "Failed to update device. Please try again.";
         log.error("Failed to update device:", error);
@@ -151,6 +142,92 @@ export default function DeviceProvider({
           isLoading: false,
           error: message,
         }));
+        throw error;
+      }
+    },
+    [deviceService],
+  );
+
+  const enableDevice = useCallback(
+    async (id: string): Promise<Device> => {
+      setState((prev) => ({ ...prev, isLoading: true, error: undefined }));
+
+      try {
+        const device = await deviceService.enableDevice(id);
+        // Update the device in the list
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          devices: prev.devices.map((d) => (d.id === id ? device : d)),
+          selectedDevice: prev.selectedDevice?.id === id ? device : prev.selectedDevice,
+        }));
+        return device;
+      } catch (error) {
+        if (isSessionExpiredError(error)) {
+          setState((prev) => ({ ...prev, isLoading: false }));
+          throw error;
+        }
+        const message =
+          error instanceof ApiError ? error.message : "Failed to enable device. Please try again.";
+        log.error("Failed to enable device:", error);
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error: message,
+        }));
+        throw error;
+      }
+    },
+    [deviceService],
+  );
+
+  const disableDevice = useCallback(
+    async (id: string): Promise<Device> => {
+      setState((prev) => ({ ...prev, isLoading: true, error: undefined }));
+
+      try {
+        const device = await deviceService.disableDevice(id);
+        // Update the device in the list
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          devices: prev.devices.map((d) => (d.id === id ? device : d)),
+          selectedDevice: prev.selectedDevice?.id === id ? device : prev.selectedDevice,
+        }));
+        return device;
+      } catch (error) {
+        if (isSessionExpiredError(error)) {
+          setState((prev) => ({ ...prev, isLoading: false }));
+          throw error;
+        }
+        const message =
+          error instanceof ApiError ? error.message : "Failed to disable device. Please try again.";
+        log.error("Failed to disable device:", error);
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error: message,
+        }));
+        throw error;
+      }
+    },
+    [deviceService],
+  );
+
+  const getDeviceAgentInfo = useCallback(
+    async (id: string): Promise<DeviceAgentInfo> => {
+      try {
+        return await deviceService.getDeviceAgentInfo(id);
+      } catch (error) {
+        if (isSessionExpiredError(error)) {
+          throw error;
+        }
+        const message =
+          error instanceof ApiError
+            ? error.message
+            : "Failed to fetch device agent info. Please try again.";
+        log.error("Failed to fetch device agent info:", error);
+        setState((prev) => ({ ...prev, error: message }));
         throw error;
       }
     },
@@ -177,6 +254,10 @@ export default function DeviceProvider({
         }
         return deleted;
       } catch (error) {
+        if (isSessionExpiredError(error)) {
+          setState((prev) => ({ ...prev, isLoading: false }));
+          throw error;
+        }
         const message =
           error instanceof ApiError ? error.message : "Failed to delete device. Please try again.";
         log.error("Failed to delete device:", error);
@@ -200,6 +281,9 @@ export default function DeviceProvider({
       try {
         return await deviceService.getDeviceTopics(id);
       } catch (error) {
+        if (isSessionExpiredError(error)) {
+          throw error;
+        }
         const message =
           error instanceof ApiError
             ? error.message
@@ -217,6 +301,9 @@ export default function DeviceProvider({
       try {
         return await deviceService.generateDeviceToken(id);
       } catch (error) {
+        if (isSessionExpiredError(error)) {
+          throw error;
+        }
         const message =
           error instanceof ApiError
             ? error.message
@@ -234,6 +321,9 @@ export default function DeviceProvider({
       try {
         return await deviceService.getDeviceEvents(deviceId, query);
       } catch (error) {
+        if (isSessionExpiredError(error)) {
+          throw error;
+        }
         const message =
           error instanceof ApiError
             ? error.message
@@ -251,6 +341,9 @@ export default function DeviceProvider({
       try {
         return await deviceService.getDeviceEvent(deviceId, eventId);
       } catch (error) {
+        if (isSessionExpiredError(error)) {
+          throw error;
+        }
         const message =
           error instanceof ApiError
             ? error.message
@@ -268,6 +361,9 @@ export default function DeviceProvider({
       try {
         return await deviceService.createDeviceEvent(deviceId, params);
       } catch (error) {
+        if (isSessionExpiredError(error)) {
+          throw error;
+        }
         const message =
           error instanceof ApiError
             ? error.message
@@ -289,6 +385,9 @@ export default function DeviceProvider({
       try {
         return await deviceService.updateDeviceEvent(deviceId, eventId, params);
       } catch (error) {
+        if (isSessionExpiredError(error)) {
+          throw error;
+        }
         const message =
           error instanceof ApiError
             ? error.message
@@ -306,6 +405,9 @@ export default function DeviceProvider({
       try {
         return await deviceService.deleteDeviceEvent(deviceId, eventId);
       } catch (error) {
+        if (isSessionExpiredError(error)) {
+          throw error;
+        }
         const message =
           error instanceof ApiError
             ? error.message
@@ -330,12 +432,14 @@ export default function DeviceProvider({
     ...state,
     fetchDevices,
     fetchDevice,
-    createDevice,
     updateDevice,
+    enableDevice,
+    disableDevice,
     deleteDevice,
     selectDevice,
     fetchDeviceTopics,
     generateDeviceToken,
+    getDeviceAgentInfo,
     fetchDeviceEvents,
     fetchDeviceEvent,
     createDeviceEvent,

@@ -69,8 +69,10 @@ export function Sidebar(): React.JSX.Element {
   const handleOpenLocalFile = useCallback(() => {
     dialogActions.openFile
       .open()
-      .then(() => {
-        void navigate("/view");
+      .then((opened) => {
+        if (opened) {
+          void navigate("/view");
+        }
       })
       .catch((err: unknown) => {
         console.error(err);

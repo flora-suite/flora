@@ -39,6 +39,11 @@ export const pages: Partial<TypeOptions["resources"]["pages"]> = {
   deleteSuccess: "数据删除成功",
   deleteError: "数据删除失败",
 
+  // Recording statuses
+  uploading: "上传中",
+  processing: "处理中",
+  ready: "就绪",
+
   // Devices page
   devicesTitle: "设备",
   devicesDescription: "管理和监控您连接的设备",
@@ -47,6 +52,9 @@ export const pages: Partial<TypeOptions["resources"]["pages"]> = {
   addDevice: "添加设备",
   deviceName: "设备名称",
   deviceType: "设备类型",
+  registerTo: "注册到",
+  personalAccount: "个人账户",
+  registerToHelperText: "选择将此设备注册到哪里",
   status: "状态",
   online: "在线",
   offline: "离线",
@@ -94,6 +102,7 @@ export const pages: Partial<TypeOptions["resources"]["pages"]> = {
   eventType: "事件类型",
   description: "描述",
   startTime: "开始时间",
+  endTime: "结束时间",
   durationMinutes: "时长（分钟）",
   metadata: "元数据",
   createdBy: "创建者",
@@ -157,6 +166,7 @@ export const pages: Partial<TypeOptions["resources"]["pages"]> = {
   panelCount: "面板",
   duplicate: "复制",
   searchLayouts: "搜索布局...",
+  noMatchingLayouts: "未找到匹配的布局",
   localLayouts: "本地布局",
   sharedLayouts: "共享布局",
   allLayouts: "所有布局",
@@ -186,10 +196,15 @@ export const pages: Partial<TypeOptions["resources"]["pages"]> = {
   create: "创建",
   update: "更新",
   noData: "暂无数据",
+  rowsPerPage: "每页行数：",
   errorLoadingData: "加载数据出错",
   retryLoading: "重试",
   upload: "上传",
   selectDevice: "选择设备",
+  dragAndDropMultiple: "拖放文件到此处，或点击浏览（支持多文件）",
+  totalFiles: "已选择 {{count}} 个文件",
+  uploadFiles: "上传 {{count}} 个文件",
+  uploadingFileOf: "正在上传第 {{current}}/{{total}} 个文件",
 
   // Dialogs
   deleteRecording: "删除数据",
@@ -199,9 +214,40 @@ export const pages: Partial<TypeOptions["resources"]["pages"]> = {
   renameDevice: "重命名设备",
   disableDevice: "禁用设备",
   disableDeviceConfirm: "确定要禁用 \"{{name}}\" 吗？设备将断开连接且不再同步数据。",
+  enableDevice: "启用设备",
   deleteLayout: "删除布局",
   deleteLayoutConfirm: "确定要删除 \"{{name}}\" 吗？此操作无法撤销。",
   renameLayout: "重命名布局",
   deleteEvent: "删除事件",
   deleteEventConfirm: "确定要删除此事件吗？此操作无法撤销。",
+
+  // Device action feedback
+  loadingDevices: "正在加载设备...",
+  devicesRefreshed: "设备列表已刷新",
+  deviceRenamed: "设备重命名成功",
+  deviceEnabled: "设备已启用",
+  deviceDisabled: "设备已禁用",
+  deviceDeleted: "设备已删除",
+  disabled: "已禁用",
+  enable: "启用",
+  enableDeviceConfirm: "确定要启用 \"{{name}}\" 吗？设备将开始同步数据。",
+
+  // Login required
+  loginRequired: "需要登录",
+  loginRequiredDescription: "请先登录以使用此功能。",
+  goToLogin: "去登录",
+
+  // Device detail page
+  deviceId: "设备 ID",
+  enabled: "已启用",
+  yes: "是",
+  no: "否",
+  systemResources: "系统资源",
+  diskUsage: "磁盘使用率",
+  rosDistro: "ROS 发行版",
+  rosNodes: "ROS 节点",
+  rosTopics: "ROS 话题",
+  unknown: "未知",
+  deviceNotFound: "设备未找到",
+  backToDevices: "返回设备列表",
 };

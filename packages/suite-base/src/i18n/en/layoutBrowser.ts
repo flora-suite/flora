@@ -18,13 +18,14 @@ export const layoutBrowser = {
   someoneElseHasDeletedThisLayout: "Someone else has deleted this layout",
   theseLayoutsHaveUnsavedChanges: "These layouts have unsaved changes",
   thisLayoutHasUnsavedChanges: "This layout has unsaved changes",
-  shareWithTeam: "Share with team…",
   export: "Export…",
   addANewLayoutToGetStartedWithFlora: "Add a new layout to get started with Flora!",
   cloudSynced: "Synced to cloud",
   localOnly: "Local only",
-  shareACopyWithYourOrganization: "Share a copy with your organization",
-  sharedLayoutsCanBeUsedAndChangedByOtherMembersOfYourOrganization:
-    "Shared layouts can be used and changed by other members of your organization.",
   layoutName: "Layout name",
+  personal: "Personal",
+  organization: "Organization",
+  recent: "Recent",
+  allLayouts: "All Layouts",
+  showMore: "Show more",
 };

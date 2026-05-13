@@ -75,8 +75,7 @@ export default function PlaybackBarHoverTicks(props: Props): JSX.Element {
 
   const hoverTimeDisplay = useMemo(() => {
     if (
-      !hoverValue ||
-      hoverValue.type !== "PLAYBACK_SECONDS" ||
+      hoverValue?.type !== "PLAYBACK_SECONDS" ||
       !startTime ||
       hoverValue.value < 0
     ) {

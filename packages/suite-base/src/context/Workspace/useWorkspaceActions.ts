@@ -31,7 +31,7 @@ export type WorkspaceActions = {
       open: (item: DataSourceDialogItem, dataSource?: IDataSourceFactory) => void;
     };
     openFile: {
-      open: () => Promise<void>;
+      open: () => Promise<boolean>;
     };
     preferences: {
       close: () => void;

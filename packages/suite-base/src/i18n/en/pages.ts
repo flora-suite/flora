@@ -38,6 +38,11 @@ export const pages = {
   deleteSuccess: "Recording deleted successfully",
   deleteError: "Failed to delete recording",
 
+  // Recording statuses
+  uploading: "Uploading",
+  processing: "Processing",
+  ready: "Ready",
+
   // Devices page
   devicesTitle: "Devices",
   devicesDescription: "Manage and monitor your connected devices",
@@ -47,6 +52,9 @@ export const pages = {
   addDevice: "Add Device",
   deviceName: "Device Name",
   deviceType: "Device Type",
+  registerTo: "Register To",
+  personalAccount: "Personal Account",
+  registerToHelperText: "Choose where to register this device",
   status: "Status",
   online: "Online",
   offline: "Offline",
@@ -95,6 +103,7 @@ export const pages = {
   eventType: "Event Type",
   description: "Description",
   startTime: "Start Time",
+  endTime: "End Time",
   durationMinutes: "Duration (minutes)",
   metadata: "Metadata",
   createdBy: "Created By",
@@ -158,6 +167,7 @@ export const pages = {
   panelCount: "Panels",
   duplicate: "Duplicate",
   searchLayouts: "Search layouts...",
+  noMatchingLayouts: "No matching layouts found",
   localLayouts: "Local Layouts",
   sharedLayouts: "Shared Layouts",
   allLayouts: "All Layouts",
@@ -187,10 +197,15 @@ export const pages = {
   create: "Create",
   update: "Update",
   noData: "No data",
+  rowsPerPage: "Rows per page:",
   errorLoadingData: "Error loading data",
   retryLoading: "Retry",
   upload: "Upload",
   selectDevice: "Select Device",
+  dragAndDropMultiple: "Drag and drop files here, or click to browse (multiple files supported)",
+  totalFiles: "{{count}} file(s) selected",
+  uploadFiles: "Upload {{count}} files",
+  uploadingFileOf: "Uploading file {{current}} of {{total}}",
 
   // Dialogs
   deleteRecording: "Delete Recording",
@@ -201,9 +216,41 @@ export const pages = {
   disableDevice: "Disable Device",
   disableDeviceConfirm:
     "Are you sure you want to disable \"{{name}}\"? The device will be disconnected and will not sync data.",
+  enableDevice: "Enable Device",
   deleteLayout: "Delete Layout",
   deleteLayoutConfirm: "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
   renameLayout: "Rename Layout",
   deleteEvent: "Delete Event",
   deleteEventConfirm: "Are you sure you want to delete this event? This action cannot be undone.",
+
+  // Device action feedback
+  loadingDevices: "Loading devices...",
+  devicesRefreshed: "Devices refreshed",
+  deviceRenamed: "Device renamed successfully",
+  deviceEnabled: "Device enabled",
+  deviceDisabled: "Device disabled",
+  deviceDeleted: "Device deleted",
+  disabled: "Disabled",
+  enable: "Enable",
+  enableDeviceConfirm:
+    "Are you sure you want to enable \"{{name}}\"? The device will start syncing data.",
+
+  // Login required
+  loginRequired: "Login Required",
+  loginRequiredDescription: "Please sign in to access this feature.",
+  goToLogin: "Sign In",
+
+  // Device detail page
+  deviceId: "Device ID",
+  enabled: "Enabled",
+  yes: "Yes",
+  no: "No",
+  systemResources: "System Resources",
+  diskUsage: "Disk Usage",
+  rosDistro: "ROS Distribution",
+  rosNodes: "ROS Nodes",
+  rosTopics: "ROS Topics",
+  unknown: "Unknown",
+  deviceNotFound: "Device not found",
+  backToDevices: "Back to Devices",
 };

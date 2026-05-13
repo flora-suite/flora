@@ -5,16 +5,16 @@
 import { Button, CircularProgress, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useCallback, useState } from "react";
-import { useAsyncFn } from "react-use";
 import { useTranslation } from "react-i18next";
+import { useAsyncFn } from "react-use";
 import { makeStyles } from "tss-react/mui";
 
 import Logger from "@lichtblick/log";
+import { AuthDialog } from "@lichtblick/suite-base/components/AuthDialog";
 import BlockheadFilledIcon from "@lichtblick/suite-base/components/BlockheadFilledIcon";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { useAuth } from "@lichtblick/suite-base/context/AuthContext";
 import { useConfirm } from "@lichtblick/suite-base/hooks/useConfirm";
-import { AuthDialog } from "@lichtblick/suite-base/components/AuthDialog";
 
 const log = Logger.getLogger(__filename);
 

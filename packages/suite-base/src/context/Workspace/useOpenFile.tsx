@@ -13,7 +13,7 @@ import {
 import { FILE_ACCEPT_TYPE } from "@lichtblick/suite-base/context/Workspace/constants";
 import showOpenFilePicker from "@lichtblick/suite-base/util/showOpenFilePicker";
 
-export function useOpenFile(sources: readonly IDataSourceFactory[]): () => Promise<void> {
+export function useOpenFile(sources: readonly IDataSourceFactory[]): () => Promise<boolean> {
   const { selectSource } = usePlayerSelection();
 
   const throwErrorAndSnackbar = (message: string): void => {
@@ -43,7 +43,7 @@ export function useOpenFile(sources: readonly IDataSourceFactory[]): () => Promi
     });
 
     if (filesHandle.length === 0) {
-      return;
+      return false;
     }
 
     const processedFiles = await Promise.all(
@@ -94,5 +94,6 @@ export function useOpenFile(sources: readonly IDataSourceFactory[]): () => Promi
       type: "file",
       handles: filesHandle,
     });
+    return true;
   }, [allExtensions, selectSource, sources]);
 }

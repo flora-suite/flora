@@ -6,8 +6,8 @@ import { createContext, useContext } from "react";
 
 import {
   CreateDeviceEventParams,
-  CreateDeviceParams,
   Device,
+  DeviceAgentInfo,
   DeviceEvent,
   DeviceEventListQuery,
   DeviceEventListResponse,
@@ -43,11 +43,12 @@ export type DeviceState = {
  * Device context interface
  */
 export interface IDeviceContext extends DeviceState {
-  // Device CRUD operations
+  // Device CRUD operations (note: devices are created via Agent only, no createDevice method)
   fetchDevices: (query?: DeviceListQuery) => Promise<DeviceListResponse>;
   fetchDevice: (id: string) => Promise<Device>;
-  createDevice: (params: CreateDeviceParams) => Promise<Device>;
   updateDevice: (id: string, params: UpdateDeviceParams) => Promise<Device>;
+  enableDevice: (id: string) => Promise<Device>;
+  disableDevice: (id: string) => Promise<Device>;
   deleteDevice: (id: string) => Promise<boolean>;
 
   // Device selection
@@ -58,6 +59,9 @@ export interface IDeviceContext extends DeviceState {
 
   // Device token
   generateDeviceToken: (id: string) => Promise<DeviceTokenResponse>;
+
+  // Device agent info
+  getDeviceAgentInfo: (id: string) => Promise<DeviceAgentInfo>;
 
   // Device events
   fetchDeviceEvents: (
@@ -93,10 +97,13 @@ const defaultDeviceContext: IDeviceContext = {
   fetchDevice: async () => {
     throw new Error("DeviceContext not initialized");
   },
-  createDevice: async () => {
+  updateDevice: async () => {
     throw new Error("DeviceContext not initialized");
   },
-  updateDevice: async () => {
+  enableDevice: async () => {
+    throw new Error("DeviceContext not initialized");
+  },
+  disableDevice: async () => {
     throw new Error("DeviceContext not initialized");
   },
   deleteDevice: async () => {
@@ -109,6 +116,9 @@ const defaultDeviceContext: IDeviceContext = {
     throw new Error("DeviceContext not initialized");
   },
   generateDeviceToken: async () => {
+    throw new Error("DeviceContext not initialized");
+  },
+  getDeviceAgentInfo: async () => {
     throw new Error("DeviceContext not initialized");
   },
   fetchDeviceEvents: async () => {

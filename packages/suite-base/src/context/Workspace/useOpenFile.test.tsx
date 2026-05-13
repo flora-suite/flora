@@ -1,7 +1,8 @@
-/** @jest-environment jsdom */
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
+
+/** @jest-environment jsdom */
 
 import { renderHook } from "@testing-library/react";
 import { enqueueSnackbar } from "notistack";
@@ -81,12 +82,20 @@ describe("useOpenFile", () => {
   it("should select a valid file source", async () => {
     const { result, sources, fsHandles } = setup();
 
-    await result.current();
+    await expect(result.current()).resolves.toBe(true);
 
     expect(selectSource).toHaveBeenCalledWith(sources[0]?.id, {
       type: "file",
       handles: fsHandles,
     });
+  });
+
+  it("should return false when file selection is cancelled", async () => {
+    (showOpenFilePicker as jest.Mock).mockResolvedValue([]);
+    const { result } = renderHook(() => useOpenFile([]));
+
+    await expect(result.current()).resolves.toBe(false);
+    expect(selectSource).not.toHaveBeenCalled();
   });
 
   it("should show error if multiple file extensions are selected", async () => {

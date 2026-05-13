@@ -2,10 +2,16 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { ApiClient, LocalStorageTokenStorage, ITokenStorage } from "@lichtblick/suite-base/services/ApiClient";
+import { ApiClient, LocalStorageTokenStorage, ITokenStorage, SessionExpiredCallback } from "@lichtblick/suite-base/services/ApiClient";
 import { AuthService, IAuthService } from "@lichtblick/suite-base/services/AuthService";
 import { DeviceService } from "@lichtblick/suite-base/services/DeviceService";
+import { EventService } from "@lichtblick/suite-base/services/EventService";
 import { IDeviceService } from "@lichtblick/suite-base/services/IDeviceService";
+import { IEventService } from "@lichtblick/suite-base/services/IEventService";
+import { IOrganizationService } from "@lichtblick/suite-base/services/IOrganizationService";
+import { IRecordingService } from "@lichtblick/suite-base/services/IRecordingService";
+import { OrganizationService } from "@lichtblick/suite-base/services/OrganizationService";
+import { RecordingService } from "@lichtblick/suite-base/services/RecordingService";
 
 /**
  * Default flora-server URL for development
@@ -20,6 +26,8 @@ export type CreateAuthServiceOptions = {
   serverUrl?: string;
   /** Custom token storage implementation */
   tokenStorage?: ITokenStorage;
+  /** Callback when session expires and cannot be refreshed */
+  onSessionExpired?: SessionExpiredCallback;
 };
 
 /**
@@ -36,6 +44,9 @@ export type AuthServicesResult = {
 export type FloraServicesResult = {
   authService: IAuthService;
   deviceService: IDeviceService;
+  recordingService: IRecordingService;
+  eventService: IEventService;
+  organizationService: IOrganizationService;
   apiClient: ApiClient;
 };
 
@@ -64,20 +75,30 @@ export function createAuthServices(options: CreateAuthServiceOptions = {}): Auth
 }
 
 /**
- * Factory function to create all flora services (auth, device, etc.)
+ * Factory function to create all flora services (auth, device, recording, event, organization, etc.)
  * Use this when you need access to all services
  */
 export function createFloraServices(options: CreateAuthServiceOptions = {}): FloraServicesResult {
   const {
     serverUrl = process.env.FLORA_SERVER_URL ?? DEFAULT_FLORA_SERVER_URL,
     tokenStorage = new LocalStorageTokenStorage(),
+    onSessionExpired,
   } = options;
 
   const apiClient = new ApiClient(serverUrl, tokenStorage);
+
+  // Set session expired callback if provided
+  if (onSessionExpired) {
+    apiClient.setSessionExpiredCallback(onSessionExpired);
+  }
+
   const authService = new AuthService(apiClient, tokenStorage);
   const deviceService = new DeviceService(apiClient);
+  const recordingService = new RecordingService(apiClient);
+  const eventService = new EventService(apiClient);
+  const organizationService = new OrganizationService(apiClient);
 
-  return { authService, deviceService, apiClient };
+  return { authService, deviceService, recordingService, eventService, organizationService, apiClient };
 }
 
 /**

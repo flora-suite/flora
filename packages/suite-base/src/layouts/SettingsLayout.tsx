@@ -2,7 +2,7 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { ArrowBackOutlined } from "@mui/icons-material";
+import { ArrowBackOutlined, BusinessOutlined } from "@mui/icons-material";
 import { Link, ListItemText, MenuItem, MenuList, Typography } from "@mui/material";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,7 @@ import { makeStyles } from "tss-react/mui";
 
 import { DashboardAppBar } from "@lichtblick/suite-base/components/AppBar";
 import Stack from "@lichtblick/suite-base/components/Stack";
+import { useCurrentOrganization } from "@lichtblick/suite-base/context/OrganizationContext";
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -55,8 +56,32 @@ const useStyles = makeStyles()((theme) => ({
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(0.5),
   },
+  orgHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(1),
+    padding: theme.spacing(1.5, 2),
+    marginTop: theme.spacing(1),
+  },
+  orgIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   menuItem: {
     paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    "&.Mui-selected": {
+      backgroundColor: theme.palette.action.selected,
+    },
+  },
+  orgMenuItem: {
+    paddingLeft: theme.spacing(4),
     paddingRight: theme.spacing(2),
     "&.Mui-selected": {
       backgroundColor: theme.palette.action.selected,
@@ -75,6 +100,7 @@ export function SettingsLayout(): React.JSX.Element {
   const { t } = useTranslation("appSettings");
   const navigate = useNavigate();
   const location = useLocation();
+  const currentOrganization = useCurrentOrganization();
 
   const handleNavigate = useCallback(
     (path: string) => {
@@ -92,6 +118,11 @@ export function SettingsLayout(): React.JSX.Element {
     if (path === "/settings" || path === "/settings/general") {
       return location.pathname === "/settings" || location.pathname === "/settings/general";
     }
+    return location.pathname === path;
+  };
+
+  // Check if any organization settings page is active
+  const isOrgSettingsActive = (path: string) => {
     return location.pathname === path;
   };
 
@@ -154,6 +185,61 @@ export function SettingsLayout(): React.JSX.Element {
               <ListItemText>{t("about")}</ListItemText>
             </MenuItem>
           </MenuList>
+
+          {/* Organization Settings - only show when an organization is selected */}
+          {currentOrganization != undefined && (
+            <MenuList>
+              <div className={classes.orgHeader}>
+                <div className={classes.orgIcon}>
+                  <BusinessOutlined fontSize="small" />
+                </div>
+                <Stack>
+                  <Typography variant="body2" fontWeight={600}>
+                    {currentOrganization.name}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {t("organizationSettings")}
+                  </Typography>
+                </Stack>
+              </div>
+              <MenuItem
+                selected={isOrgSettingsActive("/settings/organization")}
+                className={classes.orgMenuItem}
+                onClick={() => {
+                  handleNavigate("/settings/organization");
+                }}
+              >
+                <ListItemText>{t("general")}</ListItemText>
+              </MenuItem>
+              <MenuItem
+                selected={isOrgSettingsActive("/settings/organization/members")}
+                className={classes.orgMenuItem}
+                onClick={() => {
+                  handleNavigate("/settings/organization/members");
+                }}
+              >
+                <ListItemText>{t("members")}</ListItemText>
+              </MenuItem>
+              <MenuItem
+                selected={isOrgSettingsActive("/settings/organization/api-keys")}
+                className={classes.orgMenuItem}
+                onClick={() => {
+                  handleNavigate("/settings/organization/api-keys");
+                }}
+              >
+                <ListItemText>{t("apiKeys")}</ListItemText>
+              </MenuItem>
+              <MenuItem
+                selected={isOrgSettingsActive("/settings/organization/extensions")}
+                className={classes.orgMenuItem}
+                onClick={() => {
+                  handleNavigate("/settings/organization/extensions");
+                }}
+              >
+                <ListItemText>{t("extensions")}</ListItemText>
+              </MenuItem>
+            </MenuList>
+          )}
         </div>
         <Stack className={classes.main}>
           <Outlet />
