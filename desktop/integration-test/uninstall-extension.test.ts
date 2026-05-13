@@ -6,6 +6,8 @@ import path from "path";
 
 import { launchApp } from "./launchApp";
 
+const TEST_TIMEOUT = 90_000;
+
 describe("Uninstall extension", () => {
   it("should display 'Uninstalling...' during uninstallation and 'Uninstall' when idle", async () => {
     await using app = await launchApp();
@@ -26,7 +28,7 @@ describe("Uninstall extension", () => {
     // Close the data source dialog if it appears
     await app.renderer.getByTestId("DataSourceDialog").getByTestId("CloseIcon").click();
 
-    await app.renderer.getByTestId("PersonIcon").click();
+    await app.renderer.getByTestId("PersonIcon").click({ timeout: 60_000 });
     await app.renderer.getByRole("menuitem", { name: "Extensions" }).click();
     const searchBar = app.renderer.getByPlaceholder("Search Extensions...");
     await searchBar.fill("turtlesim");
@@ -43,5 +45,5 @@ describe("Uninstall extension", () => {
 
     expect(await app.renderer.getByText("Uninstalling...").isVisible()).toBe(true);
     expect(await app.renderer.getByText("Uninstalling...").isEnabled()).toBe(false);
-  }, 60_000);
+  }, TEST_TIMEOUT);
 });

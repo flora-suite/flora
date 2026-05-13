@@ -13947,7 +13947,7 @@ __metadata:
     "@types/case-sensitive-paths-webpack-plugin": "npm:2.1.9"
     "@types/jest": "npm:30.0.0"
     "@types/license-checker": "npm:^25.0.6"
-    "@types/node": "npm:24.10.9"
+    "@types/node": "npm:20.10.0"
     "@types/react": "npm:^18.3.27"
     "@types/react-dom": "npm:^18.3.7"
     "@types/react-refresh": "npm:^0.14.7"

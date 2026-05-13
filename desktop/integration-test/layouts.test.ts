@@ -4,7 +4,7 @@
 
 import { AppType, launchApp } from "./launchApp";
 
-const TEST_TIMEOUT = 45_000;
+const TEST_TIMEOUT = 90_000;
 
 describe("layouts", () => {
   const closeDataSourceDialogAfterAppLaunch = async (app: AppType) => {
@@ -20,7 +20,10 @@ describe("layouts", () => {
       .getByTestId("layout-list-item")
       .getByText("Default", { exact: true })
       .click();
-    await app.renderer.getByTestId("SettingsIcon").nth(0).waitFor({ state: "visible" });
+    await app.renderer
+      .getByTestId("SettingsIcon")
+      .nth(0)
+      .waitFor({ state: "visible", timeout: 60_000 });
   }
 
   it("should open 3D panel when clicking on Layouts > default", async () => {

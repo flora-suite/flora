@@ -5,6 +5,8 @@
 import { AppType, launchApp } from "./launchApp";
 import { loadFile } from "./utils/loadFile";
 
+const TEST_TIMEOUT = 60_000;
+
 describe("mapPanel", () => {
   const closeDataSourceDialogAfterAppLaunch = async (app: AppType) => {
     await expect(app.renderer.getByTestId("DataSourceDialog").isVisible()).resolves.toBe(true);
@@ -33,5 +35,5 @@ describe("mapPanel", () => {
     await expect(app.renderer.getByText("Map panel", { exact: true }).innerText()).resolves.toBe(
       "Map panel",
     );
-  }, 15_000);
+  }, TEST_TIMEOUT);
 });

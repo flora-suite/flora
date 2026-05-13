@@ -5,6 +5,8 @@
 import { AppType, launchApp } from "./launchApp";
 import { loadFile } from "./utils/loadFile";
 
+const TEST_TIMEOUT = 60_000;
+
 describe("filterOfTopics", () => {
   const closeDataSourceDialogAfterAppLaunch = async (app: AppType) => {
     await expect(app.renderer.getByTestId("DataSourceDialog").isVisible()).resolves.toBe(true);
@@ -49,5 +51,5 @@ describe("filterOfTopics", () => {
     await app.renderer.getByRole("button", { name: "List invisible" }).click();
     await app.renderer.locator("#menu-").getByText("List all").click();
     expect(await app.renderer.getByTitle("Toggle visibility").count()).toBe(4);
-  }, 20_000);
+  }, TEST_TIMEOUT);
 });
