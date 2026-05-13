@@ -1,6 +1,5 @@
 /** @jest-environment jsdom */
 
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -52,6 +51,7 @@ describe("useTopicPublishFrequencies", () => {
   });
 
   it("updates frequences for a live source", () => {
+    const now = jest.spyOn(Date, "now").mockReturnValue(1_000);
     let activeData: Partial<PlayerState["activeData"]> = {
       currentTime: { sec: 2, nsec: 0 },
       endTime: { sec: 10, nsec: 0 },
@@ -81,9 +81,11 @@ describe("useTopicPublishFrequencies", () => {
         ["topic_b", { numMessages: 40 }],
       ]),
     };
+    now.mockReturnValue(2_000);
     rerender();
 
     expect(result.current["topic_a"]).toBeGreaterThan(0);
     expect(result.current["topic_b"]).toBeGreaterThan(0);
+    now.mockRestore();
   });
 });

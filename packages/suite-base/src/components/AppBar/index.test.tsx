@@ -1,11 +1,11 @@
 /** @jest-environment jsdom */
 
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import { render } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 
 import MockMessagePipelineProvider from "@lichtblick/suite-base/components/MessagePipeline/MockMessagePipelineProvider";
 import MultiProvider from "@lichtblick/suite-base/components/MultiProvider";
@@ -33,6 +33,7 @@ function Wrapper({ children }: React.PropsWithChildren): JSX.Element {
     <MockCurrentLayoutProvider />,
     <ThemeProvider isDark />,
     <LayoutManagerContext.Provider value={new MockLayoutManager()} />,
+    <MemoryRouter />,
     /* eslint-enable react/jsx-key */
   ];
   return <MultiProvider providers={providers}>{children}</MultiProvider>;
