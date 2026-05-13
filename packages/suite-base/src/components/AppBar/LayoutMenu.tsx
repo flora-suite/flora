@@ -2,6 +2,8 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
+import BusinessOutlined from "@mui/icons-material/BusinessOutlined";
+import PersonOutlined from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   CircularProgress,
@@ -11,8 +13,8 @@ import {
   MenuItem,
   ListItemText,
   TextField,
+  Typography,
 } from "@mui/material";
-import * as _ from "lodash-es";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -28,17 +30,22 @@ import {
 } from "@lichtblick/suite-base/context/CurrentLayoutContext";
 import { LayoutData } from "@lichtblick/suite-base/context/CurrentLayoutContext/actions";
 import { useLayoutManager } from "@lichtblick/suite-base/context/LayoutManagerContext";
+import {
+  useCurrentOrganization,
+  useIsOrganizationMode,
+} from "@lichtblick/suite-base/context/OrganizationContext";
 import useCallbackWithToast from "@lichtblick/suite-base/hooks/useCallbackWithToast";
 import { useLayoutActions } from "@lichtblick/suite-base/hooks/useLayoutActions";
 import { useLayoutNavigation } from "@lichtblick/suite-base/hooks/useLayoutNavigation";
 import { useLayoutTransfer } from "@lichtblick/suite-base/hooks/useLayoutTransfer";
-import { usePrompt } from "@lichtblick/suite-base/hooks/usePrompt";
 import { defaultPlaybackConfig } from "@lichtblick/suite-base/providers/CurrentLayoutProvider/reducers";
 import { AppEvent } from "@lichtblick/suite-base/services/IAnalytics";
-import { Layout, layoutIsShared } from "@lichtblick/suite-base/services/ILayoutStorage";
+import { Layout } from "@lichtblick/suite-base/services/ILayoutStorage";
 
 const RECENT_LAYOUTS_KEY: string = "flora.recentLayouts";
 const MAX_RECENT_LAYOUTS = 5;
+const INITIAL_VISIBLE_LAYOUTS = 20;
+const LOAD_MORE_INCREMENT = 20;
 
 const useStyles = makeStyles()((theme) => ({
   menuList: {
@@ -50,6 +57,18 @@ const useStyles = makeStyles()((theme) => ({
     "& .MuiOutlinedInput-root": {
       fontSize: "0.875rem",
     },
+  },
+  contextHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(1),
+    padding: theme.spacing(1, 2),
+    backgroundColor: theme.palette.action.hover,
+  },
+  loadMoreButton: {
+    width: "100%",
+    justifyContent: "center",
+    color: theme.palette.primary.main,
   },
 }));
 
@@ -106,20 +125,21 @@ export function LayoutMenu(props: LayoutMenuProps): React.JSX.Element {
     onOverwriteLayout,
     confirmModal,
   } = useLayoutActions();
-  const [prompt, promptModal] = usePrompt();
+
+  // Organization context
+  const isOrganizationMode = useIsOrganizationMode();
+  const currentOrganization = useCurrentOrganization();
 
   const [selectedIds] = useState<readonly string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_LAYOUTS);
 
   const [layouts, reloadLayouts] = useAsyncFn(
     async () => {
-      const [shared, personal] = _.partition(
-        await layoutManager.getLayouts(),
-        layoutManager.supportsSharing ? layoutIsShared : () => false,
-      );
+      // All layouts are now in the same context (personal or org)
+      const allLayouts = await layoutManager.getLayouts();
       return {
-        personal: personal.sort((a, b) => a.name.localeCompare(b.name)),
-        shared: shared.sort((a, b) => a.name.localeCompare(b.name)),
+        layouts: [...allLayouts].sort((a, b) => a.name.localeCompare(b.name)),
       };
     },
     [layoutManager],
@@ -131,10 +151,9 @@ export function LayoutMenu(props: LayoutMenuProps): React.JSX.Element {
     if (!layouts.value) {
       return [];
     }
-    const allLayouts = [...layouts.value.personal, ...layouts.value.shared];
     const recentIds = getRecentLayoutIds();
     return recentIds
-      .map((id) => allLayouts.find((layout) => layout.id === id))
+      .map((id) => layouts.value!.layouts.find((layout) => layout.id === id))
       .filter((layout): layout is Layout => layout != undefined)
       .slice(0, MAX_RECENT_LAYOUTS);
   }, [layouts.value]);
@@ -142,27 +161,29 @@ export function LayoutMenu(props: LayoutMenuProps): React.JSX.Element {
   // Filter layouts by search query
   const filteredLayouts = useMemo(() => {
     if (!layouts.value) {
-      return { personal: [], shared: [], recent: [] };
+      return { layouts: [] as Layout[], recent: [] as Layout[], total: 0 };
     }
     const query = searchQuery.toLowerCase().trim();
     if (!query) {
       return {
-        personal: layouts.value.personal,
-        shared: layouts.value.shared,
+        layouts: layouts.value.layouts.slice(0, visibleCount),
         recent: recentLayouts,
+        total: layouts.value.layouts.length,
       };
     }
+    const filtered = layouts.value.layouts.filter((l) => l.name.toLowerCase().includes(query));
     return {
-      personal: layouts.value.personal.filter((l) => l.name.toLowerCase().includes(query)),
-      shared: layouts.value.shared.filter((l) => l.name.toLowerCase().includes(query)),
+      layouts: filtered.slice(0, visibleCount),
       recent: recentLayouts.filter((l) => l.name.toLowerCase().includes(query)),
+      total: filtered.length,
     };
-  }, [layouts.value, searchQuery, recentLayouts]);
+  }, [layouts.value, searchQuery, recentLayouts, visibleCount]);
 
   useEffect(() => {
     if (open) {
       void reloadLayouts();
       setSearchQuery("");
+      setVisibleCount(INITIAL_VISIBLE_LAYOUTS);
     }
   }, [open, reloadLayouts]);
 
@@ -210,27 +231,6 @@ export function LayoutMenu(props: LayoutMenuProps): React.JSX.Element {
     handleClose();
   }, [importLayout, handleClose]);
 
-  const onShareLayout = useCallbackWithToast(
-    async (item: Layout) => {
-      const name = await prompt({
-        title: t("shareACopyWithYourOrganization"),
-        subText: t("sharedLayoutsCanBeUsedAndChangedByOtherMembersOfYourOrganization"),
-        initialValue: item.name,
-        label: t("layoutName"),
-      });
-      if (name != undefined) {
-        const newLayout = await layoutManager.saveNewLayout({
-          name,
-          data: item.working?.data ?? item.baseline.data,
-          permission: "ORG_WRITE",
-        });
-        void analytics.logEvent(AppEvent.LAYOUT_SHARE, { permission: item.permission });
-        await onSelectLayout(newLayout);
-      }
-    },
-    [analytics, layoutManager, onSelectLayout, prompt, t],
-  );
-
   const onMakePersonalCopy = useCallbackWithToast(
     async (item: Layout) => {
       const newLayout = await layoutManager.makePersonalCopy({
@@ -247,24 +247,29 @@ export function LayoutMenu(props: LayoutMenuProps): React.JSX.Element {
   );
 
   const anySelectedModifiedLayouts = useMemo(() => {
-    return [layouts.value?.personal ?? [], layouts.value?.shared ?? []]
-      .flat()
-      .some((layout) => layout.working != undefined && selectedIds.includes(layout.id));
+    return (layouts.value?.layouts ?? []).some(
+      (layout: Layout) => layout.working != undefined && selectedIds.includes(layout.id),
+    );
   }, [layouts.value, selectedIds]);
 
   const hasRecentLayouts = filteredLayouts.recent.length > 0;
-  const hasPersonalLayouts = filteredLayouts.personal.length > 0;
-  const hasSharedLayouts = filteredLayouts.shared.length > 0;
+  const hasLayouts = filteredLayouts.layouts.length > 0;
+  const hasMoreLayouts = filteredLayouts.layouts.length < filteredLayouts.total;
+  const remainingCount = filteredLayouts.total - filteredLayouts.layouts.length;
+
+  const handleLoadMore = useCallback(() => {
+    setVisibleCount((prev) => prev + LOAD_MORE_INCREMENT);
+  }, []);
 
   return (
     <>
       {confirmModal}
-      {promptModal}
       <Menu
         id="layout-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        disableAutoFocusItem
         slotProps={{
           list: {
             dense: true,
@@ -282,6 +287,24 @@ export function LayoutMenu(props: LayoutMenuProps): React.JSX.Element {
           horizontal: "right",
         }}
       >
+        {/* Context indicator */}
+        <div className={classes.contextHeader}>
+          {isOrganizationMode ? (
+            <>
+              <BusinessOutlined fontSize="small" color="primary" />
+              <Typography variant="body2" color="text.secondary">
+                {currentOrganization?.name ?? t("organization")}
+              </Typography>
+            </>
+          ) : (
+            <>
+              <PersonOutlined fontSize="small" color="primary" />
+              <Typography variant="body2" color="text.secondary">
+                {t("personal")}
+              </Typography>
+            </>
+          )}
+        </div>
         <TextField
           className={classes.searchField}
           size="small"
@@ -325,7 +348,7 @@ export function LayoutMenu(props: LayoutMenuProps): React.JSX.Element {
               {hasRecentLayouts && (
                 <LayoutSection
                   disablePadding
-                  title="Recent"
+                  title={t("recent")}
                   emptyText={undefined}
                   items={filteredLayouts.recent}
                   anySelectedModifiedLayouts={anySelectedModifiedLayouts}
@@ -335,19 +358,18 @@ export function LayoutMenu(props: LayoutMenuProps): React.JSX.Element {
                   onRename={onRenameLayout}
                   onDuplicate={onDuplicateLayout}
                   onDelete={onDeleteLayout}
-                  onShare={onShareLayout}
                   onExport={exportLayout}
                   onOverwrite={onOverwriteLayout}
                   onRevert={onRevertLayout}
                   onMakePersonalCopy={onMakePersonalCopy}
                 />
               )}
-              {hasPersonalLayouts && (
+              {hasLayouts && (
                 <LayoutSection
                   disablePadding
-                  title="Personal"
+                  title={hasRecentLayouts ? t("allLayouts") : undefined}
                   emptyText={undefined}
-                  items={filteredLayouts.personal}
+                  items={filteredLayouts.layouts}
                   anySelectedModifiedLayouts={anySelectedModifiedLayouts}
                   multiSelectedIds={selectedIds}
                   selectedId={selectedLayoutId}
@@ -355,34 +377,20 @@ export function LayoutMenu(props: LayoutMenuProps): React.JSX.Element {
                   onRename={onRenameLayout}
                   onDuplicate={onDuplicateLayout}
                   onDelete={onDeleteLayout}
-                  onShare={onShareLayout}
                   onExport={exportLayout}
                   onOverwrite={onOverwriteLayout}
                   onRevert={onRevertLayout}
                   onMakePersonalCopy={onMakePersonalCopy}
                 />
               )}
-              {layoutManager.supportsSharing && hasSharedLayouts && (
-                <LayoutSection
-                  disablePadding
-                  title="Organization"
-                  emptyText={undefined}
-                  items={filteredLayouts.shared}
-                  anySelectedModifiedLayouts={anySelectedModifiedLayouts}
-                  multiSelectedIds={selectedIds}
-                  selectedId={selectedLayoutId}
-                  onSelect={handleLayoutSelect}
-                  onRename={onRenameLayout}
-                  onDuplicate={onDuplicateLayout}
-                  onDelete={onDeleteLayout}
-                  onShare={onShareLayout}
-                  onExport={exportLayout}
-                  onOverwrite={onOverwriteLayout}
-                  onRevert={onRevertLayout}
-                  onMakePersonalCopy={onMakePersonalCopy}
-                />
+              {hasMoreLayouts && (
+                <MenuItem className={classes.loadMoreButton} onClick={handleLoadMore}>
+                  <ListItemText>
+                    {t("showMore", "Show more")} ({remainingCount})
+                  </ListItemText>
+                </MenuItem>
               )}
-              {!hasRecentLayouts && !hasPersonalLayouts && !hasSharedLayouts && (
+              {!hasRecentLayouts && !hasLayouts && (
                 <Stack padding={2} alignItems="center">
                   {searchQuery
                     ? t("noLayoutsFound", "No layouts found")

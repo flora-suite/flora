@@ -3,8 +3,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import AddIcon from "@mui/icons-material/Add";
+import BusinessOutlined from "@mui/icons-material/BusinessOutlined";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
 import FileOpenOutlinedIcon from "@mui/icons-material/FileOpenOutlined";
+import PersonOutlined from "@mui/icons-material/PersonOutlined";
 import {
   CircularProgress,
   Divider,
@@ -13,8 +15,8 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  Typography,
 } from "@mui/material";
-import * as _ from "lodash-es";
 import moment from "moment";
 import { useSnackbar } from "notistack";
 import { useEffect, useLayoutEffect, useMemo } from "react";
@@ -34,17 +36,19 @@ import {
   useCurrentLayoutSelector,
 } from "@lichtblick/suite-base/context/CurrentLayoutContext";
 import { LayoutData } from "@lichtblick/suite-base/context/CurrentLayoutContext/actions";
-import { useCurrentUser } from "@lichtblick/suite-base/context/CurrentUserContext";
 import { useLayoutManager } from "@lichtblick/suite-base/context/LayoutManagerContext";
+import {
+  useCurrentOrganization,
+  useIsOrganizationMode,
+} from "@lichtblick/suite-base/context/OrganizationContext";
 import { useAppConfigurationValue } from "@lichtblick/suite-base/hooks/useAppConfigurationValue";
 import useCallbackWithToast from "@lichtblick/suite-base/hooks/useCallbackWithToast";
 import { useLayoutActions } from "@lichtblick/suite-base/hooks/useLayoutActions";
 import { useLayoutNavigation } from "@lichtblick/suite-base/hooks/useLayoutNavigation";
 import { useLayoutTransfer } from "@lichtblick/suite-base/hooks/useLayoutTransfer";
-import { usePrompt } from "@lichtblick/suite-base/hooks/usePrompt";
 import { defaultPlaybackConfig } from "@lichtblick/suite-base/providers/CurrentLayoutProvider/reducers";
 import { AppEvent } from "@lichtblick/suite-base/services/IAnalytics";
-import { Layout, layoutIsShared } from "@lichtblick/suite-base/services/ILayoutStorage";
+import { Layout } from "@lichtblick/suite-base/services/ILayoutStorage";
 
 import LayoutSection from "./LayoutSection";
 
@@ -56,6 +60,14 @@ const useStyles = makeStyles()((theme) => ({
   actionList: {
     paddingTop: theme.spacing(1),
   },
+  contextHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(1),
+    padding: theme.spacing(1.5, 2),
+    backgroundColor: theme.palette.action.hover,
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
 }));
 
 export default function LayoutBrowser({
@@ -65,11 +77,13 @@ export default function LayoutBrowser({
   currentDateForStorybook?: Date;
 }>): JSX.Element {
   const { classes } = useStyles();
-  const { signIn } = useCurrentUser();
   const { enqueueSnackbar } = useSnackbar();
   const layoutManager = useLayoutManager();
-  const [prompt, promptModal] = usePrompt();
   const analytics = useAnalytics();
+
+  // Organization context
+  const isOrganizationMode = useIsOrganizationMode();
+  const currentOrganization = useCurrentOrganization();
 
   const currentLayoutId = useCurrentLayoutSelector(selectedLayoutIdSelector);
   const {
@@ -112,13 +126,10 @@ export default function LayoutBrowser({
 
   const [layouts, reloadLayouts] = useAsyncFn(
     async () => {
-      const [shared, personal] = _.partition(
-        await layoutManager.getLayouts(),
-        layoutManager.supportsSharing ? layoutIsShared : () => false,
-      );
+      // All layouts are now in the same context (personal or org)
+      const allLayouts = await layoutManager.getLayouts();
       return {
-        personal: personal.sort((a, b) => a.name.localeCompare(b.name)),
-        shared: shared.sort((a, b) => a.name.localeCompare(b.name)),
+        layouts: [...allLayouts].sort((a, b) => a.name.localeCompare(b.name)),
       };
     },
     [layoutManager],
@@ -210,27 +221,6 @@ export default function LayoutBrowser({
     void analytics.logEvent(AppEvent.LAYOUT_CREATE);
   }, [promptForUnsavedChanges, currentDateForStorybook, layoutManager, onSelectLayout, analytics]);
 
-  const onShareLayout = useCallbackWithToast(
-    async (item: Layout) => {
-      const name = await prompt({
-        title: "Share a copy with your organization",
-        subText: "Shared layouts can be used and changed by other members of your organization.",
-        initialValue: item.name,
-        label: "Layout name",
-      });
-      if (name != undefined) {
-        const newLayout = await layoutManager.saveNewLayout({
-          name,
-          data: item.working?.data ?? item.baseline.data,
-          permission: "ORG_WRITE",
-        });
-        void analytics.logEvent(AppEvent.LAYOUT_SHARE, { permission: item.permission });
-        await onSelectLayout(newLayout);
-      }
-    },
-    [analytics, layoutManager, onSelectLayout, prompt],
-  );
-
   const onMakePersonalCopy = useCallbackWithToast(
     async (item: Layout) => {
       const newLayout = await layoutManager.makePersonalCopy({
@@ -250,20 +240,19 @@ export default function LayoutBrowser({
   const [hideSignInPrompt = false, setHideSignInPrompt] = useAppConfigurationValue<boolean>(
     AppSetting.HIDE_SIGN_IN_PROMPT,
   );
-  const showSignInPrompt =
-    signIn != undefined && !layoutManager.supportsSharing && !hideSignInPrompt;
+  const showSignInPrompt = !layoutManager.supportsSharing && !hideSignInPrompt;
 
   const pendingMultiAction = state.multiAction?.ids != undefined;
 
   const anySelectedModifiedLayouts = useMemo(() => {
-    return [layouts.value?.personal ?? [], layouts.value?.shared ?? []]
-      .flat()
-      .some((layout) => layout.working != undefined && state.selectedIds.includes(layout.id));
+    return (layouts.value?.layouts ?? []).some(
+      (layout: Layout) => layout.working != undefined && state.selectedIds.includes(layout.id),
+    );
   }, [layouts, state.selectedIds]);
 
   return (
     <SidebarContent
-      title="Layouts"
+      title={t("layouts")}
       disablePadding
       disableToolbar={enableNewTopNav}
       trailingItems={[
@@ -298,7 +287,6 @@ export default function LayoutBrowser({
         </IconButton>,
       ].filter(Boolean)}
     >
-      {promptModal}
       {confirmModal}
       {unsavedChangesPrompt}
       <Stack
@@ -306,6 +294,24 @@ export default function LayoutBrowser({
         gap={enableNewTopNav ? 1 : 2}
         style={{ pointerEvents: pendingMultiAction ? "none" : "auto" }}
       >
+        {/* Context indicator */}
+        <div className={classes.contextHeader}>
+          {isOrganizationMode ? (
+            <>
+              <BusinessOutlined fontSize="small" color="primary" />
+              <Typography variant="body2" color="text.secondary">
+                {currentOrganization?.name ?? t("organization")}
+              </Typography>
+            </>
+          ) : (
+            <>
+              <PersonOutlined fontSize="small" color="primary" />
+              <Typography variant="body2" color="text.secondary">
+                {t("personal")}
+              </Typography>
+            </>
+          )}
+        </div>
         {enableNewTopNav && (
           <>
             <List className={classes.actionList} disablePadding>
@@ -325,9 +331,9 @@ export default function LayoutBrowser({
         )}
         <LayoutSection
           disablePadding={enableNewTopNav}
-          title={layoutManager.supportsSharing ? "Personal" : undefined}
+          title={undefined}
           emptyText={t("addANewLayoutToGetStartedWithFlora")}
-          items={layouts.value?.personal}
+          items={layouts.value?.layouts}
           anySelectedModifiedLayouts={anySelectedModifiedLayouts}
           multiSelectedIds={state.selectedIds}
           selectedId={currentLayoutId}
@@ -335,32 +341,11 @@ export default function LayoutBrowser({
           onRename={onRenameLayout}
           onDuplicate={onDuplicateLayout}
           onDelete={onDeleteLayout}
-          onShare={onShareLayout}
           onExport={onExportLayout}
           onOverwrite={onOverwriteLayout}
           onRevert={onRevertLayout}
           onMakePersonalCopy={onMakePersonalCopy}
         />
-        {layoutManager.supportsSharing && (
-          <LayoutSection
-            disablePadding={enableNewTopNav}
-            title="Organization"
-            emptyText="Your organization doesn’t have any shared layouts yet. Share a layout to collaborate with others."
-            items={layouts.value?.shared}
-            anySelectedModifiedLayouts={anySelectedModifiedLayouts}
-            multiSelectedIds={state.selectedIds}
-            selectedId={currentLayoutId}
-            onSelect={onSelectLayout}
-            onRename={onRenameLayout}
-            onDuplicate={onDuplicateLayout}
-            onDelete={onDeleteLayout}
-            onShare={onShareLayout}
-            onExport={onExportLayout}
-            onOverwrite={onOverwriteLayout}
-            onRevert={onRevertLayout}
-            onMakePersonalCopy={onMakePersonalCopy}
-          />
-        )}
         {!enableNewTopNav && <Stack flexGrow={1} />}
         {showSignInPrompt && <SignInPrompt onDismiss={() => void setHideSignInPrompt(true)} />}
       </Stack>

@@ -64,6 +64,7 @@ export type DeviceListResponse = {
  * Query parameters for listing devices
  */
 export type DeviceListQuery = {
+  orgId?: string;
   search?: string;
   status?: DeviceStatus;
   page?: number;
@@ -71,31 +72,33 @@ export type DeviceListQuery = {
 };
 
 /**
- * Parameters for creating a new device
- */
-export type CreateDeviceParams = {
-  name: string;
-  type: string;
-  model?: string;
-  serialNumber?: string;
-  firmwareVersion?: string;
-  location?: string;
-  ipAddress?: string;
-  orgId?: string;
-};
-
-/**
- * Parameters for updating a device
+ * Parameters for updating a device (limited fields editable from frontend)
  */
 export type UpdateDeviceParams = {
   name?: string;
-  type?: string;
+  location?: string | null;
   model?: string | null;
   serialNumber?: string | null;
-  firmwareVersion?: string | null;
-  location?: string | null;
-  ipAddress?: string | null;
-  enabled?: boolean;
+};
+
+/**
+ * Device agent info response
+ */
+export type DeviceAgentInfo = {
+  agentInfo: {
+    version: string | undefined;
+    status: AgentStatus | undefined;
+    uptime: number | undefined;
+    lastHeartbeat: string | undefined;
+  };
+  systemInfo: {
+    cpuUsage: number | undefined;
+    memoryUsage: number | undefined;
+    diskUsage: number | undefined;
+    rosDistro: string | undefined;
+    rosNodeCount: number | undefined;
+    rosTopicCount: number | undefined;
+  };
 };
 
 /**
@@ -104,6 +107,50 @@ export type UpdateDeviceParams = {
 export type DeviceTokenResponse = {
   token: string;
   expiresAt: string;
+};
+
+/**
+ * System info collected by flora-agent for registration
+ */
+export type DeviceSystemInfo = {
+  cpuCores?: number;
+  cpuModel?: string;
+  memoryGB?: number;
+  diskGB?: number;
+  osName?: string;
+  kernelVersion?: string;
+};
+
+/**
+ * Device registration info response (for web page display)
+ */
+export type DeviceRegistrationInfo = {
+  code: string;
+  machineId: string;
+  hostname: string | undefined;
+  platform: string | undefined;
+  ipAddress: string | undefined;
+  systemInfo: DeviceSystemInfo | undefined;
+  expiresAt: string;
+  expiresIn: number;
+};
+
+/**
+ * Parameters for confirming device registration
+ */
+export type ConfirmDeviceRegistrationParams = {
+  code: string;
+  name: string;
+  type: string;
+  organizationId?: string;
+  watchPaths?: string[];
+};
+
+/**
+ * Response after confirming device registration
+ */
+export type ConfirmDeviceRegistrationResponse = {
+  success: boolean;
 };
 
 /**
@@ -180,18 +227,24 @@ export type UpdateDeviceEventParams = {
  * Device service interface
  */
 export interface IDeviceService {
-  // Device CRUD
+  // Device CRUD (note: devices are created via Agent only, no createDevice method)
   getDevices(query?: DeviceListQuery): Promise<DeviceListResponse>;
   getDevice(id: string): Promise<Device>;
-  createDevice(params: CreateDeviceParams): Promise<Device>;
   updateDevice(id: string, params: UpdateDeviceParams): Promise<Device>;
   deleteDevice(id: string): Promise<boolean>;
+
+  // Device enable/disable
+  enableDevice(id: string): Promise<Device>;
+  disableDevice(id: string): Promise<Device>;
 
   // Device topics
   getDeviceTopics(id: string): Promise<DeviceTopic[]>;
 
   // Device token
   generateDeviceToken(id: string): Promise<DeviceTokenResponse>;
+
+  // Device agent info
+  getDeviceAgentInfo(id: string): Promise<DeviceAgentInfo>;
 
   // Device events
   getDeviceEvents(deviceId: string, query?: DeviceEventListQuery): Promise<DeviceEventListResponse>;
@@ -203,4 +256,10 @@ export interface IDeviceService {
     params: UpdateDeviceEventParams,
   ): Promise<DeviceEvent>;
   deleteDeviceEvent(deviceId: string, eventId: string): Promise<boolean>;
+
+  // Device registration (public endpoints - no auth required)
+  getDeviceRegistrationInfo(code: string): Promise<DeviceRegistrationInfo>;
+  confirmDeviceRegistration(
+    params: ConfirmDeviceRegistrationParams,
+  ): Promise<ConfirmDeviceRegistrationResponse>;
 }

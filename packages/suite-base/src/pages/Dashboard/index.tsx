@@ -102,8 +102,10 @@ export function DashboardPage(): React.JSX.Element {
   const handleOpenLocalFile = useCallback(() => {
     dialogActions.openFile
       .open()
-      .then(() => {
-        void navigate("/view");
+      .then((opened) => {
+        if (opened) {
+          void navigate("/view");
+        }
       })
       .catch((err: unknown) => {
         console.error(err);
@@ -228,7 +230,7 @@ export function DashboardPage(): React.JSX.Element {
             <Card variant="outlined" className={classes.resourceCard}>
               <CardActionArea
                 component="a"
-                href="https://docs.foxglove.dev/"
+                href="https://flora.fan/docs"
                 target="_blank"
                 className={classes.resourceCardAction}
               >
@@ -251,7 +253,7 @@ export function DashboardPage(): React.JSX.Element {
             <Card variant="outlined" className={classes.resourceCard}>
               <CardActionArea
                 component="a"
-                href="https://docs.foxglove.dev/docs/connecting-to-data/ros2"
+                href="https://flora.fan/docs/connecting-to-data/frameworks/ros2/"
                 target="_blank"
                 className={classes.resourceCardAction}
               >
@@ -274,7 +276,7 @@ export function DashboardPage(): React.JSX.Element {
             <Card variant="outlined" className={classes.resourceCard}>
               <CardActionArea
                 component="a"
-                href="https://docs.foxglove.dev/docs/visualization/message-schemas"
+                href="https://flora.fan/docs/visualization/message-schemas/introduction/"
                 target="_blank"
                 className={classes.resourceCardAction}
               >

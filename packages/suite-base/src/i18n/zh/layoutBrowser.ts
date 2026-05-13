@@ -18,13 +18,14 @@ export const layoutBrowser = {
   someoneElseHasDeletedThisLayout: "其他人已删除此布局",
   theseLayoutsHaveUnsavedChanges: "这些布局有未保存的更改",
   thisLayoutHasUnsavedChanges: "此布局有未保存的更改",
-  shareWithTeam: "与团队分享…",
   export: "导出…",
   addANewLayoutToGetStartedWithFlora: "添加新布局以开始使用Flora！",
   cloudSynced: "已同步到云端",
   localOnly: "仅本地",
-  shareACopyWithYourOrganization: "与组织分享副本",
-  sharedLayoutsCanBeUsedAndChangedByOtherMembersOfYourOrganization:
-    "共享布局可以被组织中的其他成员使用和修改。",
   layoutName: "布局名称",
+  personal: "个人",
+  organization: "组织",
+  recent: "最近",
+  allLayouts: "全部布局",
+  showMore: "显示更多",
 };

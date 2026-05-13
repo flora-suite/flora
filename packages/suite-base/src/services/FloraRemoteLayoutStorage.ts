@@ -23,6 +23,9 @@ type LayoutApiResponse = {
   permission: LayoutPermission;
   data: unknown;
   savedAt: string;
+  orgId: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 /**
@@ -31,14 +34,17 @@ type LayoutApiResponse = {
 export class FloraRemoteLayoutStorage implements IRemoteLayoutStorage {
   readonly namespace: string;
   private readonly apiClient: ApiClient;
+  private readonly orgId: string | undefined;
 
-  public constructor(apiClient: ApiClient, userId: string) {
+  public constructor(apiClient: ApiClient, userId: string, orgId?: string) {
     this.apiClient = apiClient;
-    this.namespace = userId;
+    this.namespace = orgId ? `org-${orgId}` : userId;
+    this.orgId = orgId;
   }
 
   public async getLayouts(): Promise<readonly RemoteLayout[]> {
-    const response = await this.apiClient.get<LayoutApiResponse[]>("/api/layouts");
+    const queryParams = this.orgId ? `?orgId=${this.orgId}` : "";
+    const response = await this.apiClient.get<LayoutApiResponse[]>(`/api/layouts${queryParams}`);
     return response.map(this.toRemoteLayout);
   }
 
@@ -68,6 +74,7 @@ export class FloraRemoteLayoutStorage implements IRemoteLayoutStorage {
       data: params.data,
       permission: params.permission,
       savedAt: params.savedAt,
+      orgId: this.orgId,
     });
     return this.toRemoteLayout(response);
   }

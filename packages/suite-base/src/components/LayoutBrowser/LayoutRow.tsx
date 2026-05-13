@@ -131,7 +131,6 @@ export default React.memo(function LayoutRow({
   onRename,
   onDuplicate,
   onDelete,
-  onShare,
   onExport,
   onOverwrite,
   onRevert,
@@ -145,7 +144,6 @@ export default React.memo(function LayoutRow({
   onRename: (item: Layout, newName: string) => void;
   onDuplicate: (item: Layout) => void;
   onDelete: (item: Layout) => void;
-  onShare: (item: Layout) => void;
   onExport: (item: Layout) => void;
   onOverwrite: (item: Layout) => void;
   onRevert: (item: Layout) => void;
@@ -218,9 +216,6 @@ export default React.memo(function LayoutRow({
   const duplicateAction = useCallback(() => {
     onDuplicate(layout);
   }, [layout, onDuplicate]);
-  const shareAction = useCallback(() => {
-    onShare(layout);
-  }, [layout, onShare]);
   const exportAction = useCallback(() => {
     onExport(layout);
   }, [layout, onExport]);
@@ -315,15 +310,6 @@ export default React.memo(function LayoutRow({
           : t("duplicate"),
       onClick: duplicateAction,
       "data-testid": "duplicate-layout",
-    },
-    layoutManager.supportsSharing &&
-    !layoutIsShared(layout) && {
-      type: "item",
-      key: "share",
-      text: t("shareWithTeam"),
-      onClick: shareAction,
-      disabled: !isOnline || multiSelection,
-      secondaryText: !isOnline ? "Offline" : undefined,
     },
     {
       type: "item",

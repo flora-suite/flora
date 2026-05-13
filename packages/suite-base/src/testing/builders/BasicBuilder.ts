@@ -129,7 +129,7 @@ export default class BasicBuilder {
     count = 3,
     length = 6,
     charset = "alphabetic",
-    capitalization = undefined,
+    capitalization,
   }: Partial<
     {
       count: number;

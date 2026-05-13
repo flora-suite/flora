@@ -63,7 +63,6 @@ export default function LayoutSection({
   onRename,
   onDuplicate,
   onDelete,
-  onShare,
   onExport,
   onOverwrite,
   onRevert,
@@ -82,7 +81,6 @@ export default function LayoutSection({
   onRename: (item: Layout, newName: string) => void;
   onDuplicate: (item: Layout) => void;
   onDelete: (item: Layout) => void;
-  onShare: (item: Layout) => void;
   onExport: (item: Layout) => void;
   onOverwrite: (item: Layout) => void;
   onRevert: (item: Layout) => void;
@@ -134,7 +132,7 @@ export default function LayoutSection({
       )}
       <Collapse in={title == undefined || expanded}>
         <List disablePadding={disablePadding}>
-          {items != undefined && items.length === 0 && (
+          {items?.length === 0 && (
             <Stack paddingX={2}>
               <Typography variant="body2" color="text.secondary">
                 {emptyText}
@@ -152,7 +150,6 @@ export default function LayoutSection({
               onRename={onRename}
               onDuplicate={onDuplicate}
               onDelete={onDelete}
-              onShare={onShare}
               onExport={onExport}
               onOverwrite={onOverwrite}
               onRevert={onRevert}

@@ -110,7 +110,7 @@ export class ModelCache {
       // Create a copy of the array buffer to respect the `byteOffset` and `byteLength` value as
       // the underlying three.js STLLoader only accepts an ArrayBuffer instance.
       // Use Uint8Array.slice() to always get a proper ArrayBuffer
-      const stlBuffer = buffer.slice().buffer as ArrayBuffer;
+      const stlBuffer = buffer.slice().buffer;
       return this.#loadSTL(
         url,
         stlBuffer,

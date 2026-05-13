@@ -12,6 +12,7 @@ import {
 } from "@mui/icons-material";
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -31,12 +32,19 @@ import { DateCalendar, MonthCalendar, YearCalendar } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { enUS, zhCN } from "date-fns/locale";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { makeStyles } from "tss-react/mui";
 
+import { LoginRequiredPlaceholder } from "@lichtblick/suite-base/components/LoginRequiredPlaceholder";
 import Stack from "@lichtblick/suite-base/components/Stack";
+import { useAuth } from "@lichtblick/suite-base/context/AuthContext";
+import { useDevices } from "@lichtblick/suite-base/context/DeviceContext";
+import { useCurrentOrganizationId } from "@lichtblick/suite-base/context/OrganizationContext";
+import { usePlayerSelection } from "@lichtblick/suite-base/context/PlayerSelectionContext";
+import { useRecordings } from "@lichtblick/suite-base/context/RecordingContext";
+import type { Recording } from "@lichtblick/suite-base/services/IRecordingService";
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -233,6 +241,13 @@ const useStyles = makeStyles()((theme) => ({
       },
     },
   },
+  loadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    padding: theme.spacing(6),
+  },
 }));
 
 // Device colors for segments
@@ -269,92 +284,6 @@ interface TimeLabel {
   label: string;
   position: number;
   align: "start" | "center" | "end";
-}
-
-// Mock data
-const mockDevices: TimelineDevice[] = [
-  { id: "1", name: "dev_fdc68284", color: DEVICE_COLORS[0]! },
-  { id: "2", name: "dev_194a14de", color: DEVICE_COLORS[1]! },
-  { id: "3", name: "dev_0a6d3a4d", color: DEVICE_COLORS[2]! },
-  { id: "4", name: "dev_f338f375", color: DEVICE_COLORS[3]! },
-  { id: "5", name: "dev_0a98ef62", color: DEVICE_COLORS[4]! },
-  { id: "6", name: "dev_2f15098a", color: DEVICE_COLORS[5]! },
-  { id: "7", name: "dev_a49bd303", color: DEVICE_COLORS[0]! },
-  { id: "8", name: "dev_2981f7a1", color: DEVICE_COLORS[2]! },
-  { id: "9", name: "dev_859491bf", color: DEVICE_COLORS[1]! },
-  { id: "10", name: "dev_64c505bf", color: DEVICE_COLORS[5]! },
-];
-
-// Seeded random for consistent mock data
-function seededRandom(seed: number): () => number {
-  return () => {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
-  };
-}
-
-function generateMockSegments(
-  devices: TimelineDevice[],
-  rangeStart: Date,
-  rangeEnd: Date,
-  viewMode: ViewMode,
-): TimelineSegment[] {
-  const segments: TimelineSegment[] = [];
-  const rangeDuration = rangeEnd.getTime() - rangeStart.getTime();
-  const seed = rangeStart.getTime() + viewMode.charCodeAt(0);
-  const random = seededRandom(seed);
-
-  devices.forEach((device) => {
-    // Generate different number of segments based on view mode
-    const numSegments =
-      viewMode === "day"
-        ? 1 + Math.floor(random() * 3)
-        : viewMode === "week"
-          ? 3 + Math.floor(random() * 5)
-          : viewMode === "month"
-            ? 5 + Math.floor(random() * 10)
-            : 8 + Math.floor(random() * 15);
-
-    for (let i = 0; i < numSegments; i++) {
-      // Random start position within range
-      const startOffset = random() * rangeDuration * 0.9;
-      const startTime = new Date(rangeStart.getTime() + startOffset);
-
-      // Duration varies by view mode
-      let maxDurationMs: number;
-      switch (viewMode) {
-        case "day":
-          maxDurationMs = 3 * 60 * 60 * 1000; // up to 3 hours
-          break;
-        case "week":
-          maxDurationMs = 12 * 60 * 60 * 1000; // up to 12 hours
-          break;
-        case "month":
-          maxDurationMs = 2 * 24 * 60 * 60 * 1000; // up to 2 days
-          break;
-        case "year":
-          maxDurationMs = 7 * 24 * 60 * 60 * 1000; // up to 1 week
-          break;
-      }
-
-      const minDurationMs = maxDurationMs * 0.1;
-      const duration = minDurationMs + random() * (maxDurationMs - minDurationMs);
-      const endTime = new Date(
-        Math.min(startTime.getTime() + duration, rangeEnd.getTime()),
-      );
-
-      segments.push({
-        id: `seg_${device.id}_${i}_${viewMode}`,
-        deviceId: device.id,
-        startTime,
-        endTime,
-        recordingId: `rec_${device.id}_${i}`,
-        recordingName: `${device.name}_recording_${i + 1}.mcap`,
-      });
-    }
-  });
-
-  return segments;
 }
 
 function formatDuration(startTime: Date, endTime: Date): string {
@@ -612,6 +541,39 @@ function generateTimeLabels(
   return labels;
 }
 
+// Convert recordings to timeline segments
+function recordingsToSegments(recordings: Recording[]): TimelineSegment[] {
+  return recordings
+    .filter((r) => r.startTime && r.endTime && r.deviceId)
+    .map((r) => ({
+      id: r.id,
+      deviceId: r.deviceId!,
+      startTime: new Date(r.startTime!),
+      endTime: new Date(r.endTime!),
+      recordingId: r.id,
+      recordingName: r.name,
+    }));
+}
+
+// Get unique devices from recordings with assigned colors
+function getDevicesFromRecordings(recordings: Recording[]): TimelineDevice[] {
+  const deviceMap = new Map<string, { id: string; name: string }>();
+
+  for (const recording of recordings) {
+    if (recording.deviceId && !deviceMap.has(recording.deviceId)) {
+      deviceMap.set(recording.deviceId, {
+        id: recording.deviceId,
+        name: recording.deviceName ?? recording.deviceId,
+      });
+    }
+  }
+
+  return Array.from(deviceMap.values()).map((device, index) => ({
+    ...device,
+    color: DEVICE_COLORS[index % DEVICE_COLORS.length]!,
+  }));
+}
+
 export function TimelinePage(): React.JSX.Element {
   const { classes } = useStyles();
   const { t, i18n } = useTranslation("pages");
@@ -619,31 +581,28 @@ export function TimelinePage(): React.JSX.Element {
   const locale = i18n.language;
   const isZh = locale.startsWith("zh");
   const dateLocale = isZh ? zhCN : enUS;
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+
+  const { recordingService } = useRecordings();
+  const currentOrganizationId = useCurrentOrganizationId();
+  useDevices(); // Keep context mounted but don't need the returned devices here
+  const { selectSource } = usePlayerSelection();
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("day");
   const [deviceFilter, setDeviceFilter] = useState("");
-  const [selectedSegment, setSelectedSegment] = useState<
-    TimelineSegment | undefined
-  >(undefined);
+  const [selectedSegment, setSelectedSegment] = useState<TimelineSegment | undefined>(undefined);
   const [dialogTab, setDialogTab] = useState(0);
   const [rangeStart, setRangeStart] = useState<Date | undefined>(undefined);
   const [rangeEnd, setRangeEnd] = useState<Date | undefined>(undefined);
 
-  // Calendar popover state
-  const [calendarAnchor, setCalendarAnchor] = useState<HTMLElement | undefined>(
-    undefined,
-  );
-  const calendarOpen = Boolean(calendarAnchor);
+  // Data loading state
+  const [recordings, setRecordings] = useState<Recording[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const devices = useMemo(() => {
-    if (!deviceFilter.trim()) {
-      return mockDevices;
-    }
-    return mockDevices.filter((d) =>
-      d.name.toLowerCase().includes(deviceFilter.toLowerCase()),
-    );
-  }, [deviceFilter]);
+  // Calendar popover state
+  const [calendarAnchor, setCalendarAnchor] = useState<HTMLElement | undefined>(undefined);
+  const calendarOpen = Boolean(calendarAnchor);
 
   // Calculate time range based on view mode
   const timeRange = useMemo(
@@ -651,17 +610,54 @@ export function TimelinePage(): React.JSX.Element {
     [currentDate, viewMode],
   );
 
-  // Generate segments based on time range
-  const segments = useMemo(
-    () =>
-      generateMockSegments(
-        mockDevices,
-        timeRange.start,
-        timeRange.end,
-        viewMode,
-      ),
-    [timeRange.start, timeRange.end, viewMode],
+  // Load recordings when time range changes (only if authenticated)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+    const loadRecordings = async () => {
+      setLoading(true);
+      try {
+        const result = await recordingService.getRecordings({
+          orgId: currentOrganizationId,
+          startTime: timeRange.start.toISOString(),
+          endTime: timeRange.end.toISOString(),
+          pageSize: 100, // Get more recordings for timeline view
+        });
+        setRecordings(result.recordings);
+      } catch (err) {
+        console.error("Failed to load recordings:", err);
+        setRecordings([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadRecordings();
+  }, [recordingService, timeRange.start, timeRange.end, isAuthenticated, currentOrganizationId]);
+
+  // Get devices from recordings (with colors)
+  const timelineDevices = useMemo(
+    () => getDevicesFromRecordings(recordings),
+    [recordings],
   );
+
+  // Convert recordings to segments
+  const segments = useMemo(
+    () => recordingsToSegments(recordings),
+    [recordings],
+  );
+
+  // Filter devices by name
+  const filteredDevices = useMemo(() => {
+    if (!deviceFilter.trim()) {
+      return timelineDevices;
+    }
+    return timelineDevices.filter((d) =>
+      d.name.toLowerCase().includes(deviceFilter.toLowerCase()),
+    );
+  }, [timelineDevices, deviceFilter]);
 
   // Generate time labels based on view mode
   const timeLabels = useMemo(
@@ -777,10 +773,23 @@ export function TimelinePage(): React.JSX.Element {
     setRangeEnd(undefined);
   }, []);
 
-  const handleVisualize = useCallback(() => {
-    handleCloseDialog();
-    void navigate("/view");
-  }, [handleCloseDialog, navigate]);
+  const handleVisualize = useCallback(async () => {
+    if (!selectedSegment) {
+      return;
+    }
+
+    try {
+      const downloadUrl = await recordingService.getDownloadUrl(selectedSegment.recordingId);
+      selectSource("remote-file", {
+        type: "connection",
+        params: { url: downloadUrl },
+      });
+      handleCloseDialog();
+      void navigate("/view");
+    } catch (err) {
+      console.error("Failed to get download URL:", err);
+    }
+  }, [selectedSegment, recordingService, selectSource, handleCloseDialog, navigate]);
 
   const handleViewRecordings = useCallback(() => {
     if (selectedSegment) {
@@ -803,10 +812,8 @@ export function TimelinePage(): React.JSX.Element {
   // Calculate segment position based on time range
   const getSegmentPosition = useCallback(
     (segment: TimelineSegment) => {
-      const rangeDuration =
-        timeRange.end.getTime() - timeRange.start.getTime();
-      const segmentStart =
-        segment.startTime.getTime() - timeRange.start.getTime();
+      const rangeDuration = timeRange.end.getTime() - timeRange.start.getTime();
+      const segmentStart = segment.startTime.getTime() - timeRange.start.getTime();
       const segmentEnd = segment.endTime.getTime() - timeRange.start.getTime();
 
       const startPercent = Math.max(0, (segmentStart / rangeDuration) * 100);
@@ -820,9 +827,9 @@ export function TimelinePage(): React.JSX.Element {
     [timeRange],
   );
 
-  const isEmpty = devices.length === 0;
+  const isEmpty = filteredDevices.length === 0 && !loading;
   const selectedDevice = selectedSegment
-    ? mockDevices.find((d) => d.id === selectedSegment.deviceId)
+    ? timelineDevices.find((d) => d.id === selectedSegment.deviceId)
     : undefined;
 
   // Render the appropriate calendar based on view mode
@@ -852,6 +859,15 @@ export function TimelinePage(): React.JSX.Element {
         );
     }
   };
+
+  // Show login required placeholder if not authenticated
+  if (!authLoading && !isAuthenticated) {
+    return (
+      <Stack className={classes.root}>
+        <LoginRequiredPlaceholder />
+      </Stack>
+    );
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={dateLocale}>
@@ -969,7 +985,11 @@ export function TimelinePage(): React.JSX.Element {
 
             {/* Timeline Body */}
             <div className={classes.timelineBody}>
-              {isEmpty ? (
+              {loading ? (
+                <div className={classes.loadingContainer}>
+                  <CircularProgress />
+                </div>
+              ) : isEmpty ? (
                 <div className={classes.emptyState}>
                   <TimelineOutlined className={classes.emptyIcon} />
                   <Typography variant="h6" color="text.secondary">
@@ -977,70 +997,70 @@ export function TimelinePage(): React.JSX.Element {
                   </Typography>
                   <Typography
                     variant="body2"
-                  color="text.secondary"
-                  maxWidth={400}
-                >
-                  {t("noTimelineDataDescription")}
-                </Typography>
-                <Button variant="contained" onClick={handleImportData}>
-                  {t("importData")}
-                </Button>
-              </div>
-            ) : (
-              devices.map((device) => {
-                const deviceSegments = segments.filter(
-                  (s) => s.deviceId === device.id,
-                );
-                return (
-                  <div key={device.id} className={classes.deviceRow}>
-                    <div
-                      className={classes.deviceName}
-                      onClick={() => {
-                        handleDeviceClick(device.id);
-                      }}
-                    >
-                      <Typography variant="body2" noWrap fontSize={12}>
-                        {device.name}
-                      </Typography>
-                    </div>
-                    <div className={classes.trackContainer}>
-                      {deviceSegments.map((segment) => {
-                        const pos = getSegmentPosition(segment);
-                        return (
-                          <Tooltip
-                            key={segment.id}
-                            title={formatDuration(
-                              segment.startTime,
-                              segment.endTime,
-                            )}
-                          >
-                            <div
-                              className={classes.segment}
-                              style={{
-                                left: pos.left,
-                                width: pos.width,
-                                backgroundColor: device.color,
-                              }}
-                              onClick={() => {
-                                handleSegmentClick(segment);
-                              }}
+                    color="text.secondary"
+                    maxWidth={400}
+                  >
+                    {t("noTimelineDataDescription")}
+                  </Typography>
+                  <Button variant="contained" onClick={handleImportData}>
+                    {t("importData")}
+                  </Button>
+                </div>
+              ) : (
+                filteredDevices.map((device) => {
+                  const deviceSegments = segments.filter(
+                    (s) => s.deviceId === device.id,
+                  );
+                  return (
+                    <div key={device.id} className={classes.deviceRow}>
+                      <div
+                        className={classes.deviceName}
+                        onClick={() => {
+                          handleDeviceClick(device.id);
+                        }}
+                      >
+                        <Typography variant="body2" noWrap fontSize={12}>
+                          {device.name}
+                        </Typography>
+                      </div>
+                      <div className={classes.trackContainer}>
+                        {deviceSegments.map((segment) => {
+                          const pos = getSegmentPosition(segment);
+                          return (
+                            <Tooltip
+                              key={segment.id}
+                              title={formatDuration(
+                                segment.startTime,
+                                segment.endTime,
+                              )}
                             >
-                              <span className={classes.segmentDuration}>
-                                {formatDuration(
-                                  segment.startTime,
-                                  segment.endTime,
-                                )}
-                              </span>
-                            </div>
-                          </Tooltip>
-                        );
-                      })}
+                              <div
+                                className={classes.segment}
+                                style={{
+                                  left: pos.left,
+                                  width: pos.width,
+                                  backgroundColor: device.color,
+                                }}
+                                onClick={() => {
+                                  handleSegmentClick(segment);
+                                }}
+                              >
+                                <span className={classes.segmentDuration}>
+                                  {formatDuration(
+                                    segment.startTime,
+                                    segment.endTime,
+                                  )}
+                                </span>
+                              </div>
+                            </Tooltip>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
 
@@ -1128,7 +1148,7 @@ export function TimelinePage(): React.JSX.Element {
                   <Button variant="outlined" onClick={handleViewRecordings}>
                     {t("viewRecordings")}
                   </Button>
-                  <Button variant="contained" onClick={handleVisualize}>
+                  <Button variant="contained" onClick={() => { void handleVisualize(); }}>
                     {t("visualize")}
                   </Button>
                 </Stack>

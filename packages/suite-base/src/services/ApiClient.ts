@@ -74,6 +74,11 @@ export class LocalStorageTokenStorage implements ITokenStorage {
 }
 
 /**
+ * Callback type for session expiry notification
+ */
+export type SessionExpiredCallback = () => void;
+
+/**
  * API client for flora-server communication
  */
 export class ApiClient {
@@ -81,10 +86,27 @@ export class ApiClient {
   private readonly tokenStorage: ITokenStorage;
   private isRefreshing = false;
   private refreshPromise: Promise<boolean> | undefined;
+  private onSessionExpired: SessionExpiredCallback | undefined;
 
   public constructor(baseUrl: string, tokenStorage: ITokenStorage) {
     this.baseUrl = baseUrl.replace(/\/$/, ""); // Remove trailing slash
     this.tokenStorage = tokenStorage;
+  }
+
+  /**
+   * Set callback to be called when session expires and cannot be refreshed
+   */
+  public setSessionExpiredCallback(callback: SessionExpiredCallback | undefined): void {
+    this.onSessionExpired = callback;
+  }
+
+  /**
+   * Notify that session has expired
+   */
+  private notifySessionExpired(): void {
+    if (this.onSessionExpired) {
+      this.onSessionExpired();
+    }
   }
 
   /**
@@ -119,9 +141,10 @@ export class ApiClient {
       const refreshed = await this.tryRefreshToken();
       if (refreshed) {
         // Retry the original request with new token
-        return this.request<T>(endpoint, options);
+        return await this.request<T>(endpoint, options);
       }
-      // Token refresh failed, throw error
+      // Token refresh failed, notify and throw error
+      this.notifySessionExpired();
       throw new ApiError("UNAUTHORIZED", "Session expired. Please sign in again.", 401);
     }
 
@@ -145,7 +168,7 @@ export class ApiClient {
   private async tryRefreshToken(): Promise<boolean> {
     // If already refreshing, wait for that to complete
     if (this.isRefreshing && this.refreshPromise) {
-      return this.refreshPromise;
+      return await this.refreshPromise;
     }
 
     const refreshToken = this.tokenStorage.getRefreshToken();
@@ -194,27 +217,208 @@ export class ApiClient {
    * GET request helper
    */
   public async get<T>(endpoint: string, options?: Omit<ApiRequestOptions, "method" | "body">): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: "GET" });
+    return await this.request<T>(endpoint, { ...options, method: "GET" });
   }
 
   /**
    * POST request helper
    */
   public async post<T>(endpoint: string, body?: unknown, options?: Omit<ApiRequestOptions, "method" | "body">): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: "POST", body });
+    return await this.request<T>(endpoint, { ...options, method: "POST", body });
   }
 
   /**
    * PUT request helper
    */
   public async put<T>(endpoint: string, body?: unknown, options?: Omit<ApiRequestOptions, "method" | "body">): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: "PUT", body });
+    return await this.request<T>(endpoint, { ...options, method: "PUT", body });
+  }
+
+  /**
+   * PATCH request helper
+   */
+  public async patch<T>(endpoint: string, body?: unknown, options?: Omit<ApiRequestOptions, "method" | "body">): Promise<T> {
+    return await this.request<T>(endpoint, { ...options, method: "PATCH", body });
   }
 
   /**
    * DELETE request helper
    */
   public async delete<T>(endpoint: string, options?: Omit<ApiRequestOptions, "method" | "body">): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: "DELETE" });
+    return await this.request<T>(endpoint, { ...options, method: "DELETE" });
+  }
+
+  /**
+   * Get the base URL
+   */
+  public getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
+  /**
+   * Get the current access token
+   */
+  public getAccessToken(): string | undefined {
+    return this.tokenStorage.getAccessToken();
+  }
+
+  /**
+   * Upload a file using FormData
+   */
+  public async uploadFile<T>(endpoint: string, formData: FormData): Promise<T> {
+    const accessToken = this.tokenStorage.getAccessToken();
+
+    const headers: Record<string, string> = {};
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    const url = `${this.baseUrl}${endpoint}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    // Handle 401 Unauthorized - try to refresh token
+    if (response.status === 401) {
+      const refreshed = await this.tryRefreshToken();
+      if (refreshed) {
+        return await this.uploadFile<T>(endpoint, formData);
+      }
+      this.notifySessionExpired();
+      throw new ApiError("UNAUTHORIZED", "Session expired. Please sign in again.", 401);
+    }
+
+    const data = (await response.json()) as T | ApiErrorResponse;
+
+    if (!response.ok) {
+      const errorResponse = data as ApiErrorResponse;
+      throw new ApiError(
+        errorResponse.error?.code ?? "UNKNOWN_ERROR",
+        errorResponse.error?.message ?? "An unknown error occurred",
+        response.status,
+      );
+    }
+
+    return data as T;
+  }
+
+  /**
+   * Download a file as Blob
+   */
+  public async downloadBlob(endpoint: string): Promise<Blob> {
+    const accessToken = this.tokenStorage.getAccessToken();
+
+    const headers: Record<string, string> = {};
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    const url = `${this.baseUrl}${endpoint}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers,
+    });
+
+    // Handle 401 Unauthorized - try to refresh token
+    if (response.status === 401) {
+      const refreshed = await this.tryRefreshToken();
+      if (refreshed) {
+        return await this.downloadBlob(endpoint);
+      }
+      this.notifySessionExpired();
+      throw new ApiError("UNAUTHORIZED", "Session expired. Please sign in again.", 401);
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: { message: "Download failed" } })) as ApiErrorResponse;
+      throw new ApiError(
+        errorData.error?.code ?? "DOWNLOAD_ERROR",
+        errorData.error?.message ?? "Download failed",
+        response.status,
+      );
+    }
+
+    return await response.blob();
+  }
+
+  /**
+   * Upload progress callback type
+   */
+  public async uploadFileWithProgress<T>(
+    endpoint: string,
+    formData: FormData,
+    onProgress?: (loaded: number, total: number) => void,
+  ): Promise<T> {
+    const accessToken = this.tokenStorage.getAccessToken();
+    const url = `${this.baseUrl}${endpoint}`;
+
+    return await new Promise<T>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener("progress", (event) => {
+        if (event.lengthComputable && onProgress) {
+          onProgress(event.loaded, event.total);
+        }
+      });
+
+      xhr.addEventListener("load", () => {
+        if (xhr.status === 401) {
+          // Handle 401 - try refresh token
+          this.tryRefreshToken()
+            .then((refreshed) => {
+              if (refreshed) {
+                // Retry with new token
+                this.uploadFileWithProgress<T>(endpoint, formData, onProgress)
+                  .then(resolve)
+                  .catch(reject);
+              } else {
+                this.notifySessionExpired();
+                reject(new ApiError("UNAUTHORIZED", "Session expired. Please sign in again.", 401));
+              }
+            })
+            .catch(reject);
+          return;
+        }
+
+        try {
+          const data = JSON.parse(xhr.responseText) as T | ApiErrorResponse;
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(data as T);
+          } else {
+            const errorResponse = data as ApiErrorResponse;
+            reject(
+              new ApiError(
+                errorResponse.error?.code ?? "UNKNOWN_ERROR",
+                errorResponse.error?.message ?? "An unknown error occurred",
+                xhr.status,
+              ),
+            );
+          }
+        } catch {
+          reject(new ApiError("PARSE_ERROR", "Failed to parse response", xhr.status));
+        }
+      });
+
+      xhr.addEventListener("error", () => {
+        reject(new ApiError("NETWORK_ERROR", "Network error occurred", 0));
+      });
+
+      xhr.addEventListener("abort", () => {
+        reject(new ApiError("ABORTED", "Upload was aborted", 0));
+      });
+
+      xhr.open("POST", url);
+
+      if (accessToken) {
+        xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+      }
+
+      xhr.send(formData);
+    });
   }
 }

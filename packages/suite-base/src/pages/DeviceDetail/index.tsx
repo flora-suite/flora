@@ -7,6 +7,7 @@ import {
   ArrowBackOutlined,
   BlockOutlined,
   BookmarksOutlined,
+  CheckCircleOutlined,
   CloudUploadOutlined,
   DeleteOutlined,
   DownloadOutlined,
@@ -14,19 +15,23 @@ import {
   ErrorOutlined,
   InfoOutlined,
   InsertDriveFileOutlined,
+  MemoryOutlined,
   MoreVertOutlined,
   PlayArrowOutlined,
+  RefreshOutlined,
   SettingsOutlined,
   SignalWifi4BarOutlined,
   SignalWifiOffOutlined,
   SmartToyOutlined,
+  StorageOutlined,
   WarningAmberOutlined,
 } from "@mui/icons-material";
 import {
-  Box,
   Button,
   Chip,
+  CircularProgress,
   IconButton,
+  LinearProgress,
   Menu,
   MenuItem,
   Paper,
@@ -41,17 +46,32 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useCallback, useEffect, useMemo, useState, MouseEvent } from "react";
+import { useCallback, useEffect, useState, MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { makeStyles } from "tss-react/mui";
 
+import { LoginRequiredPlaceholder } from "@lichtblick/suite-base/components/LoginRequiredPlaceholder";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import {
   ConfirmDialog,
   RenameDialog,
   UploadDataDialog,
 } from "@lichtblick/suite-base/components/dialogs";
+import { useAuth } from "@lichtblick/suite-base/context/AuthContext";
+import { useDevices } from "@lichtblick/suite-base/context/DeviceContext";
+import { useCurrentOrganizationId } from "@lichtblick/suite-base/context/OrganizationContext";
+import { usePlayerSelection } from "@lichtblick/suite-base/context/PlayerSelectionContext";
+import { useRecordings } from "@lichtblick/suite-base/context/RecordingContext";
+import {
+  Device,
+  DeviceAgentInfo,
+  DeviceStatus,
+  AgentStatus,
+  DeviceEvent,
+  DeviceEventType,
+} from "@lichtblick/suite-base/services/IDeviceService";
+import type { Recording } from "@lichtblick/suite-base/services/IRecordingService";
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -69,6 +89,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   statusChip: {
     fontWeight: 600,
+    marginLeft: theme.spacing(2),
   },
   content: {
     flex: 1,
@@ -83,6 +104,9 @@ const useStyles = makeStyles()((theme) => ({
   tabContent: {
     flex: 1,
     overflow: "auto",
+    padding: theme.spacing(3),
+  },
+  propertyPaper: {
     padding: theme.spacing(3),
   },
   propertyRow: {
@@ -102,10 +126,10 @@ const useStyles = makeStyles()((theme) => ({
     padding: theme.spacing(3),
     marginBottom: theme.spacing(2),
   },
-  agentStatus: {
+  agentStatusRow: {
     display: "flex",
+    justifyContent: "space-between",
     alignItems: "center",
-    gap: theme.spacing(1),
   },
   severityChip: {
     fontWeight: 600,
@@ -124,122 +148,43 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: 64,
     color: theme.palette.text.disabled,
   },
+  loadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    padding: theme.spacing(6),
+  },
+  errorContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    padding: theme.spacing(6),
+    gap: theme.spacing(2),
+  },
+  systemInfoGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: theme.spacing(2),
+    marginTop: theme.spacing(2),
+  },
+  systemInfoCard: {
+    padding: theme.spacing(2),
+    textAlign: "center",
+  },
+  progressBar: {
+    height: 8,
+    borderRadius: 4,
+    marginTop: theme.spacing(1),
+  },
+  moreButton: {
+    marginLeft: theme.spacing(1),
+  },
 }));
 
-type DeviceStatus = "online" | "offline" | "error";
 type TabValue = "recordings" | "events" | "properties" | "agent";
-
-interface Device {
-  id: string;
-  name: string;
-  type: string;
-  status: DeviceStatus;
-  ipAddress: string;
-  lastSeen: Date;
-  topics?: number;
-  firmwareVersion?: string;
-  serialNumber?: string;
-  model?: string;
-  location?: string;
-}
-
-interface Recording {
-  id: string;
-  name: string;
-  format: "mcap" | "bag";
-  size: number;
-  duration: number;
-  createdAt: Date;
-  topicCount: number;
-}
-
-type EventSeverity = "info" | "warning" | "critical";
-
-interface DeviceEvent {
-  id: string;
-  severity: EventSeverity;
-  message: string;
-  timestamp: Date;
-  source: string;
-}
-
-interface AgentInfo {
-  version: string;
-  status: "running" | "stopped" | "error";
-  uptime: number;
-  lastHeartbeat: Date;
-  cpuUsage: number;
-  memoryUsage: number;
-}
-
-// Mock data
-const mockDevice: Device = {
-  id: "1",
-  name: "Robot-01",
-  type: "ROS 2",
-  status: "online",
-  ipAddress: "192.168.1.101",
-  lastSeen: new Date(),
-  topics: 24,
-  firmwareVersion: "2.1.0",
-  serialNumber: "SN-2024-001234",
-  model: "Flora Bot Pro",
-  location: "Building A, Floor 2",
-};
-
-const mockRecordings: Recording[] = [
-  {
-    id: "1",
-    name: "sensor_data_2024.mcap",
-    format: "mcap",
-    size: 256 * 1024 * 1024,
-    duration: 3600,
-    createdAt: new Date("2024-12-01T10:30:00"),
-    topicCount: 12,
-  },
-  {
-    id: "2",
-    name: "navigation_test.bag",
-    format: "bag",
-    size: 128 * 1024 * 1024,
-    duration: 1800,
-    createdAt: new Date("2024-11-28T14:15:00"),
-    topicCount: 8,
-  },
-];
-
-const mockEvents: DeviceEvent[] = [
-  {
-    id: "1",
-    severity: "warning",
-    message: "LiDAR sensor temperature above normal threshold (65°C)",
-    timestamp: new Date(Date.now() - 300000),
-    source: "lidar_driver",
-  },
-  {
-    id: "2",
-    severity: "info",
-    message: "Navigation goal reached successfully",
-    timestamp: new Date(Date.now() - 600000),
-    source: "nav2_controller",
-  },
-  {
-    id: "3",
-    severity: "critical",
-    message: "Emergency stop triggered by obstacle detection",
-    timestamp: new Date(Date.now() - 900000),
-    source: "safety_controller",
-  },
-];
-
-const mockAgent: AgentInfo = {
-  version: "1.2.3",
-  status: "running",
-  uptime: 86400 * 3,
-  lastHeartbeat: new Date(),
-  cpuUsage: 12.5,
-  memoryUsage: 45.2,
-};
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) {
@@ -257,7 +202,7 @@ function formatFileSize(bytes: number): string {
 function formatDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
+  const secs = Math.round(seconds % 60);
 
   if (hours > 0) {
     return `${hours}h ${minutes}m ${secs}s`;
@@ -278,7 +223,11 @@ function formatDate(date: Date): string {
   });
 }
 
-function formatTimestamp(date: Date): string {
+function formatTimestamp(dateStr: string | undefined): string {
+  if (!dateStr) {
+    return "-";
+  }
+  const date = new Date(dateStr);
   return date.toLocaleString(undefined, {
     month: "short",
     day: "numeric",
@@ -288,7 +237,10 @@ function formatTimestamp(date: Date): string {
   });
 }
 
-function formatUptime(seconds: number): string {
+function formatUptime(seconds: number | undefined): string {
+  if (seconds == undefined) {
+    return "-";
+  }
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -313,14 +265,61 @@ function StatusIcon({ status }: { status: DeviceStatus }): React.JSX.Element {
   }
 }
 
-function SeverityIcon({ severity }: { severity: EventSeverity }): React.JSX.Element {
-  switch (severity) {
-    case "info":
-      return <InfoOutlined color="info" fontSize="small" />;
-    case "warning":
-      return <WarningAmberOutlined color="warning" fontSize="small" />;
-    case "critical":
-      return <ErrorOutlined color="error" fontSize="small" />;
+function EventTypeIcon({ eventType }: { eventType: DeviceEventType }): React.JSX.Element {
+  switch (eventType) {
+    case "maintenance":
+      return <SettingsOutlined fontSize="small" />;
+    case "upgrade":
+      return <CloudUploadOutlined fontSize="small" />;
+    case "repair":
+      return <WarningAmberOutlined fontSize="small" />;
+    case "replacement":
+      return <RefreshOutlined fontSize="small" />;
+    case "inspection":
+      return <InfoOutlined fontSize="small" />;
+    case "other":
+      return <BookmarksOutlined fontSize="small" />;
+  }
+}
+
+function getEventTypeChipColor(eventType: DeviceEventType): "primary" | "secondary" | "warning" | "error" | "info" | "success" {
+  switch (eventType) {
+    case "maintenance":
+      return "primary";
+    case "upgrade":
+      return "success";
+    case "repair":
+      return "warning";
+    case "replacement":
+      return "secondary";
+    case "inspection":
+      return "info";
+    case "other":
+      return "primary";
+  }
+}
+
+function getStatusChipColor(status: DeviceStatus): "success" | "default" | "error" {
+  switch (status) {
+    case "online":
+      return "success";
+    case "offline":
+      return "default";
+    case "error":
+      return "error";
+  }
+}
+
+function getAgentStatusColor(status: AgentStatus | undefined): "success" | "default" | "error" {
+  switch (status) {
+    case "running":
+      return "success";
+    case "stopped":
+      return "default";
+    case "error":
+      return "error";
+    default:
+      return "default";
   }
 }
 
@@ -330,15 +329,133 @@ export function DeviceDetailPage(): React.JSX.Element {
   const navigate = useNavigate();
   const { deviceId } = useParams<{ deviceId: string }>();
   const [searchParams] = useSearchParams();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const {
+    fetchDevice,
+    updateDevice,
+    enableDevice,
+    disableDevice,
+    deleteDevice,
+    getDeviceAgentInfo,
+    fetchDeviceEvents,
+  } = useDevices();
+  const { recordingService } = useRecordings();
+  const { selectSource } = usePlayerSelection();
+  const currentOrganizationId = useCurrentOrganizationId();
 
-  const initialTab = (searchParams.get("tab") as TabValue) || "recordings";
+  const initialTab = (searchParams.get("tab") as TabValue) || "properties";
   const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | undefined>(undefined);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [disableDialogOpen, setDisableDialogOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [deviceName, setDeviceName] = useState(mockDevice.name);
+
+  // Device state
+  const [device, setDevice] = useState<Device | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | undefined>(undefined);
+
+  // Agent info state
+  const [agentInfo, setAgentInfo] = useState<DeviceAgentInfo | undefined>(undefined);
+  const [agentLoading, setAgentLoading] = useState(false);
+
+  // Recordings state
+  const [recordings, setRecordings] = useState<Recording[]>([]);
+  const [recordingsLoading, setRecordingsLoading] = useState(false);
+
+  // Events state
+  const [events, setEvents] = useState<DeviceEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+
+  // Fetch device details (only if authenticated)
+  useEffect(() => {
+    if (!deviceId || !isAuthenticated) {
+      if (!isAuthenticated) {
+        setLoading(false);
+      }
+      return;
+    }
+
+    const loadDevice = async () => {
+      setLoading(true);
+      setError(undefined);
+      try {
+        const data = await fetchDevice(deviceId);
+        setDevice(data);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to load device";
+        setError(message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadDevice();
+  }, [deviceId, fetchDevice, isAuthenticated]);
+
+  // Fetch recordings when recordings tab is selected
+  useEffect(() => {
+    if (activeTab !== "recordings" || !deviceId || !isAuthenticated) {
+      return;
+    }
+
+    const loadRecordings = async () => {
+      setRecordingsLoading(true);
+      try {
+        const result = await recordingService.getRecordings({ deviceId });
+        setRecordings(result.recordings);
+      } catch (err) {
+        console.error("Failed to fetch recordings:", err);
+      } finally {
+        setRecordingsLoading(false);
+      }
+    };
+
+    void loadRecordings();
+  }, [activeTab, deviceId, recordingService, isAuthenticated]);
+
+  // Fetch events when events tab is selected
+  useEffect(() => {
+    if (activeTab !== "events" || !deviceId || !isAuthenticated) {
+      return;
+    }
+
+    const loadEvents = async () => {
+      setEventsLoading(true);
+      try {
+        const result = await fetchDeviceEvents(deviceId);
+        setEvents(result.data);
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+
+    void loadEvents();
+  }, [activeTab, deviceId, fetchDeviceEvents, isAuthenticated]);
+
+  // Fetch agent info when agent tab is selected
+  useEffect(() => {
+    if (activeTab !== "agent" || !deviceId || !device || !isAuthenticated) {
+      return;
+    }
+
+    const loadAgentInfo = async () => {
+      setAgentLoading(true);
+      try {
+        const data = await getDeviceAgentInfo(deviceId);
+        setAgentInfo(data);
+      } catch (err) {
+        console.error("Failed to fetch agent info:", err);
+      } finally {
+        setAgentLoading(false);
+      }
+    };
+
+    void loadAgentInfo();
+  }, [activeTab, deviceId, getDeviceAgentInfo, device, isAuthenticated]);
 
   // Update tab when URL search params change
   useEffect(() => {
@@ -347,12 +464,6 @@ export function DeviceDetailPage(): React.JSX.Element {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
-
-  // In real implementation, fetch device by deviceId
-  const device = useMemo(() => {
-    // Mock: return the mock device regardless of ID
-    return mockDevice;
-  }, []);
 
   const handleBack = useCallback(() => {
     void navigate("/devices");
@@ -374,13 +485,76 @@ export function DeviceDetailPage(): React.JSX.Element {
     setUploadDialogOpen(true);
   }, []);
 
+  // Upload state
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<
+    | {
+        currentFileIndex: number;
+        totalFiles: number;
+        currentFileProgress: number;
+        overallProgress: number;
+        currentFileName: string;
+      }
+    | undefined
+  >(undefined);
+  const [uploadError, setUploadError] = useState<string | undefined>(undefined);
+
   const handleUploadConfirm = useCallback(
-    (_file: File, _uploadDeviceId: string) => {
-      // In real implementation, upload the file to the device
-      console.warn("Upload file to device:", _uploadDeviceId);
-      setUploadDialogOpen(false);
+    async (files: File[], uploadDeviceId: string) => {
+      try {
+        setUploading(true);
+        setUploadError(undefined);
+
+        const totalFiles = files.length;
+        const newRecordings: typeof recordings = [];
+
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i]!;
+
+          setUploadProgress({
+            currentFileIndex: i,
+            totalFiles,
+            currentFileProgress: 0,
+            overallProgress: Math.round((i / totalFiles) * 100),
+            currentFileName: file.name,
+          });
+
+          const newRecording = await recordingService.uploadRecording(
+            file,
+            {
+              deviceId: uploadDeviceId,
+              orgId: currentOrganizationId,
+            },
+            (progress) => {
+              const fileProgress = progress.percentage;
+              const overallProgress = Math.round(((i + fileProgress / 100) / totalFiles) * 100);
+              setUploadProgress({
+                currentFileIndex: i,
+                totalFiles,
+                currentFileProgress: fileProgress,
+                overallProgress,
+                currentFileName: file.name,
+              });
+            },
+          );
+          newRecordings.push(newRecording);
+        }
+
+        // Add all new recordings to the list if we're on the recordings tab
+        if (activeTab === "recordings" && newRecordings.length > 0) {
+          setRecordings((prev) => [...newRecordings.reverse(), ...prev]);
+        }
+        setUploadDialogOpen(false);
+      } catch (err) {
+        console.error("Failed to upload recording:", err);
+        const message = err instanceof Error ? err.message : "Failed to upload recording";
+        setUploadError(message);
+      } finally {
+        setUploading(false);
+        setUploadProgress(undefined);
+      }
     },
-    [],
+    [recordingService, activeTab, currentOrganizationId],
   );
 
   const handleUploadCancel = useCallback(() => {
@@ -388,7 +562,6 @@ export function DeviceDetailPage(): React.JSX.Element {
   }, []);
 
   const handleAddEvent = useCallback(() => {
-    // Navigate to events page with device pre-selected, or open create event dialog
     void navigate("/events");
   }, [navigate]);
 
@@ -397,11 +570,25 @@ export function DeviceDetailPage(): React.JSX.Element {
     setMenuAnchor(undefined);
   }, []);
 
-  const handleDisableConfirm = useCallback(() => {
-    // In real implementation, disable the device
-    console.warn("Disable device:", deviceId);
-    setDisableDialogOpen(false);
-  }, [deviceId]);
+  const handleDisableConfirm = useCallback(async () => {
+    if (!deviceId || !device) {
+      return;
+    }
+
+    try {
+      if (device.enabled) {
+        const updated = await disableDevice(deviceId);
+        setDevice(updated);
+      } else {
+        const updated = await enableDevice(deviceId);
+        setDevice(updated);
+      }
+    } catch (err) {
+      console.error("Failed to toggle device enabled state:", err);
+    } finally {
+      setDisableDialogOpen(false);
+    }
+  }, [deviceId, disableDevice, enableDevice, device]);
 
   const handleDisableCancel = useCallback(() => {
     setDisableDialogOpen(false);
@@ -412,10 +599,23 @@ export function DeviceDetailPage(): React.JSX.Element {
     setMenuAnchor(undefined);
   }, []);
 
-  const handleRenameConfirm = useCallback((newName: string) => {
-    setDeviceName(newName);
-    setRenameDialogOpen(false);
-  }, []);
+  const handleRenameConfirm = useCallback(
+    async (newName: string) => {
+      if (!deviceId) {
+        return;
+      }
+
+      try {
+        const updated = await updateDevice(deviceId, { name: newName });
+        setDevice(updated);
+      } catch (err) {
+        console.error("Failed to rename device:", err);
+      } finally {
+        setRenameDialogOpen(false);
+      }
+    },
+    [deviceId, updateDevice],
+  );
 
   const handleRenameCancel = useCallback(() => {
     setRenameDialogOpen(false);
@@ -426,307 +626,501 @@ export function DeviceDetailPage(): React.JSX.Element {
     setMenuAnchor(undefined);
   }, []);
 
-  const handleDeleteConfirm = useCallback(() => {
-    // In real implementation, delete the device
-    console.warn("Delete device:", deviceId);
-    setDeleteDialogOpen(false);
-    void navigate("/devices");
-  }, [deviceId, navigate]);
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deviceId) {
+      return;
+    }
+
+    try {
+      await deleteDevice(deviceId);
+      void navigate("/devices");
+    } catch (err) {
+      console.error("Failed to delete device:", err);
+    } finally {
+      setDeleteDialogOpen(false);
+    }
+  }, [deviceId, deleteDevice, navigate]);
 
   const handleDeleteCancel = useCallback(() => {
     setDeleteDialogOpen(false);
   }, []);
 
   const handlePlayRecording = useCallback(
-    (_recording: Recording) => {
-      void navigate("/view");
+    async (recording: Recording) => {
+      try {
+        const downloadUrl = await recordingService.getDownloadUrl(recording.id);
+        selectSource("remote-file", {
+          type: "connection",
+          params: { url: downloadUrl },
+        });
+        void navigate("/view");
+      } catch (err) {
+        console.error("Failed to open recording:", err);
+      }
     },
-    [navigate],
+    [navigate, recordingService, selectSource],
   );
 
-  const handleDownloadRecording = useCallback((_recording: Recording) => {
-    // In real implementation, trigger download
-    console.warn("Download recording:", _recording.name);
-  }, []);
-
-  const getStatusChipColor = (status: DeviceStatus): "success" | "default" | "error" => {
-    switch (status) {
-      case "online":
-        return "success";
-      case "offline":
-        return "default";
-      case "error":
-        return "error";
+  const handleDownloadRecording = useCallback(async (recording: Recording) => {
+    try {
+      const blob = await recordingService.downloadRecording(recording.id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = recording.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to download recording:", err);
     }
-  };
+  }, [recordingService]);
 
-  const getSeverityChipColor = (severity: EventSeverity): "info" | "warning" | "error" => {
-    switch (severity) {
-      case "info":
-        return "info";
-      case "warning":
-        return "warning";
-      case "critical":
-        return "error";
+  const handleRefreshAgentInfo = useCallback(async () => {
+    if (!deviceId) {
+      return;
     }
-  };
 
-  const getAgentStatusColor = (status: AgentInfo["status"]): "success" | "default" | "error" => {
-    switch (status) {
-      case "running":
-        return "success";
-      case "stopped":
-        return "default";
-      case "error":
-        return "error";
+    setAgentLoading(true);
+    try {
+      const data = await getDeviceAgentInfo(deviceId);
+      setAgentInfo(data);
+    } catch (err) {
+      console.error("Failed to refresh agent info:", err);
+    } finally {
+      setAgentLoading(false);
     }
-  };
+  }, [deviceId, getDeviceAgentInfo]);
 
-  const renderRecordingsTab = () => (
-    <Stack gap={2}>
-      <Stack direction="row" justifyContent="flex-end">
-        <Button
-          variant="contained"
-          startIcon={<CloudUploadOutlined />}
-          onClick={handleUploadData}
-        >
-          {t("uploadData")}
-        </Button>
-      </Stack>
-      {mockRecordings.length === 0 ? (
-        <div className={classes.emptyState}>
-          <InsertDriveFileOutlined className={classes.emptyIcon} />
-          <Typography variant="h6" color="text.secondary">
-            {t("noRecordings")}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {t("noDeviceRecordingsDescription")}
-          </Typography>
+  const renderRecordingsTab = () => {
+    if (recordingsLoading) {
+      return (
+        <div className={classes.loadingContainer}>
+          <CircularProgress />
         </div>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>{t("fileName")}</TableCell>
-                <TableCell>{t("size")}</TableCell>
-                <TableCell>{t("duration")}</TableCell>
-                <TableCell>{t("topics")}</TableCell>
-                <TableCell>{t("createdAt")}</TableCell>
-                <TableCell align="right">{t("actions")}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {mockRecordings.map((recording) => (
-                <TableRow key={recording.id} hover>
-                  <TableCell>
-                    <Stack direction="row" alignItems="center" gap={1}>
-                      <InsertDriveFileOutlined fontSize="small" color="action" />
-                      <Typography variant="body2">{recording.name}</Typography>
+      );
+    }
+
+    return (
+      <Stack gap={2}>
+        <Stack direction="row" justifyContent="flex-end">
+          <Button variant="contained" startIcon={<CloudUploadOutlined />} onClick={handleUploadData}>
+            {t("uploadData")}
+          </Button>
+        </Stack>
+        {recordings.length === 0 ? (
+          <div className={classes.emptyState}>
+            <InsertDriveFileOutlined className={classes.emptyIcon} />
+            <Typography variant="h6" color="text.secondary">
+              {t("noRecordings")}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {t("noDeviceRecordingsDescription")}
+            </Typography>
+          </div>
+        ) : (
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>{t("fileName")}</TableCell>
+                  <TableCell>{t("status")}</TableCell>
+                  <TableCell>{t("size")}</TableCell>
+                  <TableCell>{t("duration")}</TableCell>
+                  <TableCell>{t("startTime")}</TableCell>
+                  <TableCell>{t("endTime")}</TableCell>
+                  <TableCell>{t("topics")}</TableCell>
+                  <TableCell>{t("createdAt")}</TableCell>
+                  <TableCell align="right">{t("actions")}</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {recordings.map((recording) => (
+                  <TableRow key={recording.id} hover>
+                    <TableCell>
+                      <Stack direction="row" alignItems="center" gap={1}>
+                        <InsertDriveFileOutlined fontSize="small" color="action" />
+                        <Typography variant="body2">{recording.name}</Typography>
+                        <Chip
+                          label={recording.format}
+                          size="small"
+                          color={recording.format === "mcap" ? "primary" : "default"}
+                        />
+                      </Stack>
+                    </TableCell>
+                    <TableCell>
                       <Chip
-                        label={recording.format}
+                        label={t(recording.status)}
                         size="small"
-                        color={recording.format === "mcap" ? "primary" : "default"}
+                        color={recording.status === "ready" ? "success" : recording.status === "error" ? "error" : "default"}
                       />
-                    </Stack>
-                  </TableCell>
-                  <TableCell>{formatFileSize(recording.size)}</TableCell>
-                  <TableCell>{formatDuration(recording.duration)}</TableCell>
-                  <TableCell>{recording.topicCount}</TableCell>
-                  <TableCell>{formatDate(recording.createdAt)}</TableCell>
-                  <TableCell align="right">
-                    <Stack direction="row" gap={0.5} justifyContent="flex-end">
-                      <Tooltip title={t("play")}>
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          onClick={() => {
-                            handlePlayRecording(recording);
-                          }}
-                        >
-                          <PlayArrowOutlined fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={t("download")}>
-                        <IconButton
-                          size="small"
-                          onClick={() => {
-                            handleDownloadRecording(recording);
-                          }}
-                        >
-                          <DownloadOutlined fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </Stack>
-  );
-
-  const renderEventsTab = () => (
-    <Stack gap={2}>
-      <Stack direction="row" justifyContent="flex-end">
-        <Button
-          variant="contained"
-          startIcon={<AddOutlined />}
-          onClick={handleAddEvent}
-        >
-          {t("addEvent")}
-        </Button>
+                    </TableCell>
+                    <TableCell>{formatFileSize(recording.size)}</TableCell>
+                    <TableCell>{recording.duration ? formatDuration(Math.round(recording.duration)) : "-"}</TableCell>
+                    <TableCell>{recording.startTime ? formatDate(new Date(recording.startTime)) : "-"}</TableCell>
+                    <TableCell>{recording.endTime ? formatDate(new Date(recording.endTime)) : "-"}</TableCell>
+                    <TableCell>{recording.topicCount ?? "-"}</TableCell>
+                    <TableCell>{formatDate(new Date(recording.createdAt))}</TableCell>
+                    <TableCell align="right">
+                      <Stack direction="row" gap={0.5} justifyContent="flex-end">
+                        <Tooltip title={t("play")}>
+                          <span>
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              disabled={recording.status !== "ready"}
+                              onClick={() => {
+                                void handlePlayRecording(recording);
+                              }}
+                            >
+                              <PlayArrowOutlined fontSize="small" />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
+                        <Tooltip title={t("download")}>
+                          <span>
+                            <IconButton
+                              size="small"
+                              disabled={recording.status !== "ready"}
+                              onClick={() => {
+                                void handleDownloadRecording(recording);
+                              }}
+                            >
+                              <DownloadOutlined fontSize="small" />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Stack>
-      {mockEvents.length === 0 ? (
-        <div className={classes.emptyState}>
-          <BookmarksOutlined className={classes.emptyIcon} />
-          <Typography variant="h6" color="text.secondary">
-            {t("noEvents")}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {t("noDeviceEventsDescription")}
-          </Typography>
+    );
+  };
+
+  const renderEventsTab = () => {
+    if (eventsLoading) {
+      return (
+        <div className={classes.loadingContainer}>
+          <CircularProgress />
         </div>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>{t("severity")}</TableCell>
-                <TableCell>{t("message")}</TableCell>
-                <TableCell>{t("source")}</TableCell>
-                <TableCell>{t("timestamp")}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {mockEvents.map((event) => (
-                <TableRow key={event.id} hover>
-                  <TableCell>
-                    <Chip
-                      icon={<SeverityIcon severity={event.severity} />}
-                      label={t(event.severity as "info" | "warning" | "error")}
-                      size="small"
-                      color={getSeverityChipColor(event.severity)}
-                      className={classes.severityChip}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">{event.message}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary">
-                      {event.source}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">{formatTimestamp(event.timestamp)}</Typography>
-                  </TableCell>
+      );
+    }
+
+    return (
+      <Stack gap={2}>
+        <Stack direction="row" justifyContent="flex-end">
+          <Button variant="contained" startIcon={<AddOutlined />} onClick={handleAddEvent}>
+            {t("addEvent")}
+          </Button>
+        </Stack>
+        {events.length === 0 ? (
+          <div className={classes.emptyState}>
+            <BookmarksOutlined className={classes.emptyIcon} />
+            <Typography variant="h6" color="text.secondary">
+              {t("noEvents")}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {t("noDeviceEventsDescription")}
+            </Typography>
+          </div>
+        ) : (
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>{t("eventType")}</TableCell>
+                  <TableCell>{t("description")}</TableCell>
+                  <TableCell>{t("startTime")}</TableCell>
+                  <TableCell>{t("duration")}</TableCell>
+                  <TableCell>{t("createdBy")}</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </Stack>
-  );
-
-  const renderPropertiesTab = () => (
-    <Paper sx={{ padding: 3 }}>
-      <Stack gap={0}>
-        <div className={classes.propertyRow}>
-          <Typography className={classes.propertyLabel}>{t("deviceName")}</Typography>
-          <Typography>{device.name}</Typography>
-        </div>
-        <div className={classes.propertyRow}>
-          <Typography className={classes.propertyLabel}>{t("deviceType")}</Typography>
-          <Typography>{device.type}</Typography>
-        </div>
-        <div className={classes.propertyRow}>
-          <Typography className={classes.propertyLabel}>{t("ipAddress")}</Typography>
-          <Typography>{device.ipAddress}</Typography>
-        </div>
-        <div className={classes.propertyRow}>
-          <Typography className={classes.propertyLabel}>{t("model")}</Typography>
-          <Typography>{device.model ?? "-"}</Typography>
-        </div>
-        <div className={classes.propertyRow}>
-          <Typography className={classes.propertyLabel}>{t("serialNumber")}</Typography>
-          <Typography>{device.serialNumber ?? "-"}</Typography>
-        </div>
-        <div className={classes.propertyRow}>
-          <Typography className={classes.propertyLabel}>{t("firmwareVersion")}</Typography>
-          <Typography>{device.firmwareVersion ?? "-"}</Typography>
-        </div>
-        <div className={classes.propertyRow}>
-          <Typography className={classes.propertyLabel}>{t("location")}</Typography>
-          <Typography>{device.location ?? "-"}</Typography>
-        </div>
-        <div className={classes.propertyRow}>
-          <Typography className={classes.propertyLabel}>{t("topics")}</Typography>
-          <Typography>{device.topics ?? "-"}</Typography>
-        </div>
-        <div className={classes.propertyRow}>
-          <Typography className={classes.propertyLabel}>{t("lastSeen")}</Typography>
-          <Typography>{formatTimestamp(device.lastSeen)}</Typography>
-        </div>
+              </TableHead>
+              <TableBody>
+                {events.map((event) => (
+                  <TableRow key={event.id} hover>
+                    <TableCell>
+                      <Chip
+                        icon={<EventTypeIcon eventType={event.eventType} />}
+                        label={t(event.eventType)}
+                        size="small"
+                        color={getEventTypeChipColor(event.eventType)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{event.description}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {formatTimestamp(event.startTime)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {event.duration < 60 ? `${event.duration}m` : `${Math.floor(event.duration / 60)}h ${event.duration % 60}m`}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        {event.createdBy}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Stack>
-    </Paper>
-  );
+    );
+  };
 
-  const renderAgentTab = () => (
-    <Stack gap={3}>
-      <Paper className={classes.agentCard}>
-        <Stack gap={2}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Stack direction="row" alignItems="center" gap={2}>
-              <SmartToyOutlined color="primary" />
-              <Typography variant="h6">{t("floraAgent")}</Typography>
-            </Stack>
+  const renderPropertiesTab = () => {
+    if (!device) {
+      return undefined;
+    }
+
+    return (
+      <Paper className={classes.propertyPaper}>
+        <Stack gap={0}>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("deviceId")}</Typography>
+            <Typography fontFamily="monospace">{device.id}</Typography>
+          </div>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("deviceName")}</Typography>
+            <Typography>{device.name}</Typography>
+          </div>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("deviceType")}</Typography>
+            <Typography>{device.type}</Typography>
+          </div>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("ipAddress")}</Typography>
+            <Typography>{device.ipAddress ?? "-"}</Typography>
+          </div>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("model")}</Typography>
+            <Typography>{device.model ?? "-"}</Typography>
+          </div>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("serialNumber")}</Typography>
+            <Typography>{device.serialNumber ?? "-"}</Typography>
+          </div>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("firmwareVersion")}</Typography>
+            <Typography>{device.firmwareVersion ?? "-"}</Typography>
+          </div>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("location")}</Typography>
+            <Typography>{device.location ?? "-"}</Typography>
+          </div>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("enabled")}</Typography>
             <Chip
-              label={t(mockAgent.status)}
+              label={device.enabled ? t("yes") : t("no")}
               size="small"
-              color={getAgentStatusColor(mockAgent.status)}
-              className={classes.statusChip}
+              color={device.enabled ? "success" : "default"}
             />
-          </Stack>
-
-          <Box>
-            <div className={classes.propertyRow}>
-              <Typography className={classes.propertyLabel}>{t("agentVersion")}</Typography>
-              <Typography>v{mockAgent.version}</Typography>
-            </div>
-            <div className={classes.propertyRow}>
-              <Typography className={classes.propertyLabel}>{t("uptime")}</Typography>
-              <Typography>{formatUptime(mockAgent.uptime)}</Typography>
-            </div>
-            <div className={classes.propertyRow}>
-              <Typography className={classes.propertyLabel}>{t("lastHeartbeat")}</Typography>
-              <Typography>{formatTimestamp(mockAgent.lastHeartbeat)}</Typography>
-            </div>
-            <div className={classes.propertyRow}>
-              <Typography className={classes.propertyLabel}>{t("cpuUsage")}</Typography>
-              <Typography>{mockAgent.cpuUsage.toFixed(1)}%</Typography>
-            </div>
-            <div className={classes.propertyRow}>
-              <Typography className={classes.propertyLabel}>{t("memoryUsage")}</Typography>
-              <Typography>{mockAgent.memoryUsage.toFixed(1)}%</Typography>
-            </div>
-          </Box>
-
-          <Stack direction="row" gap={1}>
-            <Button variant="outlined" size="small" disabled={mockAgent.status !== "running"}>
-              {t("restartAgent")}
-            </Button>
-            <Button variant="outlined" size="small">
-              {t("viewLogs")}
-            </Button>
-          </Stack>
+          </div>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("lastSeen")}</Typography>
+            <Typography>{formatTimestamp(device.lastSeen)}</Typography>
+          </div>
+          <div className={classes.propertyRow}>
+            <Typography className={classes.propertyLabel}>{t("createdAt")}</Typography>
+            <Typography>{formatTimestamp(device.createdAt)}</Typography>
+          </div>
         </Stack>
       </Paper>
-    </Stack>
-  );
+    );
+  };
+
+  const renderAgentTab = () => {
+    if (agentLoading) {
+      return (
+        <div className={classes.loadingContainer}>
+          <CircularProgress />
+        </div>
+      );
+    }
+
+    // Use device data if agentInfo is not available
+    const agentVersion = agentInfo?.agentInfo.version ?? device?.agentVersion;
+    const agentStatus = agentInfo?.agentInfo.status ?? device?.agentStatus;
+    const uptime = agentInfo?.agentInfo.uptime ?? device?.agentUptime;
+    const lastHeartbeat = agentInfo?.agentInfo.lastHeartbeat ?? device?.lastSeen;
+    const cpuUsage = agentInfo?.systemInfo.cpuUsage ?? device?.cpuUsage;
+    const memoryUsage = agentInfo?.systemInfo.memoryUsage ?? device?.memoryUsage;
+    const diskUsage = agentInfo?.systemInfo.diskUsage ?? device?.diskUsage;
+    const rosDistro = agentInfo?.systemInfo.rosDistro ?? device?.rosDistro;
+    const rosNodeCount = agentInfo?.systemInfo.rosNodeCount ?? device?.rosNodeCount;
+    const rosTopicCount = agentInfo?.systemInfo.rosTopicCount ?? device?.rosTopicCount;
+
+    return (
+      <Stack gap={3}>
+        <Paper className={classes.agentCard}>
+          <Stack gap={2}>
+            <div className={classes.agentStatusRow}>
+              <Stack direction="row" alignItems="center" gap={2}>
+                <SmartToyOutlined color="primary" />
+                <Typography variant="h6">{t("floraAgent")}</Typography>
+              </Stack>
+              <Stack direction="row" alignItems="center" gap={1}>
+                <Chip
+                  label={agentStatus ? t(agentStatus) : t("unknown")}
+                  size="small"
+                  color={getAgentStatusColor(agentStatus)}
+                  className={classes.statusChip}
+                />
+                <Tooltip title={t("refresh")}>
+                  <IconButton size="small" onClick={handleRefreshAgentInfo}>
+                    <RefreshOutlined fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </div>
+
+            <Stack gap={0}>
+              <div className={classes.propertyRow}>
+                <Typography className={classes.propertyLabel}>{t("agentVersion")}</Typography>
+                <Typography>{agentVersion ? `v${agentVersion}` : "-"}</Typography>
+              </div>
+              <div className={classes.propertyRow}>
+                <Typography className={classes.propertyLabel}>{t("uptime")}</Typography>
+                <Typography>{formatUptime(uptime)}</Typography>
+              </div>
+              <div className={classes.propertyRow}>
+                <Typography className={classes.propertyLabel}>{t("lastHeartbeat")}</Typography>
+                <Typography>{formatTimestamp(lastHeartbeat)}</Typography>
+              </div>
+            </Stack>
+          </Stack>
+        </Paper>
+
+        {/* System Resources */}
+        <Paper className={classes.agentCard}>
+          <Typography variant="h6" gutterBottom>
+            {t("systemResources")}
+          </Typography>
+          <div className={classes.systemInfoGrid}>
+            <Paper variant="outlined" className={classes.systemInfoCard}>
+              <MemoryOutlined color="primary" />
+              <Typography variant="body2" color="text.secondary">
+                {t("cpuUsage")}
+              </Typography>
+              <Typography variant="h5">{cpuUsage != undefined ? `${cpuUsage.toFixed(1)}%` : "-"}</Typography>
+              {cpuUsage != undefined && (
+                <LinearProgress
+                  variant="determinate"
+                  value={cpuUsage}
+                  className={classes.progressBar}
+                  color={cpuUsage > 80 ? "error" : cpuUsage > 60 ? "warning" : "primary"}
+                />
+              )}
+            </Paper>
+
+            <Paper variant="outlined" className={classes.systemInfoCard}>
+              <MemoryOutlined color="primary" />
+              <Typography variant="body2" color="text.secondary">
+                {t("memoryUsage")}
+              </Typography>
+              <Typography variant="h5">
+                {memoryUsage != undefined ? `${memoryUsage.toFixed(1)}%` : "-"}
+              </Typography>
+              {memoryUsage != undefined && (
+                <LinearProgress
+                  variant="determinate"
+                  value={memoryUsage}
+                  className={classes.progressBar}
+                  color={memoryUsage > 80 ? "error" : memoryUsage > 60 ? "warning" : "primary"}
+                />
+              )}
+            </Paper>
+
+            <Paper variant="outlined" className={classes.systemInfoCard}>
+              <StorageOutlined color="primary" />
+              <Typography variant="body2" color="text.secondary">
+                {t("diskUsage")}
+              </Typography>
+              <Typography variant="h5">
+                {diskUsage != undefined ? `${diskUsage.toFixed(1)}%` : "-"}
+              </Typography>
+              {diskUsage != undefined && (
+                <LinearProgress
+                  variant="determinate"
+                  value={diskUsage}
+                  className={classes.progressBar}
+                  color={diskUsage > 80 ? "error" : diskUsage > 60 ? "warning" : "primary"}
+                />
+              )}
+            </Paper>
+          </div>
+        </Paper>
+
+        {/* ROS Info */}
+        {(rosDistro ?? rosNodeCount ?? rosTopicCount) && (
+          <Paper className={classes.agentCard}>
+            <Typography variant="h6" gutterBottom>
+              ROS
+            </Typography>
+            <Stack gap={0}>
+              <div className={classes.propertyRow}>
+                <Typography className={classes.propertyLabel}>{t("rosDistro")}</Typography>
+                <Typography>{rosDistro ?? "-"}</Typography>
+              </div>
+              <div className={classes.propertyRow}>
+                <Typography className={classes.propertyLabel}>{t("rosNodes")}</Typography>
+                <Typography>{rosNodeCount ?? "-"}</Typography>
+              </div>
+              <div className={classes.propertyRow}>
+                <Typography className={classes.propertyLabel}>{t("rosTopics")}</Typography>
+                <Typography>{rosTopicCount ?? "-"}</Typography>
+              </div>
+            </Stack>
+          </Paper>
+        )}
+      </Stack>
+    );
+  };
+
+  // Show login required placeholder if not authenticated
+  if (!authLoading && !isAuthenticated) {
+    return (
+      <Stack className={classes.root}>
+        <LoginRequiredPlaceholder />
+      </Stack>
+    );
+  }
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className={classes.loadingContainer}>
+        <CircularProgress />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !device) {
+    return (
+      <div className={classes.errorContainer}>
+        <ErrorOutlined color="error" style={{ fontSize: 64 }} />
+        <Typography variant="h6" color="error">
+          {error ?? t("deviceNotFound")}
+        </Typography>
+        <Button variant="contained" onClick={handleBack}>
+          {t("backToDevices")}
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <Stack className={classes.root}>
@@ -736,10 +1130,10 @@ export function DeviceDetailPage(): React.JSX.Element {
             <ArrowBackOutlined />
           </IconButton>
           <StatusIcon status={device.status} />
-          <Stack gap={0.25} style={{ marginLeft: 16 }}>
-            <Typography variant="h5">{deviceName}</Typography>
+          <Stack gap={0.25} style={{ marginLeft: 16, flex: 1 }}>
+            <Typography variant="h5">{device.name}</Typography>
             <Typography variant="body2" color="text.secondary">
-              {device.type} • {device.ipAddress}
+              {device.type} {device.ipAddress && `• ${device.ipAddress}`}
             </Typography>
           </Stack>
           <Chip
@@ -747,9 +1141,11 @@ export function DeviceDetailPage(): React.JSX.Element {
             color={getStatusChipColor(device.status)}
             size="small"
             className={classes.statusChip}
-            sx={{ ml: 2 }}
           />
-          <IconButton onClick={handleMenuOpen} sx={{ ml: 1 }}>
+          {!device.enabled && (
+            <Chip label={t("disabled")} color="warning" size="small" className={classes.statusChip} />
+          )}
+          <IconButton onClick={handleMenuOpen} className={classes.moreButton}>
             <MoreVertOutlined />
           </IconButton>
         </Stack>
@@ -759,8 +1155,17 @@ export function DeviceDetailPage(): React.JSX.Element {
       <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
         <MenuItem onClick={handleDisableDevice}>
           <Stack direction="row" alignItems="center" gap={1}>
-            <BlockOutlined fontSize="small" />
-            {t("disable")}
+            {device.enabled ? (
+              <>
+                <BlockOutlined fontSize="small" />
+                {t("disable")}
+              </>
+            ) : (
+              <>
+                <CheckCircleOutlined fontSize="small" />
+                {t("enable")}
+              </>
+            )}
           </Stack>
         </MenuItem>
         <MenuItem onClick={handleRenameDevice}>
@@ -781,18 +1186,6 @@ export function DeviceDetailPage(): React.JSX.Element {
         <div className={classes.tabsContainer}>
           <Tabs value={activeTab} onChange={handleTabChange}>
             <Tab
-              icon={<InsertDriveFileOutlined />}
-              iconPosition="start"
-              label={t("recordings")}
-              value="recordings"
-            />
-            <Tab
-              icon={<BookmarksOutlined />}
-              iconPosition="start"
-              label={t("events")}
-              value="events"
-            />
-            <Tab
               icon={<SettingsOutlined />}
               iconPosition="start"
               label={t("properties")}
@@ -804,21 +1197,33 @@ export function DeviceDetailPage(): React.JSX.Element {
               label={t("agent")}
               value="agent"
             />
+            <Tab
+              icon={<InsertDriveFileOutlined />}
+              iconPosition="start"
+              label={t("recordings")}
+              value="recordings"
+            />
+            <Tab
+              icon={<BookmarksOutlined />}
+              iconPosition="start"
+              label={t("events")}
+              value="events"
+            />
           </Tabs>
         </div>
 
         <div className={classes.tabContent}>
-          {activeTab === "recordings" && renderRecordingsTab()}
-          {activeTab === "events" && renderEventsTab()}
           {activeTab === "properties" && renderPropertiesTab()}
           {activeTab === "agent" && renderAgentTab()}
+          {activeTab === "recordings" && renderRecordingsTab()}
+          {activeTab === "events" && renderEventsTab()}
         </div>
       </div>
 
       <ConfirmDialog
         open={deleteDialogOpen}
         title={t("deleteDevice")}
-        message={t("deleteDeviceConfirm", { name: deviceName })}
+        message={t("deleteDeviceConfirm", { name: device.name })}
         confirmLabel={t("delete")}
         variant="error"
         onConfirm={handleDeleteConfirm}
@@ -827,9 +1232,13 @@ export function DeviceDetailPage(): React.JSX.Element {
 
       <ConfirmDialog
         open={disableDialogOpen}
-        title={t("disableDevice")}
-        message={t("disableDeviceConfirm", { name: deviceName })}
-        confirmLabel={t("disable")}
+        title={device.enabled ? t("disableDevice") : t("enableDevice")}
+        message={
+          device.enabled
+            ? t("disableDeviceConfirm", { name: device.name })
+            : t("enableDeviceConfirm", { name: device.name })
+        }
+        confirmLabel={device.enabled ? t("disable") : t("enable")}
         variant="warning"
         onConfirm={handleDisableConfirm}
         onCancel={handleDisableCancel}
@@ -839,15 +1248,18 @@ export function DeviceDetailPage(): React.JSX.Element {
         open={renameDialogOpen}
         title={t("renameDevice")}
         label={t("deviceName")}
-        initialValue={deviceName}
+        initialValue={device.name}
         onConfirm={handleRenameConfirm}
         onCancel={handleRenameCancel}
       />
 
       <UploadDataDialog
         open={uploadDialogOpen}
-        devices={[{ id: device.id, name: deviceName }]}
+        devices={[{ id: device.id, name: device.name }]}
         selectedDeviceId={device.id}
+        uploading={uploading}
+        uploadProgress={uploadProgress}
+        error={uploadError}
         onConfirm={handleUploadConfirm}
         onCancel={handleUploadCancel}
       />

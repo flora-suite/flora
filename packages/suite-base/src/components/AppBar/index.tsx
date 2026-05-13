@@ -22,6 +22,7 @@ import { makeStyles } from "tss-react/mui";
 import { AppSetting } from "@lichtblick/suite-base/AppSetting";
 import { FloraLogo } from "@lichtblick/suite-base/components/FloraLogo";
 import { MemoryUseIndicator } from "@lichtblick/suite-base/components/MemoryUseIndicator";
+import { OrganizationSwitcher } from "@lichtblick/suite-base/components/OrganizationSwitcher";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { useAppContext } from "@lichtblick/suite-base/context/AppContext";
 import { useAuth } from "@lichtblick/suite-base/context/AuthContext";
@@ -290,23 +291,23 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
 
           <div className={classes.end}>
             <div className={classes.endInner}>
-              <button
-                className={cx(classes.layoutButton, { "Mui-selected": layoutMenuOpen })}
-                id="layout-menu-button"
-                data-testid="LayoutMenuButton"
-                aria-label="Layouts button"
-                aria-controls={layoutMenuOpen ? "layout-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={layoutMenuOpen ? "true" : undefined}
-                onClick={(event) => {
-                  setLayoutAnchorEl(event.currentTarget);
-                }}
-                disabled={!hasCurrentLayout}
+              <Tooltip
+                title={hasUnsavedChanges ? t("unsavedChanges") : ""}
+                placement="bottom"
+                disableHoverListener={!hasUnsavedChanges}
               >
-                <Tooltip
-                  title={hasUnsavedChanges ? t("unsavedChanges") : ""}
-                  placement="bottom"
-                  disableHoverListener={!hasUnsavedChanges}
+                <button
+                  className={cx(classes.layoutButton, { "Mui-selected": layoutMenuOpen })}
+                  id="layout-menu-button"
+                  data-testid="LayoutMenuButton"
+                  aria-label="Layouts button"
+                  aria-controls={layoutMenuOpen ? "layout-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={layoutMenuOpen ? "true" : undefined}
+                  onClick={(event) => {
+                    setLayoutAnchorEl(event.currentTarget);
+                  }}
+                  disabled={!hasCurrentLayout}
                 >
                   <span className={classes.layoutIconWrapper}>
                     <Board20Regular />
@@ -320,15 +321,15 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
                       </SvgIcon>
                     )}
                   </span>
-                </Tooltip>
-                <span className={classes.layoutName}>
-                  {currentLayoutName ?? t("layouts", "Layouts")}
-                </span>
-                <ChevronDown12Regular
-                  className={classes.dropDownIcon}
-                  primaryFill={theme.palette.common.white}
-                />
-              </button>
+                  <span className={classes.layoutName}>
+                    {currentLayoutName ?? t("layouts", "Layouts")}
+                  </span>
+                  <ChevronDown12Regular
+                    className={classes.dropDownIcon}
+                    primaryFill={theme.palette.common.white}
+                  />
+                </button>
+              </Tooltip>
               <AppBarIconButton
                 className={cx({ "Mui-selected": panelMenuOpen })}
                 color="inherit"
@@ -478,6 +479,7 @@ export function DashboardAppBar({ children }: { children?: ReactElement }): Reac
               >
                 <FloraLogo fontSize="inherit" color="inherit" />
               </IconButton>
+              <OrganizationSwitcher />
             </div>
           </div>
 

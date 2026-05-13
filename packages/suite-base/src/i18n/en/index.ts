@@ -15,6 +15,7 @@ export * from "./incompatibleLayoutVersion";
 export * from "./layoutBrowser";
 export * from "./log";
 export * from "./openDialog";
+export * from "./organization";
 export * from "./panelConfigVersionGuard";
 export * from "./panels";
 export * from "./panelSettings";

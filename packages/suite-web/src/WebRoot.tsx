@@ -2,7 +2,7 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import {
   ApiClientContext,
@@ -11,10 +11,13 @@ import {
   AuthProvider,
   createFloraServices,
   DeviceProvider,
+  EventProvider,
   FoxgloveWebSocketDataSourceFactory,
   IDataSourceFactory,
   IdbExtensionLoader,
   McapLocalDataSourceFactory,
+  OrganizationProvider,
+  RecordingProvider,
   RemoteDataSourceFactory,
   RemoteLayoutStorageProvider,
   Ros1LocalBagDataSourceFactory,
@@ -50,7 +53,23 @@ export function WebRoot(props: {
     new IdbExtensionLoader("local"),
   ]);
 
-  const [{ authService, deviceService, apiClient }] = useState(() => createFloraServices());
+  // Track session expiry to force re-render and update auth state
+  const [sessionExpiredCount, setSessionExpiredCount] = useState(0);
+
+  // Callback when API client detects session expired
+  const handleSessionExpired = useCallback(() => {
+    // Increment counter to signal AuthProvider that session expired
+    setSessionExpiredCount((prev) => prev + 1);
+  }, []);
+
+  // Create services once, but set up session expired callback
+  const services = useMemo(() => {
+    return createFloraServices({
+      onSessionExpired: handleSessionExpired,
+    });
+  }, [handleSessionExpired]);
+
+  const { authService, deviceService, recordingService, eventService, organizationService, apiClient } = services;
 
   const dataSources = useMemo(() => {
     const sources = [
@@ -74,8 +93,11 @@ export function WebRoot(props: {
     const providers: JSX.Element[] = [
       /* eslint-disable react/jsx-key */
       <ApiClientContext.Provider value={apiClient} />,
-      <AuthProvider authService={authService} />,
+      <AuthProvider authService={authService} sessionExpiredSignal={sessionExpiredCount} />,
+      <OrganizationProvider organizationService={organizationService} />,
       <DeviceProvider deviceService={deviceService} />,
+      <RecordingProvider recordingService={recordingService} />,
+      <EventProvider eventService={eventService} />,
       <RemoteLayoutStorageProvider />,
       /* eslint-enable react/jsx-key */
     ];
@@ -83,7 +105,7 @@ export function WebRoot(props: {
       providers.push(...props.extraProviders);
     }
     return providers;
-  }, [authService, deviceService, apiClient, props.extraProviders]);
+  }, [authService, deviceService, recordingService, eventService, organizationService, apiClient, sessionExpiredCount, props.extraProviders]);
 
   return (
     <SharedRoot

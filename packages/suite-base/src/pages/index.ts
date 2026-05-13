@@ -5,6 +5,7 @@
 export { DashboardPage } from "./Dashboard";
 export { DevicesPage } from "./Devices";
 export { DeviceDetailPage } from "./DeviceDetail";
+export { DeviceRegisterPage } from "./DeviceRegister";
 export { RecordingsPage } from "./Recordings";
 export { EventsPage } from "./Events";
 export { TimelinePage } from "./Timeline";
@@ -15,4 +16,9 @@ export {
   ExtensionsSettingsPage,
   ExperimentalSettings,
   AboutSettings,
+  OrganizationSettings,
+  OrganizationGeneralSettings,
+  OrganizationMembersSettings,
+  OrganizationApiKeysSettings,
+  OrganizationExtensionsSettings,
 } from "./Settings";

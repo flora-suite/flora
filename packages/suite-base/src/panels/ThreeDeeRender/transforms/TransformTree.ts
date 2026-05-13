@@ -83,7 +83,7 @@ export class TransformTree {
     let cycleDetected = false;
     const frame = this.getOrCreateFrame(frameId);
     const curParentFrame = frame.parent();
-    if (curParentFrame == undefined || curParentFrame.id !== parentFrameId) {
+    if (curParentFrame?.id !== parentFrameId) {
       cycleDetected = this.#checkParentForCycle(frameId, parentFrameId);
       // This frame was previously unparented but now we know its parent, or we
       // are reparenting this frame

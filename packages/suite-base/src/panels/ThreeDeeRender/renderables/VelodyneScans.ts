@@ -254,7 +254,7 @@ export class VelodyneScans extends SceneExtension<PointCloudHistoryRenderable> {
     // Update the mapping of topic to point cloud field names if necessary
     let fields = this.#pointCloudFieldsByTopic.get(messageEvent.topic);
     let fieldsUpdated = false;
-    if (!fields || fields.length !== pointCloud.fields.length) {
+    if (fields?.length !== pointCloud.fields.length) {
       fields = pointCloud.fields.map((field) => field.name);
       this.#pointCloudFieldsByTopic.set(messageEvent.topic, fields);
       fieldsUpdated = true;

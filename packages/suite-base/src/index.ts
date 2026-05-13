@@ -61,7 +61,7 @@ export type {
   IAuthContext,
 } from "./context/AuthContext";
 export { ApiClient, LocalStorageTokenStorage, ApiError } from "./services/ApiClient";
-export type { ITokenStorage, ApiErrorResponse } from "./services/ApiClient";
+export type { ITokenStorage, ApiErrorResponse, SessionExpiredCallback } from "./services/ApiClient";
 export { AuthService } from "./services/AuthService";
 export type { IAuthService } from "./services/AuthService";
 export { default as AuthProvider } from "./providers/AuthProvider";
@@ -83,9 +83,9 @@ export type {
   DeviceTopic,
   DeviceListResponse,
   DeviceListQuery,
-  CreateDeviceParams,
   UpdateDeviceParams,
   DeviceTokenResponse,
+  DeviceAgentInfo,
   DeviceEventType,
   DeviceEvent,
   DeviceEventListResponse,
@@ -95,3 +95,35 @@ export type {
   IDeviceService,
 } from "./services/IDeviceService";
 export { default as DeviceProvider } from "./providers/DeviceProvider";
+export { default as RecordingProvider } from "./providers/RecordingProvider";
+
+// Event management exports
+export { default as EventContext, useEvents } from "./context/EventContext";
+export type { IEventContext } from "./context/EventContext";
+export { EventService } from "./services/EventService";
+export type {
+  EventType,
+  DeviceEvent as EventServiceDeviceEvent,
+  EventListQuery,
+  EventListResponse,
+  CreateEventInput,
+  UpdateEventInput,
+  IEventService,
+} from "./services/IEventService";
+export { default as EventProvider } from "./providers/EventProvider";
+
+// Organization management exports
+export { default as OrganizationContext, useOrganizations, useCurrentOrganization, useIsOrganizationMode } from "./context/OrganizationContext";
+export type { OrganizationState, IOrganizationContext } from "./context/OrganizationContext";
+export { OrganizationService } from "./services/OrganizationService";
+export type {
+  OrgRole,
+  Organization,
+  OrgMember,
+  CreateOrganizationInput,
+  UpdateOrganizationInput,
+  AddMemberInput,
+  UpdateMemberRoleInput,
+  IOrganizationService,
+} from "./services/IOrganizationService";
+export { default as OrganizationProvider } from "./providers/OrganizationProvider";

@@ -95,7 +95,7 @@ export class Downsampler {
 
       // NaN item values create gaps in the line
       const undefinedToNanData = resolved.map((item) => {
-        if (item == undefined || item.x == undefined || item.y == undefined || isNaN(item.x) || isNaN(item.y)) {
+        if (item?.x == undefined || item.y == undefined || isNaN(item.x) || isNaN(item.y)) {
           return { x: NaN, y: NaN, value: NaN };
         }
         return item;

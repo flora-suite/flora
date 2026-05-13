@@ -4,8 +4,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import Logger from "@lichtblick/log";
 import { useShallowMemo } from "@lichtblick/hooks";
+import Logger from "@lichtblick/log";
 import AuthContext, {
   AuthState,
   IAuthContext,
@@ -19,12 +19,14 @@ const log = Logger.getLogger(__filename);
 
 type AuthProviderProps = React.PropsWithChildren<{
   authService: IAuthService;
+  /** Signal that increments when session expires from API, triggers sign out */
+  sessionExpiredSignal?: number;
 }>;
 
 /**
  * Provider component for authentication context
  */
-export default function AuthProvider({ authService, children }: AuthProviderProps): JSX.Element {
+export default function AuthProvider({ authService, sessionExpiredSignal, children }: AuthProviderProps): JSX.Element {
   const [state, setState] = useState<AuthState>({
     isLoading: true,
     isAuthenticated: false,
@@ -68,6 +70,22 @@ export default function AuthProvider({ authService, children }: AuthProviderProp
       log.error("Session check error:", error);
     });
   }, [authService]);
+
+  // Handle session expired signal from API client
+  useEffect(() => {
+    // Skip initial render (signal = 0 or undefined)
+    if (!sessionExpiredSignal || sessionExpiredSignal === 0) {
+      return;
+    }
+
+    log.warn("Session expired signal received, signing out");
+    setState({
+      isLoading: false,
+      isAuthenticated: false,
+      user: undefined,
+      error: undefined,
+    });
+  }, [sessionExpiredSignal]);
 
   const signIn = useCallback(
     async (credentials: LoginCredentials): Promise<void> => {
