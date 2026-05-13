@@ -62,8 +62,8 @@
     "tss-react": "4.9.20",
     "typescript": "5.9.3",
     "utif": "3.1.0",
-    "webpack": "5.102.1",
-    "webpack-dev-server": "5.2.2"
+    "webpack": "5.106.2",
+    "webpack-dev-server": "5.2.4"
   },
   "dependencies": {
     "fork-ts-checker-webpack-plugin": "9.1.0"
