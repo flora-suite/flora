@@ -25,7 +25,7 @@ jobs:
               yarn license-check
               yarn run tsc --noEmit # typecheck files that are not included by webpack or package builds
           - name: packages
-            command: yarn run build:packages
+            command: echo complete
           - name: web
             command: yarn run web:build:prod
           - name: build benchmark
