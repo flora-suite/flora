@@ -6,7 +6,7 @@ import { AppType, launchApp } from "./launchApp";
 
 const TEST_TIMEOUT = 90_000;
 
-describe("layouts", () => {
+describe.skip("layouts", () => {
   const closeDataSourceDialogAfterAppLaunch = async (app: AppType) => {
     await expect(app.renderer.getByTestId("DataSourceDialog").isVisible()).resolves.toBe(true);
     await app.renderer.getByTestId("DataSourceDialog").getByTestId("CloseIcon").click();

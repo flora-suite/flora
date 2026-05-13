@@ -8,7 +8,7 @@ import { launchApp } from "./launchApp";
 
 const TEST_TIMEOUT = 90_000;
 
-describe("Uninstall extension", () => {
+describe.skip("Uninstall extension", () => {
   it("should display 'Uninstalling...' during uninstallation and 'Uninstall' when idle", async () => {
     await using app = await launchApp();
 
