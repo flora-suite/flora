@@ -319,7 +319,7 @@ export function OrganizationExtensionsSettings(): React.JSX.Element {
     [currentOrganization, extensionSettings, updateExtensionSetting],
   );
 
-  const handleOpenReviewDialog = useCallback((extension: OrgExtension, action: "approve" | "reject") => {
+  const handleOpenReviewDialog = useCallback((extension: OrgExtension) => {
     setExtensionToReview(extension);
     setReviewNote("");
     setReviewDialogOpen(true);
@@ -515,7 +515,7 @@ export function OrganizationExtensionsSettings(): React.JSX.Element {
                                       size="small"
                                       color="success"
                                       onClick={() => {
-                                        handleOpenReviewDialog(extension, "approve");
+                                        handleOpenReviewDialog(extension);
                                       }}
                                     >
                                       <CheckCircleIcon />
@@ -526,7 +526,7 @@ export function OrganizationExtensionsSettings(): React.JSX.Element {
                                       size="small"
                                       color="error"
                                       onClick={() => {
-                                        handleOpenReviewDialog(extension, "reject");
+                                        handleOpenReviewDialog(extension);
                                       }}
                                     >
                                       <DoNotDisturbIcon />
