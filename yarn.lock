@@ -4979,7 +4979,7 @@ __metadata:
     chromatic: "npm:11.29.0"
     crypto-browserify: "npm:3.12.1"
     css-loader: "npm:6.11.0"
-    cytoscape: "npm:3.33.1"
+    cytoscape: "npm:3.33.3"
     cytoscape-dagre: "npm:2.5.0"
     date-fns: "npm:^3.6.0"
     dompurify: "npm:3.3.1"
@@ -11643,10 +11643,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cytoscape@npm:*, cytoscape@npm:3.33.1":
+"cytoscape@npm:*":
   version: 3.33.1
   resolution: "cytoscape@npm:3.33.1"
   checksum: 10c0/dffcf5f74df4d91517c4faf394df880d8283ce76edef19edba0c762941cf4f18daf7c4c955ec50c794f476ace39ad4394f8c98483222bd2682e1fd206e976411
+  languageName: node
+  linkType: hard
+
+"cytoscape@npm:3.33.3":
+  version: 3.33.3
+  resolution: "cytoscape@npm:3.33.3"
+  checksum: 10c0/f0d01f682d3e443cbeea9aa294ccd6934442362df3ce259e7b0fe3b9a8ce534d901840c503db8b53da814542bc1508f7f14a69e4fe725f919c25483a7200efe7
   languageName: node
   linkType: hard
 
