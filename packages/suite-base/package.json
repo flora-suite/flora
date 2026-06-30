@@ -115,7 +115,7 @@
     "cytoscape-dagre": "2.5.0",
     "date-fns": "^3.6.0",
     "dompurify": "3.3.1",
-    "electron": "38.7.2",
+    "electron": "42.0.1",
     "esbuild-loader": "2.21.0",
     "eventemitter3": "5.0.4",
     "fake-indexeddb": "4.0.2",
