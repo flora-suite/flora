@@ -5060,7 +5060,7 @@ __metadata:
     gl-matrix: "npm:3.4.4"
     hammerjs: "npm:2.0.8"
     heap-js: "npm:2.7.1"
-    i18next: "npm:23.16.8"
+    i18next: "npm:26.3.4"
     i18next-browser-languagedetector: "npm:7.2.2"
     idb: "npm:8.0.3"
     idb-keyval: "npm:6.2.2"
@@ -5178,7 +5178,7 @@ __metadata:
     eventemitter3: "npm:5.0.4"
     fork-ts-checker-webpack-plugin: "npm:9.1.0"
     html-webpack-plugin: "npm:5.6.6"
-    i18next: "npm:23.16.8"
+    i18next: "npm:26.3.4"
     jszip: "npm:3.10.1"
     mock-fs: "npm:5.5.0"
     path-browserify: "npm:1.0.1"
@@ -5256,7 +5256,7 @@ __metadata:
     "@storybook/react": "npm:^8.6.15"
     "@types/react": "npm:^18.3.27"
     "@types/react-dom": "npm:^18.3.7"
-    i18next: "npm:23.16.8"
+    i18next: "npm:26.3.4"
     i18next-browser-languagedetector: "npm:7.2.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -15967,12 +15967,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:23.16.8":
-  version: 23.16.8
-  resolution: "i18next@npm:23.16.8"
-  dependencies:
-    "@babel/runtime": "npm:^7.23.2"
-  checksum: 10c0/57d249191e8a39bbbbe190cfa2e2bb651d0198e14444fe80453d3df8d02927de3c147c77724e9ae6c72fa241898cd761e3fdcd55d053db373471f1ac084bf345
+"i18next@npm:26.3.4":
+  version: 26.3.4
+  resolution: "i18next@npm:26.3.4"
+  peerDependencies:
+    typescript: ^5 || ^6
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/09b2e578660b1cdcb284ed00e1f1c8559871fa66cbf85e58f9b78bf782e3b575341f0668ca7230fc80d30104bec42f8ac3ac221096d0f6e6bfbf18255dcccc94
   languageName: node
   linkType: hard
 
