@@ -12295,7 +12295,7 @@ __metadata:
     "@lichtblick/tsconfig": "npm:1.0.2"
     "@types/ws": "npm:^8.18.1"
     electron: "npm:42.0.1"
-    playwright: "npm:1.57.0"
+    playwright: "npm:1.61.1"
     ws: "npm:8.18.3"
   languageName: unknown
   linkType: soft
@@ -20339,27 +20339,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.57.0":
-  version: 1.57.0
-  resolution: "playwright-core@npm:1.57.0"
+"playwright-core@npm:1.61.1":
+  version: 1.61.1
+  resolution: "playwright-core@npm:1.61.1"
   bin:
     playwright-core: cli.js
-  checksum: 10c0/798e35d83bf48419a8c73de20bb94d68be5dde68de23f95d80a0ebe401e3b83e29e3e84aea7894d67fa6c79d2d3d40cc5bcde3e166f657ce50987aaa2421b6a9
+  checksum: 10c0/c28896ba82a602182e240ed4f9c467fb0dd9cb57d510f8aba9f25183fe1cde3a0105725a29baffa4157fe885bbb11e228032a2aad0424111584fde45303f07bd
   languageName: node
   linkType: hard
 
-"playwright@npm:1.57.0":
-  version: 1.57.0
-  resolution: "playwright@npm:1.57.0"
+"playwright@npm:1.61.1":
+  version: 1.61.1
+  resolution: "playwright@npm:1.61.1"
   dependencies:
     fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.57.0"
+    playwright-core: "npm:1.61.1"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 10c0/ab03c99a67b835bdea9059f516ad3b6e42c21025f9adaa161a4ef6bc7ca716dcba476d287140bb240d06126eb23f889a8933b8f5f1f1a56b80659d92d1358899
+  checksum: 10c0/cea1bc4d2a64ec3ef683891606774029da7b8a8036ed98332565cec2f8e89549ca1fab9a89fbfba4e08e27e0d7e7d148031e965af66d5ff97bb3c34058cfcad0
   languageName: node
   linkType: hard
 
@@ -25170,7 +25170,7 @@ __metadata:
     "@lichtblick/suite-web": "workspace:*"
     "@lichtblick/tsconfig": "npm:1.0.2"
     "@types/serve-handler": "npm:^6.1.4"
-    playwright: "npm:1.57.0"
+    playwright: "npm:1.61.1"
     serve-handler: "npm:6.1.7"
     webpack: "npm:5.106.2"
     webpack-dev-server: "npm:5.2.4"
