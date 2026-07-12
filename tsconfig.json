@@ -5,6 +5,7 @@
   "extends": "@lichtblick/tsconfig/base",
   "include": ["./*.ts", "./*.js", "./**/jest.config.ts", "./ci/**/*.ts", "./package.json"],
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "jsx": "react-jsx",
     "module": "commonjs",
     "noEmit": true

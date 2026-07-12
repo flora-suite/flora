@@ -2,6 +2,7 @@
   "extends": "@lichtblick/tsconfig/base",
   "include": ["**/*", "../integration-test-build.ts"],
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "jsx": "react-jsx",
     "lib": ["ESNext.Disposable"],
     "module": "commonjs",

@@ -2,6 +2,7 @@
   "extends": "@lichtblick/tsconfig/base",
   "include": ["./**/*", "../common/**/*", "../../package.json"],
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "rootDir": "../../",
     "noEmit": true,
     "jsx": "react-jsx",
