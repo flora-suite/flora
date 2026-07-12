@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   ApiClientContext,
-  App,
   AppSetting,
   AuthProvider,
   createFloraServices,
@@ -27,6 +26,8 @@ import {
   Ros2LocalBagDataSourceFactory,
   RosbridgeDataSourceFactory,
   SampleNuscenesDataSourceFactory,
+  SharedRoot,
+  StudioApp,
   UlogLocalDataSourceFactory,
   VelodyneDataSourceFactory,
 } from "@lichtblick/suite-base";
@@ -100,7 +101,14 @@ export default function Root(props: RootProps): React.JSX.Element {
     });
   }, [appConfiguration, handleSessionExpired]);
 
-  const { authService, deviceService, recordingService, eventService, organizationService, apiClient } = services;
+  const {
+    authService,
+    deviceService,
+    recordingService,
+    eventService,
+    organizationService,
+    apiClient,
+  } = services;
 
   const nativeAppMenu = useMemo(() => new NativeAppMenu(menuBridge), []);
   const nativeWindow = useMemo(() => new NativeWindow(desktopBridge), []);
@@ -193,10 +201,19 @@ export default function Root(props: RootProps): React.JSX.Element {
       providers.push(...extraProviders);
     }
     return providers;
-  }, [authService, deviceService, recordingService, eventService, organizationService, apiClient, sessionExpiredCount, extraProviders]);
+  }, [
+    authService,
+    deviceService,
+    recordingService,
+    eventService,
+    organizationService,
+    apiClient,
+    sessionExpiredCount,
+    extraProviders,
+  ]);
 
   return (
-    <App
+    <SharedRoot
       appParameters={appParameters}
       deepLinks={deepLinks}
       dataSources={dataSources}
@@ -210,12 +227,16 @@ export default function Root(props: RootProps): React.JSX.Element {
       onAppBarDoubleClick={() => {
         nativeWindow.handleTitleBarDoubleClick();
       }}
-      isMaximized={isMaximized}
-      onMinimizeWindow={onMinimizeWindow}
-      onMaximizeWindow={onMaximizeWindow}
-      onUnmaximizeWindow={onUnmaximizeWindow}
-      onCloseWindow={onCloseWindow}
       extraProviders={allProviders}
-    />
+      customWindowControlProps={{
+        isMaximized,
+        onMinimizeWindow,
+        onMaximizeWindow,
+        onUnmaximizeWindow,
+        onCloseWindow,
+      }}
+    >
+      <StudioApp />
+    </SharedRoot>
   );
 }
