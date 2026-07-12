@@ -70,6 +70,7 @@
     ]
   },
   "resolutions": {
+    "@babel/core": "8.0.1",
     "@types/node": "20.10.0",
     "webpack": "5.108.4",
     "react-use": "patch:react-use@17.4.0#./patches/react-use.patch",
@@ -81,7 +82,7 @@
     "@actions/tool-cache": "2.0.2",
     "@babel/core": "8.0.1",
     "@babel/plugin-proposal-decorators": "8.0.2",
-    "@babel/plugin-proposal-explicit-resource-management": "7.27.4",
+    "@babel/plugin-transform-explicit-resource-management": "8.0.1",
     "@babel/preset-env": "8.0.2",
     "@babel/preset-react": "8.0.1",
     "@babel/preset-typescript": "8.0.1",

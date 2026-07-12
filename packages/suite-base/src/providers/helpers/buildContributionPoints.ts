@@ -68,7 +68,7 @@ export function buildContributionPoints(
       };
     },
 
-    registerMessageConverter: <Src>(messageConverter: RegisterMessageConverterArgs<Src>) => {
+    registerMessageConverter: <Src,>(messageConverter: RegisterMessageConverterArgs<Src>) => {
       log.debug(
         `Extension ${extension.qualifiedName} registering message converter from: ${messageConverter.fromSchemaName} to: ${messageConverter.toSchemaName}`,
       );

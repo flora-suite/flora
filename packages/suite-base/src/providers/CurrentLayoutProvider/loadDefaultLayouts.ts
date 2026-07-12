@@ -8,7 +8,7 @@ import { ILayoutManager } from "@lichtblick/suite-base/services/ILayoutManager";
 
 const log = Logger.getLogger(__filename);
 
-const isFulfilled = <T>(result: PromiseSettledResult<T>): result is PromiseFulfilledResult<T> =>
+const isFulfilled = <T,>(result: PromiseSettledResult<T>): result is PromiseFulfilledResult<T> =>
   result.status === "fulfilled";
 
 const isRejected = (result: PromiseSettledResult<unknown>): result is PromiseRejectedResult =>

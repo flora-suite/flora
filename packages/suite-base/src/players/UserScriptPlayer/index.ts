@@ -247,7 +247,7 @@ export default class UserScriptPlayer implements Player {
       return [];
     }
 
-    const identity = <T>(item: T) => item;
+    const identity = <T,>(item: T) => item;
 
     const outputMessages: MessageEvent[] = [];
     for (const message of inputMessages) {
