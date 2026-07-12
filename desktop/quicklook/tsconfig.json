@@ -3,6 +3,7 @@
   "include": ["./**/*"],
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
     "rootDir": "../../",
     "noEmit": true,
     "jsx": "react-jsx",

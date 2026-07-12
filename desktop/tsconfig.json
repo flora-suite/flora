@@ -3,6 +3,7 @@
   "include": ["*.ts", "common/**/*", "integration-test/**/*.ts", "../package.json"],
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
     "lib": ["dom", "es2022", "esnext.disposable"],
     "module": "commonjs",
     "noEmit": true

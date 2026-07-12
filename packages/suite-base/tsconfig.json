@@ -3,6 +3,8 @@
   "include": ["./src/**/*", "./src/**/*.json", "../package.json"],
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
+    "types": ["wicg-file-system-access"],
     "rootDir": "./src",
     "baseUrl": "./src",
     "jsx": "react-jsx",

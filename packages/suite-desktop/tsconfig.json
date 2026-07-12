@@ -3,6 +3,7 @@
   "include": ["**/*"],
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "es2022", "webworker"],
     "noEmit": true,

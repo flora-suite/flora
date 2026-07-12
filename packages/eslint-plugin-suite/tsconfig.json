@@ -3,6 +3,7 @@
   "include": ["./**/*.ts"],
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
     "rootDir": ".",
     "lib": ["es2022"],
     "module": "NodeNext",

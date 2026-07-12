@@ -20,6 +20,7 @@
   "include": ["**/*", "**/.storybook/**/*"],
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "es2022", "esnext.disposable"],
     "paths": {
