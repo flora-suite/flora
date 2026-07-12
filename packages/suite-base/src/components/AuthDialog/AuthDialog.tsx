@@ -23,8 +23,15 @@ import { FormEvent, MouseEvent, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "tss-react/mui";
 
+import { AppSetting } from "@lichtblick/suite-base/AppSetting";
 import Stack from "@lichtblick/suite-base/components/Stack";
+import { useApiClient } from "@lichtblick/suite-base/context/ApiClientContext";
 import { useAuth } from "@lichtblick/suite-base/context/AuthContext";
+import { useAppConfigurationValue } from "@lichtblick/suite-base/hooks/useAppConfigurationValue";
+import {
+  DEFAULT_FLORA_SERVER_URL,
+  getFloraServerUrl,
+} from "@lichtblick/suite-base/services/createAuthService";
 
 const useStyles = makeStyles()((theme) => ({
   dialogTitle: {
@@ -42,6 +49,12 @@ const useStyles = makeStyles()((theme) => ({
     marginTop: theme.spacing(2),
     textAlign: "center",
   },
+  testServerNotice: {
+    backgroundColor: theme.palette.action.hover,
+    borderLeft: `3px solid ${theme.palette.info.main}`,
+    borderRadius: theme.shape.borderRadius,
+    padding: theme.spacing(0.75, 1),
+  },
 }));
 
 export type AuthDialogMode = "login" | "register";
@@ -56,6 +69,10 @@ export function AuthDialog(props: AuthDialogProps): JSX.Element {
   const { t } = useTranslation("auth");
   const { classes } = useStyles();
   const { signIn, register, isLoading, error, clearError } = useAuth();
+  const apiClient = useApiClient();
+  const [configuredServerUrl, setConfiguredServerUrl] = useAppConfigurationValue<string>(
+    AppSetting.FLORA_SERVER_URL,
+  );
 
   const [mode, setMode] = useState<AuthDialogMode>(initialMode);
   const [email, setEmail] = useState("");
@@ -63,6 +80,7 @@ export function AuthDialog(props: AuthDialogProps): JSX.Element {
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState<string>();
+  const [serverUrl, setServerUrl] = useState(() => configuredServerUrl ?? getFloraServerUrl());
 
   const handleClose = useCallback(
     (event: MouseEvent<HTMLElement>) => {
@@ -81,7 +99,20 @@ export function AuthDialog(props: AuthDialogProps): JSX.Element {
       setLocalError(undefined);
       clearError();
 
+      const normalizedServerUrl = serverUrl.replace(/\/$/, "");
       try {
+        new URL(normalizedServerUrl);
+      } catch {
+        setLocalError(t("invalidServerUrl"));
+        return;
+      }
+
+      try {
+        if (normalizedServerUrl !== configuredServerUrl) {
+          await setConfiguredServerUrl(normalizedServerUrl);
+          apiClient?.setBaseUrl(normalizedServerUrl);
+        }
+
         if (mode === "login") {
           await signIn({ email, password });
         } else {
@@ -93,7 +124,22 @@ export function AuthDialog(props: AuthDialogProps): JSX.Element {
         // Error is already set in the auth context
       }
     },
-    [mode, email, password, name, signIn, register, onSuccess, handleClose, clearError],
+    [
+      mode,
+      email,
+      password,
+      name,
+      serverUrl,
+      configuredServerUrl,
+      setConfiguredServerUrl,
+      apiClient,
+      signIn,
+      register,
+      onSuccess,
+      handleClose,
+      clearError,
+      t,
+    ],
   );
 
   const handleToggleMode = useCallback(() => {
@@ -120,6 +166,34 @@ export function AuthDialog(props: AuthDialogProps): JSX.Element {
         <form className={classes.form} onSubmit={handleSubmit}>
           <Stack gap={2}>
             {displayError && <Alert severity="error">{displayError}</Alert>}
+
+            <TextField
+              label={t("serverUrl")}
+              type="url"
+              value={serverUrl}
+              onChange={(event) => {
+                setServerUrl(event.target.value);
+              }}
+              required
+              fullWidth
+              autoComplete="url"
+            />
+
+            {serverUrl.replace(/\/$/, "") === DEFAULT_FLORA_SERVER_URL && (
+              <div className={classes.testServerNotice}>
+                <Typography color="text.secondary" display="block" variant="caption">
+                  {t("testServerWarning")}
+                </Typography>
+                <Link
+                  href="https://github.com/flora-suite/flora-server"
+                  rel="noreferrer"
+                  target="_blank"
+                  variant="caption"
+                >
+                  {t("testServerSource")} flora-suite/flora-server
+                </Link>
+              </div>
+            )}
 
             {mode === "register" && (
               <TextField
