@@ -89,7 +89,7 @@ function NativeAppMenuHandler(): null {
         void navigate("/settings/about");
       }),
       nativeAppMenu?.on("open-help-docs", () => {
-        window.open("https://flora.fan/docs", "_blank");
+        window.open("https://flora.fan/docs", "_blank", "noopener,noreferrer");
       }),
       nativeAppMenu?.on("open-help-general", () => {
         void navigate("/settings/general");
