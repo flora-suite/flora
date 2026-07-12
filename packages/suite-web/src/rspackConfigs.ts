@@ -6,10 +6,8 @@ import { rspack, type Configuration } from "@rspack/core";
 import { ReactRefreshRspackPlugin } from "@rspack/plugin-react-refresh";
 import path from "path";
 
-import type { WebpackArgv } from "@lichtblick/suite-base/WebpackArgv";
+import type { BuildArgv } from "@lichtblick/suite-base/BuildArgv";
 import { makeRspackConfig } from "@lichtblick/suite-base/rspack";
-
-import { mainConfig as webpackMainConfig } from "./webpackConfigs";
 
 export type ConfigParams = {
   contextPath: string;
@@ -21,44 +19,16 @@ export type ConfigParams = {
   historyApiFallback?: { index: string };
 };
 
-type HtmlTemplate = (params: { htmlWebpackPlugin: { options: Record<string, unknown> } }) => string;
-
-function existingHtmlTemplate(
-  params: ConfigParams,
-  env: unknown,
-  argv: WebpackArgv,
-  options: Record<string, unknown>,
-): string {
-  const htmlPlugin = webpackMainConfig(params)(env, argv).plugins?.find(
-    (plugin) => plugin?.constructor.name === "HtmlWebpackPlugin",
-  ) as { userOptions?: { templateContent?: HtmlTemplate } } | undefined;
-  const templateContent = htmlPlugin?.userOptions?.templateContent;
-
-  if (!templateContent) {
-    throw new Error("Unable to load the existing Webpack HTML template");
-  }
-
-  // Rspack's HTML parser rejects the script placement accepted by
-  // HtmlWebpackPlugin. Preserve the legacy template and make only that markup
-  // correction while the two build paths coexist.
-  return templateContent({
-    htmlWebpackPlugin: {
-      options: { ...options, foxgloveExtraHeadTags: options.foxgloveExtraHeadTags ?? "" },
-    },
-  })
-    .replace(/<\/head>\s*<script>/, "</head><body><script>")
-    .replace(/<\/script>\s*<body>/, "</script>");
-}
-
 export const mainConfig =
   (params: ConfigParams) =>
-  (env: unknown, argv: WebpackArgv): Configuration => {
+  (env: unknown, argv: BuildArgv): Configuration => {
     const isDev = argv.mode === "development";
     const isServe = process.env.FLORA_RSPACK_SERVE === "1";
-    const appRspackConfig = makeRspackConfig(env, argv, {
-      allowUnusedVariables: isDev,
-      version: params.version,
-    });
+    const appRspackConfig = makeRspackConfig(
+      env,
+      { ...argv, env: { ...argv.env, RSPACK_SERVE: isServe } },
+      { allowUnusedVariables: isDev, version: params.version },
+    );
 
     return {
       name: "web",
@@ -89,13 +59,7 @@ export const mainConfig =
           patterns: [{ from: path.resolve(__dirname, "..", "public") }],
         }),
         new rspack.HtmlRspackPlugin({
-          templateContent: ({ htmlRspackPlugin }) =>
-            existingHtmlTemplate(
-              params,
-              env,
-              argv,
-              htmlRspackPlugin.options as Record<string, unknown>,
-            ),
+          template: path.resolve(__dirname, "index.html"),
         }),
         ...(isServe ? [new ReactRefreshRspackPlugin()] : []),
       ],
