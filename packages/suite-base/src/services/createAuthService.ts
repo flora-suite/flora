@@ -14,9 +14,9 @@ import { OrganizationService } from "@lichtblick/suite-base/services/Organizatio
 import { RecordingService } from "@lichtblick/suite-base/services/RecordingService";
 
 /**
- * Default flora-server URL for development
+ * Public Flora test server. Users can select a self-hosted server from the sign-in dialog.
  */
-const DEFAULT_FLORA_SERVER_URL = "http://localhost:3000";
+export const DEFAULT_FLORA_SERVER_URL = "https://api.flora.fan";
 
 /**
  * Options for creating an AuthService instance
@@ -107,4 +107,3 @@ export function createFloraServices(options: CreateAuthServiceOptions = {}): Flo
 export function getFloraServerUrl(): string {
   return process.env.FLORA_SERVER_URL ?? DEFAULT_FLORA_SERVER_URL;
 }
-
