@@ -7,16 +7,20 @@ import { createContext, useContext } from "react";
 import { AppBarProps } from "@lichtblick/suite-base/components/AppBar";
 import { CustomWindowControlsProps } from "@lichtblick/suite-base/components/AppBar/CustomWindowControls";
 import { IAppConfiguration } from "@lichtblick/suite-base/context/AppConfigurationContext";
+import { AppParametersInput } from "@lichtblick/suite-base/context/AppParametersContext";
 import { INativeAppMenu } from "@lichtblick/suite-base/context/NativeAppMenuContext";
 import { INativeWindow } from "@lichtblick/suite-base/context/NativeWindowContext";
 import { IDataSourceFactory } from "@lichtblick/suite-base/context/PlayerSelectionContext";
 import { ExtensionLoader } from "@lichtblick/suite-base/services/ExtensionLoader";
+import { LayoutLoader } from "@lichtblick/suite-base/services/ILayoutLoader";
 
 interface ISharedRootContext {
+  appParameters?: AppParametersInput;
   deepLinks: readonly string[];
   appConfiguration?: IAppConfiguration;
   dataSources: IDataSourceFactory[];
   extensionLoaders: readonly ExtensionLoader[];
+  layoutLoaders?: readonly LayoutLoader[];
   nativeAppMenu?: INativeAppMenu;
   nativeWindow?: INativeWindow;
   enableLaunchPreferenceScreen?: boolean;
