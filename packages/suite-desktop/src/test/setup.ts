@@ -2,6 +2,11 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
+import { TextDecoder, TextEncoder } from "util";
+import * as React from "react";
+
+Object.assign(globalThis, { React, TextDecoder, TextEncoder });
+
 // intercept console.error and console.warn calls to fail tests if they are called
 // the user can indicate they expect the call to happen by checking the mock.calls
 // and then clearing the mock via mockClear()
