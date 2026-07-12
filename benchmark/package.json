@@ -22,7 +22,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-refresh": "0.17.0",
-    "webpack": "5.106.2",
-    "webpack-dev-server": "5.2.4"
+    "webpack": "5.108.4",
+    "webpack-dev-server": "6.0.0"
   }
 }
