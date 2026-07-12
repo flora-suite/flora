@@ -18,6 +18,7 @@ export function SharedRoot(props: ISharedRootContext & { children: JSX.Element }
   const {
     appBarLeftInset,
     appConfiguration,
+    appParameters,
     onAppBarDoubleClick,
     AppBarComponent,
     children,
@@ -28,11 +29,14 @@ export function SharedRoot(props: ISharedRootContext & { children: JSX.Element }
     enableLaunchPreferenceScreen,
     extensionLoaders,
     extraProviders,
+    layoutLoaders,
+    nativeAppMenu,
+    nativeWindow,
   } = props;
 
   return (
     <AppConfigurationContext.Provider value={appConfiguration}>
-      <AppParametersProvider>
+      <AppParametersProvider appParameters={appParameters}>
         <ColorSchemeThemeProvider>
           {enableGlobalCss && <GlobalCss />}
           <CssBaseline>
@@ -42,12 +46,16 @@ export function SharedRoot(props: ISharedRootContext & { children: JSX.Element }
                   appBarLeftInset,
                   AppBarComponent,
                   appConfiguration,
+                  appParameters,
                   customWindowControlProps,
                   dataSources,
                   deepLinks,
                   enableLaunchPreferenceScreen,
                   extensionLoaders,
                   extraProviders,
+                  layoutLoaders,
+                  nativeAppMenu,
+                  nativeWindow,
                   onAppBarDoubleClick,
                 }}
               >
