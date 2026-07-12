@@ -7,7 +7,7 @@ import { downloadTool, extractZip } from "@actions/tool-cache";
 import type { MacPackager } from "app-builder-lib/out/macPackager";
 import { log, Arch } from "builder-util";
 import crypto from "crypto";
-import { AfterPackContext } from "electron-builder";
+import type { AfterPackContext } from "electron-builder";
 import fs from "fs/promises";
 import path from "path";
 import plist, { PlistObject } from "plist";
@@ -67,7 +67,7 @@ async function copySpotlightImporter(context: AfterPackContext) {
   await downloadTool(zipURL, zipPath);
   const actualSHA = crypto
     .createHash("sha256")
-    .update(await fs.readFile(zipPath))
+    .update(await fs.readFile(zipPath, { encoding: "base64" }), "base64")
     .digest("hex");
   if (actualSHA !== zipSHA) {
     throw new Error(`SHA mismatch for ${zipURL}: expected ${zipSHA}, got ${actualSHA}`);
