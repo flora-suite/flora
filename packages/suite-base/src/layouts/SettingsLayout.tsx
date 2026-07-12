@@ -12,6 +12,7 @@ import { makeStyles } from "tss-react/mui";
 import { DashboardAppBar } from "@lichtblick/suite-base/components/AppBar";
 import Stack from "@lichtblick/suite-base/components/Stack";
 import { useCurrentOrganization } from "@lichtblick/suite-base/context/OrganizationContext";
+import { useSharedRootContext } from "@lichtblick/suite-base/context/SharedRootContext";
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -101,6 +102,7 @@ export function SettingsLayout(): React.JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
   const currentOrganization = useCurrentOrganization();
+  const { appBarLeftInset, onAppBarDoubleClick } = useSharedRootContext();
 
   const handleNavigate = useCallback(
     (path: string) => {
@@ -128,7 +130,7 @@ export function SettingsLayout(): React.JSX.Element {
 
   return (
     <Stack className={classes.root}>
-      <DashboardAppBar />
+      <DashboardAppBar leftInset={appBarLeftInset} onDoubleClick={onAppBarDoubleClick} />
       <Stack className={classes.body}>
         <div className={classes.sidebar}>
           <Link
