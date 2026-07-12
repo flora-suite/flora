@@ -11,6 +11,7 @@ import { makeStyles } from "tss-react/mui";
 import { DashboardAppBar } from "@lichtblick/suite-base/components/AppBar";
 import { Sidebar } from "@lichtblick/suite-base/components/Sidebar";
 import Stack from "@lichtblick/suite-base/components/Stack";
+import { useSharedRootContext } from "@lichtblick/suite-base/context/SharedRootContext";
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -42,6 +43,7 @@ export function DashboardLayout(): React.JSX.Element {
   const { classes } = useStyles();
   const { t } = useTranslation("pages");
   const location = useLocation();
+  const { appBarLeftInset, onAppBarDoubleClick } = useSharedRootContext();
 
   const pageTitle = useMemo(() => {
     const path = location.pathname;
@@ -69,7 +71,7 @@ export function DashboardLayout(): React.JSX.Element {
 
   return (
     <Stack className={classes.root}>
-      <DashboardAppBar>
+      <DashboardAppBar leftInset={appBarLeftInset} onDoubleClick={onAppBarDoubleClick}>
         <Typography variant="subtitle1" className={classes.pageTitle}>
           {pageTitle}
         </Typography>
