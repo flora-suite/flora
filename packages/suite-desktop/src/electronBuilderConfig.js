@@ -29,6 +29,7 @@ function makeElectronBuilderConfig(params) {
       },
     ],
     linux: {
+      icon: path.join(__dirname, "../resources/icon/icon.png"),
       target: [
         {
           target: "deb",
