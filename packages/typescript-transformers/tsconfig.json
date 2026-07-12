@@ -4,6 +4,7 @@
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
     "noUncheckedSideEffectImports": false,
+    "types": ["node"],
     "rootDir": "./src",
     "outDir": "./dist",
     "lib": ["dom", "es2022"]

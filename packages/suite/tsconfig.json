@@ -4,6 +4,7 @@
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
     "noUncheckedSideEffectImports": false,
+    "types": ["node"],
     "composite": true,
     "incremental": true,
     "rootDir": "./src",
