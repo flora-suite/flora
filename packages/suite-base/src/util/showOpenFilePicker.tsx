@@ -7,19 +7,39 @@
  * the user cancels the file picker.
  */
 
+type FilePickerAcceptType = {
+  description?: string;
+  accept?: Record<string, string | string[]>;
+};
+
+type OpenFilePickerOptions = {
+  excludeAcceptAllOption?: boolean;
+  multiple?: boolean;
+  types?: FilePickerAcceptType[];
+};
+
+type FilePickerWindow = Window &
+  typeof globalThis & {
+    showOpenFilePicker?: (options?: OpenFilePickerOptions) => Promise<FileSystemFileHandle[]>;
+  };
+
 // Simple helper for file picking when the API is not available
 async function createFileInput(options?: OpenFilePickerOptions): Promise<FileSystemFileHandle[]> {
   return await new Promise((resolve) => {
     const input = document.createElement("input");
     input.type = "file";
-    if (options?.multiple) {input.multiple = true;}
-    
+    if (options?.multiple) {
+      input.multiple = true;
+    }
+
     // Handle accept types if provided
     if (options?.types) {
       const acceptedTypes = options.types
-        .flatMap((type) => type.accept ? Object.values(type.accept).flat() : [])
+        .flatMap((type) => (type.accept ? Object.values(type.accept).flat() : []))
         .join(",");
-      if (acceptedTypes) {input.accept = acceptedTypes;}
+      if (acceptedTypes) {
+        input.accept = acceptedTypes;
+      }
     }
 
     input.onchange = () => {
@@ -27,7 +47,7 @@ async function createFileInput(options?: OpenFilePickerOptions): Promise<FileSys
         resolve([]);
         return;
       }
-      
+
       // Create minimal compatible file handles
       const fileHandles = Array.from(input.files).map((file) => ({
         kind: "file" as const,
@@ -37,13 +57,15 @@ async function createFileInput(options?: OpenFilePickerOptions): Promise<FileSys
         queryPermission: async () => "granted" as const,
         requestPermission: async () => "granted" as const,
       }));
-      
+
       resolve(fileHandles as unknown as FileSystemFileHandle[]);
     };
-    
+
     // Cancel case
-    input.oncancel = () => { resolve([]); };
-    
+    input.oncancel = () => {
+      resolve([]);
+    };
+
     // Trigger file picker
     input.click();
   });
@@ -53,12 +75,13 @@ export default async function showOpenFilePicker(
   options?: OpenFilePickerOptions,
 ): Promise<FileSystemFileHandle[] /* foxglove-depcheck-used: @types/wicg-file-system-access */> {
   try {
+    const filePickerWindow = window as FilePickerWindow;
     // Check if the File System Access API is available
-    if (typeof window.showOpenFilePicker !== "function") {
+    if (typeof filePickerWindow.showOpenFilePicker !== "function") {
       // Fallback to traditional file input
       return await createFileInput(options);
     }
-    return await window.showOpenFilePicker(options);
+    return await filePickerWindow.showOpenFilePicker(options);
   } catch (err) {
     if (err.name === "AbortError") {
       return [];

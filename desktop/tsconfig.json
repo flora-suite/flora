@@ -2,6 +2,9 @@
   "extends": "@lichtblick/tsconfig/base",
   "include": ["*.ts", "common/**/*", "integration-test/**/*.ts", "../package.json"],
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
+    "types": ["node"],
     "lib": ["dom", "es2022", "esnext.disposable"],
     "module": "commonjs",
     "noEmit": true

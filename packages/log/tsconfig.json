@@ -2,6 +2,9 @@
   "extends": "@lichtblick/tsconfig/base",
   "include": ["./src/**/*"],
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
+    "types": ["node"],
     "rootDir": "./src",
     "outDir": "./dist"
   }
