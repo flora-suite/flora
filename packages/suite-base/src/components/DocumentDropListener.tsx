@@ -61,8 +61,11 @@ export default function DocumentDropListener(props: Props): JSX.Element {
         // Handles power features like recents which require saving handles in indexeddb. This check
         // allows us to gracefully degrade away from this feature if the user deploys Studio in an
         // unsecure context.
-        if (window.isSecureContext && "getAsFileSystemHandle" in item) {
-          handlePromises.push(item.getAsFileSystemHandle());
+        const fileSystemItem = item as DataTransferItem & {
+          getAsFileSystemHandle?: () => Promise<FileSystemHandle | null>;
+        };
+        if (window.isSecureContext && fileSystemItem.getAsFileSystemHandle != undefined) {
+          handlePromises.push(fileSystemItem.getAsFileSystemHandle());
         } else {
           log.info(
             "getAsFileSystemHandle not available on a dropped item. Features requiring handles will not be available for the item",

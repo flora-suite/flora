@@ -1,0 +1,13 @@
+diff --git a/rules/no-boolean-parameters.js b/rules/no-boolean-parameters.js
+index 61c63634b43ee3f46492fc2e901afd3cb53b358d..a42c578254b50c9f6bbecc690952a193e84d5d24 100644
+--- a/rules/no-boolean-parameters.js
++++ b/rules/no-boolean-parameters.js
+@@ -105,7 +105,7 @@ module.exports = {
+           }
+           const tsNode = esTreeNodeToTSNodeMap.get(param);
+           const type = checker.getTypeAtLocation(tsNode);
+-          const parts = unionTypeParts(type);
++          const parts = unionTypeParts(type) ?? [];
+           const isBoolean =
+             parts.some((part) => part.flags & ts.TypeFlags.BooleanLike) &&
+             parts.every(

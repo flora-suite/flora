@@ -21,7 +21,11 @@ export function parseProtobufSchema(
 } {
   const descriptorSet = FileDescriptorSet.decode(schemaData);
 
-  const root = protobufjs.Root.fromDescriptor(descriptorSet);
+  const root = (
+    protobufjs.Root as typeof protobufjs.Root & {
+      fromDescriptor(desc: protobufjs.Message): protobufjs.Root;
+    }
+  ).fromDescriptor(descriptorSet);
   root.resolveAll();
   const rootType = root.lookupType(schemaName);
 

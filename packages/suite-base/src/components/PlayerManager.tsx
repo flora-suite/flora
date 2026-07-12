@@ -225,13 +225,21 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
               return;
             } else if (handles) {
               for (const handle of handles) {
-                const permission = await handle.queryPermission({ mode: "read" });
+                const fileHandle = handle as FileSystemFileHandle & {
+                  queryPermission(descriptor?: {
+                    mode?: "read" | "readwrite";
+                  }): Promise<PermissionState>;
+                  requestPermission(descriptor?: {
+                    mode?: "read" | "readwrite";
+                  }): Promise<PermissionState>;
+                };
+                const permission = await fileHandle.queryPermission({ mode: "read" });
                 if (!isMounted()) {
                   return;
                 }
 
                 if (permission !== "granted") {
-                  const newPerm = await handle.requestPermission({ mode: "read" });
+                  const newPerm = await fileHandle.requestPermission({ mode: "read" });
                   if (newPerm !== "granted") {
                     throw new Error(`Permission denied: ${handle.name}`);
                   }

@@ -3,6 +3,7 @@
   "include": ["*.ts"],
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
     "module": "commonjs",
     "noEmit": true,
     "experimentalDecorators": true

@@ -3,6 +3,7 @@
   "include": ["./**/*"],
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
     "rootDir": ".",
     "outDir": "./dist",
     "lib": ["DOM", "es2022"]

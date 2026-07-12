@@ -3,6 +3,7 @@
   "include": ["**/*", "../integration-test-build.ts"],
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
     "jsx": "react-jsx",
     "lib": ["ESNext.Disposable"],
     "module": "commonjs",
