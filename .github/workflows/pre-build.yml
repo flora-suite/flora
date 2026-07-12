@@ -18,6 +18,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 16.17
+          package-manager-cache: false
 
       - name: Enable corepack
         run: corepack enable yarn
