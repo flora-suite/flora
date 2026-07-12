@@ -450,7 +450,15 @@ export function AppBar(props: AppBarProps): React.JSX.Element {
   );
 }
 
-export function DashboardAppBar({ children }: { children?: ReactElement }): React.JSX.Element {
+export function DashboardAppBar({
+  children,
+  leftInset,
+  onDoubleClick,
+}: {
+  children?: ReactElement;
+  leftInset?: number;
+  onDoubleClick?: () => void;
+}): React.JSX.Element {
   const { classes, cx } = useStyles({});
   const { t } = useTranslation("appBar");
   const navigate = useNavigate();
@@ -467,7 +475,7 @@ export function DashboardAppBar({ children }: { children?: ReactElement }): Reac
 
   return (
     <>
-      <AppBarContainer onDoubleClick={() => {}} leftInset={0}>
+      <AppBarContainer onDoubleClick={onDoubleClick} leftInset={leftInset}>
         <div className={classes.toolbar}>
           <div className={classes.start}>
             <div className={classes.startInner}>
