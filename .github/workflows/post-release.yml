@@ -19,6 +19,7 @@ jobs:
         with:
           node-version: 16.17
           registry-url: https://registry.npmjs.org
+          package-manager-cache: false
 
       - run: corepack enable yarn
 
