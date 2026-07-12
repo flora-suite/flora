@@ -6,6 +6,7 @@
   "transformIgnorePatterns": [],
   "moduleNameMapper": {
     "\\.svg$": "<rootDir>/../suite-base/src/test/mocks/MockSvg.tsx",
+    "\\.(glb|md|png)$": "<rootDir>/../suite-base/src/test/mocks/fileMock.ts",
     "@lichtblick/suite-base/(.*)": "<rootDir>/../suite-base/src/$1"
   },
   "testEnvironment": "jsdom",
