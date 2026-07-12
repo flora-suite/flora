@@ -95,9 +95,10 @@ export default function Root(props: RootProps): React.JSX.Element {
   // Create services once, but set up session expired callback
   const services = useMemo(() => {
     return createFloraServices({
+      serverUrl: appConfiguration.get(AppSetting.FLORA_SERVER_URL) as string | undefined,
       onSessionExpired: handleSessionExpired,
     });
-  }, [handleSessionExpired]);
+  }, [appConfiguration, handleSessionExpired]);
 
   const { authService, deviceService, recordingService, eventService, organizationService, apiClient } = services;
 
