@@ -2,6 +2,7 @@
   "extends": "@lichtblick/tsconfig/base",
   "include": ["./src/**/*"],
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "rootDir": "./src",
     "outDir": "./dist",
     "lib": ["dom", "es2022"]

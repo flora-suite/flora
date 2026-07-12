@@ -2,6 +2,7 @@
   "extends": "@lichtblick/tsconfig/base",
   "include": ["./**/*.ts"],
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "rootDir": ".",
     "lib": ["es2022"],
     "module": "NodeNext",
