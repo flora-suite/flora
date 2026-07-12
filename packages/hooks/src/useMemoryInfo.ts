@@ -14,18 +14,28 @@ type UseMemoryInfoOptions = {
   refreshIntervalMs: number;
 };
 
+type MemoryInfo = {
+  jsHeapSizeLimit: number;
+  totalJSHeapSize: number;
+  usedJSHeapSize: number;
+};
+
+const performanceWithMemory = window.performance as Performance & { memory?: MemoryInfo };
+
 export function useMemoryInfo(opt: UseMemoryInfoOptions): MemoryInfo | undefined {
   const { refreshIntervalMs } = opt;
-  const [memoryInfo, setMemoryInfo] = useState<MemoryInfo | undefined>(window.performance.memory);
+  const [memoryInfo, setMemoryInfo] = useState<MemoryInfo | undefined>(
+    performanceWithMemory.memory,
+  );
 
   useEffect(() => {
-    if (!window.performance.memory) {
+    if (!performanceWithMemory.memory) {
       log.info("No memory information available");
       return;
     }
 
     const interval = setInterval(() => {
-      setMemoryInfo(window.performance.memory);
+      setMemoryInfo(performanceWithMemory.memory);
     }, refreshIntervalMs);
     return () => {
       clearInterval(interval);

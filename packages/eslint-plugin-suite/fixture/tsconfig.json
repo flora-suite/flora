@@ -1,6 +1,9 @@
 {
   "extends": "@lichtblick/tsconfig/base",
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false,
+    "types": ["node"],
     "lib": ["es2020", "dom"],
     "noEmit": true
   },
