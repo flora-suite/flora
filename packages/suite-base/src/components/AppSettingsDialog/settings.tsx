@@ -47,6 +47,11 @@ const LANGUAGE_OPTIONS: { key: Language; value: string }[] = [
   { key: "ja", value: "日本語" },
 ];
 
+export function getSupportedLanguage(language: string | undefined): Language {
+  const languageCode = language?.split(/[-_]/)[0];
+  return LANGUAGE_OPTIONS.find(({ key }) => key === languageCode)?.key ?? "en";
+}
+
 const useStyles = makeStyles()((theme) => ({
   autocompleteInput: {
     "&.MuiOutlinedInput-input": {
@@ -352,9 +357,10 @@ export function RosPackagePath(): React.ReactElement {
 
 export function LanguageSettings(): React.ReactElement {
   const { t, i18n } = useTranslation("appSettings");
-  const [selectedLanguage = "en", setSelectedLanguage] = useAppConfigurationValue<Language>(
+  const [configuredLanguage, setSelectedLanguage] = useAppConfigurationValue<Language>(
     AppSetting.LANGUAGE,
   );
+  const selectedLanguage = configuredLanguage ?? getSupportedLanguage(i18n.resolvedLanguage);
   const onChangeLanguage = useCallback(
     (event: SelectChangeEvent<Language>) => {
       const lang = event.target.value;
