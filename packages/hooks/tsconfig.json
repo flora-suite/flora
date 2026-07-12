@@ -4,7 +4,7 @@
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
     "noUncheckedSideEffectImports": false,
-    "types": ["foxglove__web"],
+    "types": ["node", "foxglove__web"],
     "rootDir": "./src",
     "outDir": "./dist",
     "jsx": "react-jsx",

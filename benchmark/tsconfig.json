@@ -4,6 +4,7 @@
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
     "noUncheckedSideEffectImports": false,
+    "types": ["node"],
     "module": "commonjs",
     "noEmit": true,
     "experimentalDecorators": true

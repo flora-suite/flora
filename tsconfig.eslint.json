@@ -21,6 +21,7 @@
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
     "noUncheckedSideEffectImports": false,
+    "types": ["node"],
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "es2022", "esnext.disposable"],
     "paths": {

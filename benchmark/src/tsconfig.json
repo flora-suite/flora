@@ -4,6 +4,7 @@
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
     "noUncheckedSideEffectImports": false,
+    "types": ["node"],
     "noEmit": true,
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "es2022", "webworker", "ESNext.Disposable"],
