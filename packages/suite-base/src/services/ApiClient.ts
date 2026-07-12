@@ -82,15 +82,26 @@ export type SessionExpiredCallback = () => void;
  * API client for flora-server communication
  */
 export class ApiClient {
-  private readonly baseUrl: string;
+  private baseUrl: string;
   private readonly tokenStorage: ITokenStorage;
   private isRefreshing = false;
   private refreshPromise: Promise<boolean> | undefined;
   private onSessionExpired: SessionExpiredCallback | undefined;
 
   public constructor(baseUrl: string, tokenStorage: ITokenStorage) {
-    this.baseUrl = baseUrl.replace(/\/$/, ""); // Remove trailing slash
+    this.baseUrl = ApiClient.normalizeBaseUrl(baseUrl);
     this.tokenStorage = tokenStorage;
+  }
+
+  /**
+   * Switch the server used for future requests.
+   */
+  public setBaseUrl(baseUrl: string): void {
+    this.baseUrl = ApiClient.normalizeBaseUrl(baseUrl);
+  }
+
+  private static normalizeBaseUrl(baseUrl: string): string {
+    return baseUrl.replace(/\/$/, ""); // Remove trailing slash
   }
 
   /**
