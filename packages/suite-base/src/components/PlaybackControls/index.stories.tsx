@@ -11,7 +11,7 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
-import { action } from "@storybook/addon-actions";
+import { action } from "@lichtblick/suite-base/stories/action";
 import { StoryObj, StoryFn } from "@storybook/react";
 import { useEffect, useLayoutEffect } from "react";
 
