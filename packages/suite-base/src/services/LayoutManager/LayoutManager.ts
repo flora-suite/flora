@@ -61,9 +61,12 @@ async function updateOrFetchLayout(
 }
 
 function withBusyStatus<Args extends unknown[], Ret>(
-  method: (this: LayoutManager, ...args: Args) => Promise<Ret>,
+  _prototype: LayoutManager,
+  _propertyKey: string,
+  descriptor: TypedPropertyDescriptor<(this: LayoutManager, ...args: Args) => Promise<Ret>>,
 ) {
-  return async function (this: LayoutManager, ...args: Args): Promise<Ret> {
+  const method = descriptor.value!;
+  descriptor.value = async function (this: LayoutManager, ...args: Args): Promise<Ret> {
     this.beginBusyStatus();
     try {
       return await method.apply(this, args);
