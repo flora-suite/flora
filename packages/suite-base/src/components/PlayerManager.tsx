@@ -238,7 +238,10 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
                     mode?: "read" | "readwrite";
                   }): Promise<PermissionState>;
                 };
-                const permission = await fileHandle.queryPermission({ mode: "read" });
+                const permission =
+                  args.requestPermission === true
+                    ? await fileHandle.requestPermission({ mode: "read" })
+                    : await fileHandle.queryPermission({ mode: "read" });
                 if (!isMounted()) {
                   return;
                 }
@@ -248,6 +251,9 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
                     throw new Error(
                       `Permission required to reopen ${handle.name}. Select it from Recent data sources to grant access.`,
                     );
+                  }
+                  if (args.requestPermission === true) {
+                    throw new Error(`Permission denied: ${handle.name}`);
                   }
                   const newPerm = await fileHandle.requestPermission({ mode: "read" });
                   if (newPerm !== "granted") {
@@ -363,7 +369,7 @@ function createSelectRecentCallback(
           type: "file",
           handles: foundRecent.handles,
           recentId,
-          requestPermission: options?.requestPermission,
+          requestPermission: options?.requestPermission ?? true,
         });
       }
     }
