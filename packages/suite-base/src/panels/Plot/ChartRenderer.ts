@@ -4,7 +4,7 @@
 
 import { Zoom as ZoomPlugin } from "@flora-suite/chartjs-plugin-zoom";
 import { Chart } from "chart.js";
-import { AnnotationOptions } from "chartjs-plugin-annotation";
+import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import EventEmitter from "eventemitter3";
 
 import { unwrap } from "@lichtblick/den/monads";

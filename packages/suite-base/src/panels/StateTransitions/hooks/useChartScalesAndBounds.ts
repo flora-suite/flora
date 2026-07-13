@@ -5,7 +5,7 @@
 import { ScaleOptions } from "chart.js";
 import { useEffect, useMemo } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { OnRefChangeType } from "react-resize-detector/build/types/types";
+import type { OnRefChangeType } from "react-resize-detector/build/types/types";
 
 import { StateTransitionConfig } from "@lichtblick/suite-base/panels/StateTransitions/types";
 import { Bounds } from "@lichtblick/suite-base/types/Bounds";

@@ -14,7 +14,7 @@
 import type { ZoomOptions } from "@flora-suite/chartjs-plugin-zoom/types/options";
 import { Button, Fade, Tooltip, buttonClasses } from "@mui/material";
 import { ChartOptions, InteractionMode, ScaleOptions } from "chart.js";
-import { AnnotationOptions } from "chartjs-plugin-annotation";
+import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import * as _ from "lodash-es";
 import * as R from "ramda";
 import React, {

@@ -14,7 +14,7 @@ export function SyncAdapters(): JSX.Element {
 
   return useMemo(() => {
     if (syncAdapters) {
-      return <>{...syncAdapters}</>;
+      return <>{syncAdapters}</>;
     }
 
     return (
