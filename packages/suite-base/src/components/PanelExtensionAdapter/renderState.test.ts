@@ -993,7 +993,7 @@ describe("renderState", () => {
   });
 
   it("should add extension settings to converter method", async () => {
-    const generatePanelSettings = <T>(obj: PanelSettings<T>) => obj as PanelSettings<unknown>;
+    const generatePanelSettings = <T,>(obj: PanelSettings<T>) => obj as PanelSettings<unknown>;
     const checkRenderedConfig = jest.fn();
     const buildRenderState = initRenderStateBuilder();
     buildRenderState({

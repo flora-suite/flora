@@ -43,7 +43,7 @@ export default class MockUserScriptPlayerWorker {
       // no-op
     };
     const receiver = new Rpc(remote);
-    const receiveAndLog = <Args extends unknown[]>(
+    const receiveAndLog = <Args extends unknown[],>(
       action: string,
       impl: (..._: Args) => unknown,
     ) => {

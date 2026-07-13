@@ -491,12 +491,12 @@ function PanelExtensionAdapter(
         : undefined,
 
       callService: capabilities.includes(PlayerCapabilities.callServices)
-        ? async (service, request): Promise<unknown> => {
+        ? (async (service, request): Promise<unknown> => {
           if (!isMounted()) {
             throw new Error("Service call after panel was unmounted");
           }
           return await getMessagePipelineContext().callService(service, request);
-        }
+        })
         : undefined,
 
       unstable_fetchAsset: async (uri, options) => {

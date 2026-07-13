@@ -20,7 +20,7 @@ export const mergeMetadata = (accumulated: InitMetadata, current: InitMetadata):
   return [...(accumulated ?? []), ...(current ?? [])];
 };
 
-export const accumulateMap = <V>(
+export const accumulateMap = <V,>(
   accumulated: Map<string, V>,
   current: Map<string, V>,
 ): Map<string, V> => {

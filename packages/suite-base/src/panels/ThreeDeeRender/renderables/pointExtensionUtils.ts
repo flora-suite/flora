@@ -18,7 +18,7 @@ import { BaseSettings } from "@lichtblick/suite-base/panels/ThreeDeeRender/setti
 import { MAX_DURATION } from "@lichtblick/suite-base/panels/ThreeDeeRender/transforms";
 import { updatePose } from "@lichtblick/suite-base/panels/ThreeDeeRender/updatePose";
 
-import { LaserScanMaterial } from "./LaserScans";
+import type { LaserScanMaterial } from "./LaserScans";
 import {
   colorHasTransparency,
   ColorModeSettings,

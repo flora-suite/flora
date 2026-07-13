@@ -1,0 +1,13 @@
+diff --git a/dist/index.js b/dist/index.js
+index f7c9698c5089a6ad8995b6fe27c41a5d5acb7f48..b34e99eb7873dd9ac6e55fe60d5300d81985cf07 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -79,7 +79,7 @@ const jsxPlugin = (code, config, state) => {
+       name: "svgr"
+     },
+     presets: [
+-      core.createConfigItem([svgrBabelPreset, svgPresetOptions], {
++      core.createConfigItemSync([svgrBabelPreset, svgPresetOptions], {
+         type: "preset"
+       })
+     ],

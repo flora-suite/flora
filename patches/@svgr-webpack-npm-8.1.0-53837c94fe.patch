@@ -1,0 +1,24 @@
+diff --git a/dist/index.js b/dist/index.js
+index 55b8537f396155a450d14d06c98a76fb0e91bb11..68b24c36e112c0d14438bdd795dc01738dc51349 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -46,15 +46,15 @@ const babelOptions = {
+   babelrc: false,
+   configFile: false,
+   presets: [
+-    core.createConfigItem(presetReact, { type: "preset" }),
+-    core.createConfigItem([presetEnv, { modules: false }], { type: "preset" })
++    core.createConfigItemSync(presetReact, { type: "preset" }),
++    core.createConfigItemSync([presetEnv, { modules: false }], { type: "preset" })
+   ],
+-  plugins: [core.createConfigItem(pluginTransformReactConstantElements)]
++  plugins: [core.createConfigItemSync(pluginTransformReactConstantElements)]
+ };
+ const typeScriptBabelOptions = __spreadProps(__spreadValues({}, babelOptions), {
+   presets: [
+     ...babelOptions.presets,
+-    core.createConfigItem(
++    core.createConfigItemSync(
+       [presetTS, { allowNamespaces: true, allExtensions: true, isTSX: true }],
+       { type: "preset" }
+     )

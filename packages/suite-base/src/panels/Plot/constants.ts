@@ -2,7 +2,7 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import { AnnotationOptions } from "chartjs-plugin-annotation";
+import type { AnnotationOptions } from "chartjs-plugin-annotation";
 
 import { PlotConfig, PlotPath } from "@lichtblick/suite-base/panels/Plot/utils/config";
 import { MathFunction } from "@lichtblick/suite-base/panels/Plot/utils/mathFunctions";

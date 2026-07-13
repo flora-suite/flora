@@ -17,7 +17,7 @@
   "homepage": "https://github.com/flora-suite",
   "main": "src/index",
   "devDependencies": {
-    "@babel/core": "7.29.0",
+    "@babel/core": "8.0.1",
     "@emotion/cache": "11.14.0",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
@@ -64,7 +64,7 @@
     "@storybook/jest": "0.2.3",
     "@storybook/react": "^10.5.0",
     "@storybook/testing-library": "0.2.2",
-    "@svgr/webpack": "8.1.0",
+    "@svgr/webpack": "patch:@svgr/webpack@npm%3A8.1.0#~/patches/@svgr-webpack-npm-8.1.0-53837c94fe.patch",
     "@tanstack/react-table": "8.21.3",
     "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "6.9.1",

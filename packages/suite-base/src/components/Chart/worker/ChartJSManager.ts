@@ -24,7 +24,7 @@ import {
 import { getRelativePosition } from "chart.js/helpers";
 import type { Context as DatalabelContext } from "chartjs-plugin-datalabels";
 import DatalabelPlugin from "chartjs-plugin-datalabels";
-import { type Options as DatalabelsPluginOptions } from "chartjs-plugin-datalabels/types/options";
+import type { Options as DatalabelsPluginOptions } from "chartjs-plugin-datalabels/types/options";
 import EventEmitter from "eventemitter3";
 
 import Logger from "@lichtblick/log";
