@@ -83,6 +83,10 @@ type FileDataSourceArgs = {
   type: "file";
   files?: File[];
   handles?: FileSystemFileHandle[]; // foxglove-depcheck-used: @types/wicg-file-system-access
+  /** Existing recent record that supplied the handles. */
+  recentId?: string;
+  /** Whether this selection may prompt the user to grant file access. */
+  requestPermission?: boolean;
 };
 
 type ConnectionDataSourceArgs = {
@@ -97,7 +101,7 @@ export type DataSourceArgs = FileDataSourceArgs | ConnectionDataSourceArgs;
  */
 export interface PlayerSelection {
   selectSource: (sourceId: string, args?: DataSourceArgs) => void;
-  selectRecent: (recentId: string) => void;
+  selectRecent: (recentId: string, options?: { requestPermission?: boolean }) => void;
 
   /** Currently selected data source */
   selectedSource?: IDataSourceFactory;
@@ -107,6 +111,12 @@ export interface PlayerSelection {
 
   /** Recently selected sources */
   recentSources: readonly RecentSource[];
+
+  /** The active recent source, when it was opened from a persisted file handle. */
+  selectedRecentId?: string;
+
+  /** Whether persisted recent sources are still being loaded. */
+  recentSourcesLoading?: boolean;
 }
 
 const PlayerSelectionContext = createContext<PlayerSelection>({
@@ -114,6 +124,7 @@ const PlayerSelectionContext = createContext<PlayerSelection>({
   selectRecent: () => {},
   availableSources: [],
   recentSources: [],
+  recentSourcesLoading: false,
 });
 PlayerSelectionContext.displayName = "PlayerSelectionContext";
 

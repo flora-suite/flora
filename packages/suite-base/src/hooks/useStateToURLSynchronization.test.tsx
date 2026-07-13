@@ -1,6 +1,5 @@
 /** @jest-environment jsdom */
 
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
@@ -18,6 +17,9 @@ import { renderHook } from "@testing-library/react";
 import { ReactNode } from "react";
 
 import { useMessagePipeline } from "@lichtblick/suite-base/components/MessagePipeline";
+import PlayerSelectionContext, {
+  PlayerSelection,
+} from "@lichtblick/suite-base/context/PlayerSelectionContext";
 import { useStateToURLSynchronization } from "@lichtblick/suite-base/hooks/useStateToURLSynchronization";
 import EventsProvider from "@lichtblick/suite-base/providers/EventsProvider";
 
@@ -25,6 +27,54 @@ jest.mock("@lichtblick/suite-base/context/CurrentLayoutContext");
 jest.mock("@lichtblick/suite-base/components/MessagePipeline");
 
 describe("useStateToURLSynchronization", () => {
+  beforeEach(() => {
+    window.history.replaceState(undefined, "", "http://localhost/");
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("includes the active recent file id in the url", () => {
+    const spy = jest.spyOn(window.history, "replaceState");
+    const playerSelection: PlayerSelection = {
+      selectSource: () => {},
+      selectRecent: () => {},
+      availableSources: [],
+      recentSources: [],
+      selectedRecentId: "recent-file-id",
+    };
+
+    (useMessagePipeline as jest.Mock).mockImplementation((selector) =>
+      selector({
+        playerState: {
+          activeData: {},
+          capabilities: [],
+          urlState: {
+            sourceId: "local-file",
+            parameters: {},
+          },
+        },
+      }),
+    );
+
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <EventsProvider>
+        <PlayerSelectionContext.Provider value={playerSelection}>
+          {children}
+        </PlayerSelectionContext.Provider>
+      </EventsProvider>
+    );
+
+    renderHook(useStateToURLSynchronization, { wrapper });
+
+    expect(spy).toHaveBeenLastCalledWith(
+      undefined,
+      "",
+      "http://localhost/?ds=local-file&ds.recentId=recent-file-id",
+    );
+  });
+
   it("updates the url with a stable source & player state", () => {
     const spy = jest.spyOn(window.history, "replaceState");
 

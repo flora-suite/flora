@@ -12,6 +12,7 @@ import {
   useMessagePipeline,
 } from "@lichtblick/suite-base/components/MessagePipeline";
 import { EventsStore, useEvents } from "@lichtblick/suite-base/context/EventsContext";
+import { usePlayerSelection } from "@lichtblick/suite-base/context/PlayerSelectionContext";
 import { PlayerCapabilities } from "@lichtblick/suite-base/players/types";
 import { AppURLState, updateAppURLState } from "@lichtblick/suite-base/util/appURLState";
 
@@ -36,6 +37,7 @@ export function useStateToURLSynchronization(): void {
   const currentTime = useMessagePipeline(selectCurrentTime);
   const [debouncedCurrentTime] = useDebounce(currentTime, 500, { maxWait: 500 });
   const selectedEventId = useEvents(selectSelectedEventId);
+  const { selectedRecentId } = usePlayerSelection();
 
   // Sync current time with the url.
   useEffect(() => {
@@ -56,6 +58,7 @@ export function useStateToURLSynchronization(): void {
         {
           ...stablePlayerUrlState.parameters,
           eventId: selectedEventId,
+          recentId: selectedRecentId,
         },
         _.isString,
       ),
@@ -65,5 +68,5 @@ export function useStateToURLSynchronization(): void {
         _.isArray,
       ),
     });
-  }, [selectedEventId, stablePlayerUrlState]);
+  }, [selectedEventId, selectedRecentId, stablePlayerUrlState]);
 }

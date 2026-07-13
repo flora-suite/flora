@@ -89,7 +89,8 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
 
   const [basePlayer, setBasePlayer] = useState<Player | undefined>();
 
-  const { recents, addRecent } = useIndexedDbRecents();
+  const { recents, addRecent, loading: recentSourcesLoading } = useIndexedDbRecents();
+  const [selectedRecentId, setSelectedRecentId] = useState<string | undefined>();
 
   const userScripts = useCurrentLayoutSelector(userScriptsSelector);
   const globalVariables = useCurrentLayoutSelector(globalVariablesSelector);
@@ -158,6 +159,10 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
       }
 
       metricsCollector.setProperty("player", sourceId);
+
+      if (args?.type === "connection" || args?.files) {
+        setSelectedRecentId(undefined);
+      }
 
       setSelectedSource(foundSource);
 
@@ -233,12 +238,23 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
                     mode?: "read" | "readwrite";
                   }): Promise<PermissionState>;
                 };
-                const permission = await fileHandle.queryPermission({ mode: "read" });
+                const permission =
+                  args.requestPermission === true
+                    ? await fileHandle.requestPermission({ mode: "read" })
+                    : await fileHandle.queryPermission({ mode: "read" });
                 if (!isMounted()) {
                   return;
                 }
 
                 if (permission !== "granted") {
+                  if (args.requestPermission === false) {
+                    throw new Error(
+                      `Permission required to reopen ${handle.name}. Select it from Recent data sources to grant access.`,
+                    );
+                  }
+                  if (args.requestPermission === true) {
+                    throw new Error(`Permission denied: ${handle.name}`);
+                  }
                   const newPerm = await fileHandle.requestPermission({ mode: "read" });
                   if (newPerm !== "granted") {
                     throw new Error(`Permission denied: ${handle.name}`);
@@ -256,12 +272,17 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
               });
 
               setBasePlayer(newPlayer);
-              addRecent({
-                type: "file",
-                title: mergeMultipleFileNames(handles.map((h) => h.name)),
-                sourceId: foundSource.id,
-                handles,
-              });
+              if (args.recentId != undefined) {
+                setSelectedRecentId(args.recentId);
+              } else {
+                const recent = addRecent({
+                  type: "file",
+                  title: mergeMultipleFileNames(handles.map((h) => h.name)),
+                  sourceId: foundSource.id,
+                  handles,
+                });
+                setSelectedRecentId(recent.id);
+              }
 
               return;
             }
@@ -280,7 +301,7 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
   // necessary to pull out callback creation to avoid capturing the initial player in closure context
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const selectRecent = useCallback(
-    createSelectRecentCallback(recents, selectSource, enqueueSnackbar),
+    createSelectRecentCallback(recents, selectSource, enqueueSnackbar, setSelectedRecentId),
     [recents, enqueueSnackbar, selectSource],
   );
 
@@ -297,6 +318,8 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
     selectedSource,
     availableSources: playerSources,
     recentSources,
+    selectedRecentId,
+    recentSourcesLoading,
   };
 
   return (
@@ -321,14 +344,17 @@ function createSelectRecentCallback(
   recents: RecentRecord[],
   selectSource: (sourceId: string, dataSourceArgs: DataSourceArgs) => Promise<void>,
   enqueueSnackbar: ReturnType<typeof useSnackbar>["enqueueSnackbar"],
+  setSelectedRecentId: (recentId: string | undefined) => void,
 ) {
-  return (recentId: string) => {
+  return (recentId: string, options?: { requestPermission?: boolean }) => {
     // find the recent from the list and initialize
     const foundRecent = recents.find((value) => value.id === recentId);
     if (!foundRecent) {
       enqueueSnackbar(`Failed to restore recent: ${recentId}`, { variant: "error" });
       return;
     }
+
+    setSelectedRecentId(recentId);
 
     switch (foundRecent.type) {
       case "connection": {
@@ -342,6 +368,8 @@ function createSelectRecentCallback(
         void selectSource(foundRecent.sourceId, {
           type: "file",
           handles: foundRecent.handles,
+          recentId,
+          requestPermission: options?.requestPermission ?? true,
         });
       }
     }

@@ -151,7 +151,8 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
   const { PerformanceSidebarComponent } = useAppContext();
   const { classes } = useStyles();
   const containerRef = useRef<HTMLDivElement>(ReactNull);
-  const { availableSources, selectSource } = usePlayerSelection();
+  const { availableSources, selectRecent, selectSource, recentSourcesLoading } =
+    usePlayerSelection();
   const playerPresence = useMessagePipeline(selectPlayerPresence);
   const playerProblems = useMessagePipeline(selectPlayerProblems);
 
@@ -515,6 +516,19 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
       return;
     }
 
+    const recentId = unappliedSourceArgs.dsParams?.recentId;
+    if (recentId != undefined) {
+      // Wait until IndexedDB has restored the persisted file handles before selecting the recent.
+      if (recentSourcesLoading === true) {
+        return;
+      }
+
+      log.debug("Initialising recent source from url", recentId);
+      selectRecent(recentId, { requestPermission: false });
+      setUnappliedSourceArgs({ ds: undefined, dsParams: undefined });
+      return;
+    }
+
     // Apply any available data source args
     if (unappliedSourceArgs.ds) {
       log.debug("Initialising source from url", unappliedSourceArgs);
@@ -525,7 +539,14 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
       selectEvent(unappliedSourceArgs.dsParams?.eventId);
       setUnappliedSourceArgs({ ds: undefined, dsParams: undefined });
     }
-  }, [selectEvent, selectSource, unappliedSourceArgs, setUnappliedSourceArgs]);
+  }, [
+    recentSourcesLoading,
+    selectEvent,
+    selectRecent,
+    selectSource,
+    unappliedSourceArgs,
+    setUnappliedSourceArgs,
+  ]);
 
   const [unappliedTime, setUnappliedTime] = useState(
     targetUrlState ? { time: targetUrlState.time } : undefined,
