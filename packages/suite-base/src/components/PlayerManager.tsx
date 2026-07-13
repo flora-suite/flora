@@ -89,7 +89,8 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
 
   const [basePlayer, setBasePlayer] = useState<Player | undefined>();
 
-  const { recents, addRecent } = useIndexedDbRecents();
+  const { recents, addRecent, loading: recentSourcesLoading } = useIndexedDbRecents();
+  const [selectedRecentId, setSelectedRecentId] = useState<string | undefined>();
 
   const userScripts = useCurrentLayoutSelector(userScriptsSelector);
   const globalVariables = useCurrentLayoutSelector(globalVariablesSelector);
@@ -158,6 +159,10 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
       }
 
       metricsCollector.setProperty("player", sourceId);
+
+      if (args?.type === "connection" || args?.files) {
+        setSelectedRecentId(undefined);
+      }
 
       setSelectedSource(foundSource);
 
@@ -256,12 +261,17 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
               });
 
               setBasePlayer(newPlayer);
-              addRecent({
-                type: "file",
-                title: mergeMultipleFileNames(handles.map((h) => h.name)),
-                sourceId: foundSource.id,
-                handles,
-              });
+              if (args.recentId != undefined) {
+                setSelectedRecentId(args.recentId);
+              } else {
+                const recent = addRecent({
+                  type: "file",
+                  title: mergeMultipleFileNames(handles.map((h) => h.name)),
+                  sourceId: foundSource.id,
+                  handles,
+                });
+                setSelectedRecentId(recent.id);
+              }
 
               return;
             }
@@ -280,7 +290,7 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
   // necessary to pull out callback creation to avoid capturing the initial player in closure context
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const selectRecent = useCallback(
-    createSelectRecentCallback(recents, selectSource, enqueueSnackbar),
+    createSelectRecentCallback(recents, selectSource, enqueueSnackbar, setSelectedRecentId),
     [recents, enqueueSnackbar, selectSource],
   );
 
@@ -297,6 +307,8 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
     selectedSource,
     availableSources: playerSources,
     recentSources,
+    selectedRecentId,
+    recentSourcesLoading,
   };
 
   return (
@@ -321,6 +333,7 @@ function createSelectRecentCallback(
   recents: RecentRecord[],
   selectSource: (sourceId: string, dataSourceArgs: DataSourceArgs) => Promise<void>,
   enqueueSnackbar: ReturnType<typeof useSnackbar>["enqueueSnackbar"],
+  setSelectedRecentId: (recentId: string | undefined) => void,
 ) {
   return (recentId: string) => {
     // find the recent from the list and initialize
@@ -329,6 +342,8 @@ function createSelectRecentCallback(
       enqueueSnackbar(`Failed to restore recent: ${recentId}`, { variant: "error" });
       return;
     }
+
+    setSelectedRecentId(recentId);
 
     switch (foundRecent.type) {
       case "connection": {
@@ -342,6 +357,7 @@ function createSelectRecentCallback(
         void selectSource(foundRecent.sourceId, {
           type: "file",
           handles: foundRecent.handles,
+          recentId,
         });
       }
     }

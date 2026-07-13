@@ -54,7 +54,10 @@ interface IRecentsStore {
   recents: RecentRecord[];
 
   // Add a new recent
-  addRecent: (newRecent: UnsavedRecentRecord) => void;
+  addRecent: (newRecent: UnsavedRecentRecord) => RecentRecord;
+
+  // Whether persisted recents have finished loading.
+  loading: boolean;
 
   // Save changes
   save: () => Promise<void>;
@@ -159,6 +162,7 @@ function useIndexedDbRecents(): IRecentsStore {
       };
       newRecentsRef.current.unshift(fullRecord);
       void save();
+      return fullRecord;
     },
     [save],
   );
@@ -167,9 +171,10 @@ function useIndexedDbRecents(): IRecentsStore {
     return {
       recents,
       addRecent,
+      loading,
       save,
     };
-  }, [addRecent, recents, save]);
+  }, [addRecent, loading, recents, save]);
 }
 
 export default useIndexedDbRecents;
