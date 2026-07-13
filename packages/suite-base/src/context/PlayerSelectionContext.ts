@@ -85,6 +85,8 @@ type FileDataSourceArgs = {
   handles?: FileSystemFileHandle[]; // foxglove-depcheck-used: @types/wicg-file-system-access
   /** Existing recent record that supplied the handles. */
   recentId?: string;
+  /** Whether this selection may prompt the user to grant file access. */
+  requestPermission?: boolean;
 };
 
 type ConnectionDataSourceArgs = {
@@ -99,7 +101,7 @@ export type DataSourceArgs = FileDataSourceArgs | ConnectionDataSourceArgs;
  */
 export interface PlayerSelection {
   selectSource: (sourceId: string, args?: DataSourceArgs) => void;
-  selectRecent: (recentId: string) => void;
+  selectRecent: (recentId: string, options?: { requestPermission?: boolean }) => void;
 
   /** Currently selected data source */
   selectedSource?: IDataSourceFactory;

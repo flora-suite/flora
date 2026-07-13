@@ -524,7 +524,7 @@ function WorkspaceContent(props: WorkspaceProps): JSX.Element {
       }
 
       log.debug("Initialising recent source from url", recentId);
-      selectRecent(recentId);
+      selectRecent(recentId, { requestPermission: false });
       setUnappliedSourceArgs({ ds: undefined, dsParams: undefined });
       return;
     }

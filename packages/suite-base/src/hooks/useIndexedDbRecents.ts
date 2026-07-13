@@ -64,19 +64,20 @@ interface IRecentsStore {
 }
 
 function useIndexedDbRecents(): IRecentsStore {
-  const { value: initialRecents, loading } = useAsync(
+  const { value: initialRecents, loading: initialRecentsLoading } = useAsync(
     async () => await idbGet<(RecentRecord & OldRecentRecord)[] | undefined>(IDB_KEY, IDB_STORE),
     [],
   );
 
   const [recents, setRecents] = useState<RecentRecord[]>([]);
+  const [recentsLoaded, setRecentsLoaded] = useState(false);
 
   // Track new recents in a ref and update the state after persisting
   const newRecentsRef = useRef<RecentRecord[]>([]);
 
   const save = useCallback(async () => {
     // We don't save until we've loaded our existing recents. This ensures we include stored recents when we save
-    if (loading) {
+    if (initialRecentsLoading) {
       return;
     }
 
@@ -124,11 +125,11 @@ function useIndexedDbRecents(): IRecentsStore {
     idbSet(IDB_KEY, recentsToSave, IDB_STORE).catch((err) => {
       log.error(err);
     });
-  }, [loading]);
+  }, [initialRecentsLoading]);
 
   // Set the first load records from the store to the state
   useLayoutEffect(() => {
-    if (loading) {
+    if (initialRecentsLoading) {
       return;
     }
 
@@ -152,7 +153,8 @@ function useIndexedDbRecents(): IRecentsStore {
       // Normally a save invokes set - but since we don't need to save we set here
       setRecents(newRecentsRef.current);
     }
-  }, [loading, initialRecents, save]);
+    setRecentsLoaded(true);
+  }, [initialRecentsLoading, initialRecents, save]);
 
   const addRecent = useCallback(
     (record: UnsavedRecentRecord) => {
@@ -171,10 +173,10 @@ function useIndexedDbRecents(): IRecentsStore {
     return {
       recents,
       addRecent,
-      loading,
+      loading: !recentsLoaded,
       save,
     };
-  }, [addRecent, loading, recents, save]);
+  }, [addRecent, recents, recentsLoaded, save]);
 }
 
 export default useIndexedDbRecents;

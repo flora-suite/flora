@@ -244,6 +244,11 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
                 }
 
                 if (permission !== "granted") {
+                  if (args.requestPermission === false) {
+                    throw new Error(
+                      `Permission required to reopen ${handle.name}. Select it from Recent data sources to grant access.`,
+                    );
+                  }
                   const newPerm = await fileHandle.requestPermission({ mode: "read" });
                   if (newPerm !== "granted") {
                     throw new Error(`Permission denied: ${handle.name}`);
@@ -335,7 +340,7 @@ function createSelectRecentCallback(
   enqueueSnackbar: ReturnType<typeof useSnackbar>["enqueueSnackbar"],
   setSelectedRecentId: (recentId: string | undefined) => void,
 ) {
-  return (recentId: string) => {
+  return (recentId: string, options?: { requestPermission?: boolean }) => {
     // find the recent from the list and initialize
     const foundRecent = recents.find((value) => value.id === recentId);
     if (!foundRecent) {
@@ -358,6 +363,7 @@ function createSelectRecentCallback(
           type: "file",
           handles: foundRecent.handles,
           recentId,
+          requestPermission: options?.requestPermission,
         });
       }
     }
