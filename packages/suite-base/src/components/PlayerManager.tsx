@@ -248,9 +248,7 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
 
                 if (permission !== "granted") {
                   if (args.requestPermission === false) {
-                    throw new Error(
-                      `Permission required to reopen ${handle.name}. Select it from Recent data sources to grant access.`,
-                    );
+                    return;
                   }
                   if (args.requestPermission === true) {
                     throw new Error(`Permission denied: ${handle.name}`);
@@ -261,7 +259,15 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
                   }
                 }
               }
-              const filesHandled = await Promise.all(handles.map(async (f) => await f.getFile()));
+              let filesHandled: File[];
+              try {
+                filesHandled = await Promise.all(handles.map(async (f) => await f.getFile()));
+              } catch (error) {
+                if (args.requestPermission === false) {
+                  return;
+                }
+                throw error;
+              }
               if (!isMounted()) {
                 return;
               }
