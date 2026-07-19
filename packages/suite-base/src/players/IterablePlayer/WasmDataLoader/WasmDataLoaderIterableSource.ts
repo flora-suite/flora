@@ -5,7 +5,7 @@
 import { fromNanoSec, toNanoSec } from "@lichtblick/rostime";
 import { Immutable, MessageEvent } from "@lichtblick/suite";
 import { ParsedChannel, parseChannel } from "@lichtblick/mcap-support";
-import { PlayerProblem, Topic, TopicStats } from "@lichtblick/suite-base/players/types";
+import { Topic, TopicStats } from "@lichtblick/suite-base/players/types";
 import { RosDatatypes } from "@lichtblick/suite-base/types/RosDatatypes";
 
 import {
@@ -246,8 +246,9 @@ export class WasmDataLoaderIterableSource implements IIterableSource {
       },
     };
     const wasm = decodeDataUrl(this.#wasmUrl);
-    const result = await WebAssembly.instantiate(wasm, imports);
-    instance = { exports: result.instance.exports as LoaderInstance["exports"], paths, readers };
+    const module = await WebAssembly.compile(wasm);
+    const wasmInstance = await WebAssembly.instantiate(module, imports);
+    instance = { exports: wasmInstance.exports as LoaderInstance["exports"], paths, readers };
     this.#instance = instance;
 
     const pointer = allocate(instance, paths.length * 8, 4);
