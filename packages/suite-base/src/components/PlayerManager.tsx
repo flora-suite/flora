@@ -34,6 +34,7 @@ import {
 } from "@lichtblick/suite-base/context/CurrentLayoutContext";
 import { ExtensionCatalogContext } from "@lichtblick/suite-base/context/ExtensionCatalogContext";
 import { usePerformance } from "@lichtblick/suite-base/context/PerformanceContext";
+import { WasmDataLoaderDataSourceFactory } from "@lichtblick/suite-base/dataSources/WasmDataLoaderDataSourceFactory";
 import PlayerSelectionContext, {
   DataSourceArgs,
   IDataSourceFactory,
@@ -106,6 +107,30 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
   // Update the alias functions when they change. We do not need to re-render the player manager
   // since nothing in the local state has changed.
   const extensionCatalogContext = useContext(ExtensionCatalogContext);
+  const [dataLoaderSources, setDataLoaderSources] = useState<readonly IDataSourceFactory[]>(() =>
+    (extensionCatalogContext?.getState().installedDataLoaders ?? []).map(
+      (registration) => new WasmDataLoaderDataSourceFactory(registration),
+    ),
+  );
+  useEffect(() => {
+    const updateDataLoaders = () => {
+      setDataLoaderSources(
+        (extensionCatalogContext?.getState().installedDataLoaders ?? []).map(
+          (registration) => new WasmDataLoaderDataSourceFactory(registration),
+        ),
+      );
+    };
+    updateDataLoaders();
+    return extensionCatalogContext?.subscribe((state, previousState) => {
+      if (state.installedDataLoaders !== previousState.installedDataLoaders) {
+        updateDataLoaders();
+      }
+    });
+  }, [extensionCatalogContext]);
+  const availablePlayerSources = useMemo(
+    () => [...playerSources, ...dataLoaderSources],
+    [dataLoaderSources, playerSources],
+  );
   useEffect(() => {
     // Stable empty alias functions if we don't have any
     const emptyAliasFunctions: Immutable<TopicAliasFunctions> = [];
@@ -150,7 +175,7 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
     async (sourceId: string, args?: DataSourceArgs) => {
       log.debug(`Select Source: ${sourceId}`);
 
-      const foundSource = playerSources.find(
+      const foundSource = availablePlayerSources.find(
         (source) => source.id === sourceId || source.legacyIds?.includes(sourceId),
       );
       if (!foundSource) {
@@ -294,7 +319,7 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
         enqueueSnackbar((error as Error).message, { variant: "error" });
       }
     },
-    [playerSources, metricsCollector, enqueueSnackbar, isMounted, addRecent],
+    [availablePlayerSources, metricsCollector, enqueueSnackbar, isMounted, addRecent],
   );
 
   // Select a recent entry by id
@@ -316,7 +341,7 @@ export default function PlayerManager(props: PropsWithChildren<PlayerManagerProp
     selectSource,
     selectRecent,
     selectedSource,
-    availableSources: playerSources,
+    availableSources: availablePlayerSources,
     recentSources,
     selectedRecentId,
     recentSourcesLoading,

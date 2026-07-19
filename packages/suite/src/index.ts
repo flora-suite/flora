@@ -502,6 +502,24 @@ export interface ExtensionContext {
   registerTopicAliases(aliasFunction: TopicAliasFunction): void;
 }
 
+type BaseExtensionContext = ExtensionContext;
+
+/** Experimental extension APIs backed by the Flora desktop data-source runtime. */
+export namespace Experimental {
+  export type DataLoaderRegistration = {
+    type: "file";
+    /** A data URL containing a WebAssembly module compatible with foxglove:loader@0.1.0. */
+    wasmUrl: string;
+    /** A file suffix, including its leading period (for example, `.csv`). */
+    supportedFileType: string;
+    supportsMultiFile?: boolean;
+  };
+
+  export interface ExtensionContext extends BaseExtensionContext {
+    registerDataLoader(registration: DataLoaderRegistration): void;
+  }
+}
+
 export type ExtensionActivate = (extensionContext: ExtensionContext) => void;
 
 // ExtensionModule describes the interface your extension entry level module must export

@@ -228,6 +228,41 @@ describe("ExtensionCatalogProvider", () => {
     ]);
   });
 
+  it("registers a data loader contribution", async () => {
+    const source = `
+      module.exports = {
+        activate: function(ctx) {
+          ctx.registerDataLoader({
+            type: "file",
+            wasmUrl: "data:application/wasm;base64,AGFzbQ==",
+            supportedFileType: ".flora-test",
+          });
+        }
+      };
+    `;
+    const extension = ExtensionBuilder.extensionInfo();
+    const loadExtension = jest.fn().mockResolvedValue(source);
+    const loader: ExtensionLoader = {
+      namespace: extension.namespace!,
+      getExtension: jest.fn(),
+      getExtensions: jest.fn().mockResolvedValue([extension]),
+      installExtension: jest.fn(),
+      loadExtension,
+      uninstallExtension: jest.fn(),
+    };
+
+    const { result } = setup({ loadersOverride: [loader] });
+
+    await waitFor(() => {
+      expect(result.current.installedDataLoaders).toEqual([
+        expect.objectContaining({
+          extensionId: extension.id,
+          supportedFileType: ".flora-test",
+        }),
+      ]);
+    });
+  });
+
   it("should register a default config", async () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
 
@@ -394,6 +429,7 @@ describe("ExtensionCatalogProvider", () => {
         { extensionId: extensionInfo.id, aliasFunction: jest.fn() },
       ];
       const contributionPoints: ContributionPoints = {
+        dataLoaders: [],
         messageConverters: [messageConverter],
         topicAliasFunctions,
         panelSettings: {

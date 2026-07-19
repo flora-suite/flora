@@ -8,7 +8,7 @@ import ReactDOM from "react-dom";
 import Logger from "@lichtblick/log";
 import {
   RegisterMessageConverterArgs,
-  ExtensionContext,
+  Experimental,
   TopicAliasFunction,
   ExtensionModule,
   ExtensionPanelRegistration,
@@ -16,6 +16,7 @@ import {
 import { ExtensionSettings } from "@lichtblick/suite-base/components/PanelSettings/types";
 import {
   ContributionPoints,
+  RegisteredDataLoader,
   RegisteredPanel,
   MessageConverter,
 } from "@lichtblick/suite-base/context/ExtensionCatalogContext";
@@ -33,12 +34,21 @@ export function buildContributionPoints(
   const messageConverters: RegisterMessageConverterArgs<unknown>[] = [];
   const panelSettings: ExtensionSettings = {};
   const topicAliasFunctions: ContributionPoints["topicAliasFunctions"] = [];
+  const dataLoaders: RegisteredDataLoader[] = [];
 
   log.debug(`Mounting extension ${extension.qualifiedName}`);
 
   const module = { exports: {} };
-  const require = (name: string) => {
-    return { react: React, "react-dom": ReactDOM }[name];
+  const require = (name: string): unknown => {
+    const modules: Record<string, unknown> = {
+      react: React,
+      "react-dom": ReactDOM,
+      // Flora extension API packages contain compile-time contracts. Returning an empty module
+      // keeps type-only imports safe even when a bundler preserves an import expression.
+      "@flora-suite/extension": {},
+      "@flora-suite/schemas": {},
+    };
+    return modules[name];
   };
 
   const extensionMode =
@@ -48,7 +58,7 @@ export function buildContributionPoints(
         ? "test"
         : "development";
 
-  const ctx: ExtensionContext = {
+  const ctx: Experimental.ExtensionContext = {
     mode: extensionMode,
 
     registerPanel: (registration: ExtensionPanelRegistration) => {
@@ -68,7 +78,7 @@ export function buildContributionPoints(
       };
     },
 
-    registerMessageConverter: <Src,>(messageConverter: RegisterMessageConverterArgs<Src>) => {
+    registerMessageConverter: <Src>(messageConverter: RegisterMessageConverterArgs<Src>) => {
       log.debug(
         `Extension ${extension.qualifiedName} registering message converter from: ${messageConverter.fromSchemaName} to: ${messageConverter.toSchemaName}`,
       );
@@ -89,6 +99,32 @@ export function buildContributionPoints(
     registerTopicAliases: (aliasFunction: TopicAliasFunction) => {
       topicAliasFunctions.push({ aliasFunction, extensionId: extension.id });
     },
+
+    registerDataLoader: (registration: Experimental.DataLoaderRegistration) => {
+      if (registration.type !== "file") {
+        log.error(
+          `Extension ${extension.qualifiedName} registered an unsupported data loader type`,
+        );
+        return;
+      }
+      if (!registration.supportedFileType.startsWith(".")) {
+        log.error(
+          `Extension ${extension.qualifiedName} registered a data loader without a file suffix`,
+        );
+        return;
+      }
+      if (!registration.wasmUrl.startsWith("data:application/wasm;base64,")) {
+        log.error(
+          `Extension ${extension.qualifiedName} registered a data loader without an inline WASM module`,
+        );
+        return;
+      }
+      dataLoaders.push({
+        ...registration,
+        extensionId: extension.id,
+        extensionNamespace: extension.namespace,
+      });
+    },
   };
 
   try {
@@ -108,6 +144,7 @@ export function buildContributionPoints(
     panels,
     messageConverters,
     topicAliasFunctions,
+    dataLoaders,
     panelSettings,
   };
 }

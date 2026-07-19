@@ -7,6 +7,7 @@ import { StoreApi, useStore } from "zustand";
 
 import { useGuaranteedContext } from "@lichtblick/hooks";
 import {
+  Experimental,
   ExtensionPanelRegistration,
   Immutable,
   PanelSettings,
@@ -46,6 +47,7 @@ export type ExtensionCatalog = Immutable<{
   installedExtensions: undefined | ExtensionInfo[];
   installedPanels: undefined | Record<string, RegisteredPanel>;
   installedMessageConverters: undefined | Omit<MessageConverter, "panelSettings">[];
+  installedDataLoaders: undefined | RegisteredDataLoader[];
   installedTopicAliasFunctions: undefined | TopicAliasFunctions;
   panelSettings: undefined | ExtensionSettings;
 }>;
@@ -55,9 +57,15 @@ export type MessageConverter = RegisterMessageConverterArgs<unknown> & {
   extensionId?: string;
 };
 
+export type RegisteredDataLoader = Experimental.DataLoaderRegistration & {
+  extensionId: string;
+  extensionNamespace?: ExtensionNamespace;
+};
+
 export type ContributionPoints = {
   panels: Record<string, RegisteredPanel>;
   messageConverters: MessageConverter[];
+  dataLoaders: RegisteredDataLoader[];
   topicAliasFunctions: TopicAliasFunctions;
   panelSettings: ExtensionSettings;
 };
