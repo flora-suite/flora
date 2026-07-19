@@ -8,6 +8,50 @@ import { FileDescriptorSet, IFileDescriptorSet } from "protobufjs/ext/descriptor
 import { parseChannel } from "./parseChannel";
 
 describe("parseChannel", () => {
+  const bytes = (value: string) => new TextEncoder().encode(value);
+
+  it.each([
+    ["json", { name: "X", encoding: "protobuf", data: bytes("") }],
+    ["flatbuffer", { name: "X", encoding: "protobuf", data: bytes("") }],
+    ["protobuf", { name: "X", encoding: "flatbuffer", data: bytes("") }],
+    ["ros1", { name: "X", encoding: "ros2msg", data: bytes("string value") }],
+    ["cdr", { name: "X", encoding: "protobuf", data: bytes("") }],
+  ])("rejects an incompatible schema encoding for %s", (messageEncoding, schema) => {
+    expect(() => parseChannel({ messageEncoding, schema })).toThrow("not supported");
+  });
+
+  it("rejects unsupported message encodings", () => {
+    expect(() => parseChannel({ messageEncoding: "custom", schema: undefined })).toThrow(
+      "Unsupported encoding custom",
+    );
+  });
+
+  it("rejects non-object JSON schemas", () => {
+    expect(() =>
+      parseChannel({
+        messageEncoding: "json",
+        schema: { name: "X", encoding: "jsonschema", data: bytes("true") },
+      }),
+    ).toThrow("Invalid schema, expected JSON object");
+  });
+
+  it("allows configured and well-known empty ROS schemas", () => {
+    const emptyRosSchema = { name: "custom_msgs/Empty", encoding: "ros1msg", data: bytes("") };
+
+    expect(() => parseChannel({ messageEncoding: "ros1", schema: emptyRosSchema })).toThrow(
+      "Schema for custom_msgs/Empty is empty",
+    );
+    expect(() =>
+      parseChannel({ messageEncoding: "ros1", schema: emptyRosSchema }, { allowEmptySchema: true }),
+    ).not.toThrow();
+    expect(() =>
+      parseChannel({
+        messageEncoding: "ros2",
+        schema: { name: "std_msgs/msg/Empty", encoding: "ros2msg", data: bytes("") },
+      }),
+    ).toThrow("Unsupported encoding ros2");
+  });
+
   it("works with json/jsonschema", () => {
     const channel = parseChannel({
       messageEncoding: "json",

@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import { SPS } from "./SPS";
+import { BitstreamWriter } from "./BitstreamWriter";
 
 describe("SPS", () => {
   function createValidNALU() {
@@ -312,6 +313,112 @@ describe("SPS", () => {
 
       expect(() => new SPS(new Uint8Array(NALU))).toThrow(
         "SPS error: log2_max_pic_order_cnt_lsb_minus4 must be 12 or less",
+      );
+    });
+  });
+
+  describe("SPS serialization", () => {
+    it("round-trips a baseline SPS through the bitstream writer", () => {
+      const source = new SPS(new Uint8Array([0x67, 0x42, 0x00, 0x0a, 0xf8, 0x41, 0xa2]));
+      const buffer = new Uint8Array(128);
+      const writer = new BitstreamWriter(buffer);
+
+      source.writeToBitstream(writer);
+      writer.finish();
+
+      const reparsed = new SPS(buffer.slice(0, writer.bytesWritten()));
+      expect(reparsed.profile_idc).toBe(66);
+      expect(reparsed.cropRect).toEqual(source.cropRect);
+      expect(reparsed.MIME()).toBe(source.MIME());
+    });
+
+    it("round-trips VUI timing and colour description fields", () => {
+      const source = new SPS(new Uint8Array(createValidNALU()));
+      const buffer = new Uint8Array(256);
+      const writer = new BitstreamWriter(buffer);
+
+      source.writeToBitstream(writer);
+      writer.finish();
+
+      const reparsed = new SPS(buffer.slice(0, writer.bytesWritten()));
+      expect(reparsed.vui_parameters_present_flag).toBe(1);
+      expect(reparsed.color_description_present_flag).toBe(1);
+      expect(reparsed.framesPerSecond).toBe(25);
+      expect(reparsed.cropRect).toEqual(source.cropRect);
+    });
+
+    it("serializes optional chroma, POC, interlacing, and VUI branches", () => {
+      const source = new SPS(new Uint8Array(createValidNALU()));
+      source.chroma_format_idc = 3;
+      source.separate_colour_plane_flag = 0;
+      source.seq_scaling_matrix_present_flag = 1;
+      source.seq_scaling_list_present_flag = Array.from({ length: 12 }, () => 0);
+      source.seq_scaling_list = [];
+      source.pic_order_cnt_type = 1;
+      source.delta_pic_order_always_zero_flag = 1;
+      source.offset_for_non_ref_pic = -2;
+      source.offset_for_top_to_bottom_field = 3;
+      source.num_ref_frames_in_pic_order_cnt_cycle = 2;
+      source.offset_for_ref_frame = [-1, 2];
+      source.frame_mbs_only_flag = 0;
+      source.mb_adaptive_frame_field_flag = 1;
+      source.vui_parameters_present_flag = 1;
+      source.aspect_ratio_info_present_flag = 1;
+      source.aspect_ratio_idc = 255;
+      source.sar_width = 4;
+      source.sar_height = 3;
+      source.overscan_info_present_flag = 1;
+      source.overscan_appropriate_flag = 1;
+      source.video_signal_type_present_flag = 1;
+      source.video_format = 5;
+      source.video_full_range_flag = 1;
+      source.color_description_present_flag = 1;
+      source.color_primaries = 1;
+      source.transfer_characteristics = 2;
+      source.matrix_coefficients = 3;
+      source.chroma_loc_info_present_flag = 1;
+      source.chroma_sample_loc_type_top_field = 1;
+      source.chroma_sample_loc_type_bottom_field = 2;
+      source.timing_info_present_flag = 1;
+      source.num_units_in_tick = 1;
+      source.time_scale = 60;
+      source.fixed_frame_rate_flag = 1;
+      source.nal_hrd_parameters_present_flag = 0;
+      source.vcl_hrd_parameters_present_flag = 0;
+      source.pic_struct_present_flag = 1;
+      source.bitstream_restriction_flag = 1;
+      source.motion_vectors_over_pic_boundaries_flag = 1;
+      source.max_bytes_per_pic_denom = 2;
+      source.max_bits_per_mb_denom = 1;
+      source.log2_max_mv_length_horizontal = 16;
+      source.log2_max_mv_length_vertical = 16;
+      source.max_num_reorder_frames = 1;
+      source.max_dec_frame_buffering = 3;
+
+      const buffer = new Uint8Array(512);
+      const writer = new BitstreamWriter(buffer);
+      source.writeToBitstream(writer);
+      writer.finish();
+
+      const reparsed = new SPS(buffer.slice(0, writer.bytesWritten()));
+      expect(reparsed.chromaArrayType).toBe(3);
+      expect(reparsed.pic_order_cnt_type).toBe(1);
+      expect(reparsed.offset_for_ref_frame).toEqual([-1, 2]);
+      expect(reparsed.interlaced).toBe(true);
+      expect(reparsed.sar_width).toBe(4);
+      expect(reparsed.sar_height).toBe(3);
+      expect(reparsed.overscan_appropriate_flag).toBe(1);
+      expect(reparsed.chroma_sample_loc_type_bottom_field).toBe(2);
+      expect(reparsed.framesPerSecond).toBe(30);
+      expect(reparsed.max_dec_frame_buffering).toBe(3);
+    });
+
+    it("rejects writing a non-SPS NAL unit", () => {
+      const source = new SPS(new Uint8Array(createValidNALU()));
+      source.nal_unit_type = 5;
+
+      expect(() => source.writeToBitstream(new BitstreamWriter(new Uint8Array(128)))).toThrow(
+        "Expected SPS NALU, got 5",
       );
     });
   });

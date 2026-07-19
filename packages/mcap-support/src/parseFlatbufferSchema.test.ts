@@ -361,6 +361,13 @@ describe("parseFlatbufferSchema", () => {
       index: 123,
     });
   });
+  it("rejects a type that is absent from the schema", () => {
+    const reflectionSchema = fs.readFileSync(`${__dirname}/fixtures/reflection.bfbs`);
+
+    expect(() => parseFlatbufferSchema("reflection.Unknown", reflectionSchema)).toThrow(
+      'Type "reflection.Unknown" is not available in the schema',
+    );
+  });
   it("converts uint8 vectors to uint8arrays", () => {
     const builder = new Builder();
 
