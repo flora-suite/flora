@@ -39,14 +39,16 @@ export function buildContributionPoints(
   log.debug(`Mounting extension ${extension.qualifiedName}`);
 
   const module = { exports: {} };
+  const floraExtensionPackage = ["@flora-suite", "extension"].join("/");
+  const floraSchemasPackage = ["@flora-suite", "schemas"].join("/");
   const require = (name: string): unknown => {
     const modules: Record<string, unknown> = {
       react: React,
       "react-dom": ReactDOM,
-      // Flora extension API packages contain compile-time contracts. Returning an empty module
-      // keeps type-only imports safe even when a bundler preserves an import expression.
-      "@flora-suite/extension": {},
-      "@flora-suite/schemas": {},
+      // The Flora API packages contain compile-time contracts. An empty runtime module keeps
+      // type-only imports safe when a bundler preserves an import expression.
+      [floraExtensionPackage]: {},
+      [floraSchemasPackage]: {},
     };
     return modules[name];
   };

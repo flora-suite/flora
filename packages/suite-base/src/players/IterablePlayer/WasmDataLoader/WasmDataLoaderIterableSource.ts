@@ -246,7 +246,9 @@ export class WasmDataLoaderIterableSource implements IIterableSource {
       },
     };
     const wasm = decodeDataUrl(this.#wasmUrl);
-    const module = await WebAssembly.compile(wasm);
+    const wasmBuffer = new ArrayBuffer(wasm.byteLength);
+    new Uint8Array(wasmBuffer).set(wasm);
+    const module = await WebAssembly.compile(wasmBuffer);
     const wasmInstance = await WebAssembly.instantiate(module, imports);
     instance = { exports: wasmInstance.exports as LoaderInstance["exports"], paths, readers };
     this.#instance = instance;
