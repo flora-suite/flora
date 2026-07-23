@@ -75,9 +75,13 @@ describe("processMcapRecord", () => {
       nextRecord: () => records.shift(),
     };
     const progress = jest.fn();
+    const file = {
+      size: 9,
+      slice: jest.fn().mockReturnValue({ arrayBuffer: async () => new ArrayBuffer(9) }),
+    } as unknown as Blob;
 
     const result = await getStreamedMcapInfo(
-      new Blob(["mcap data"]),
+      file,
       reader,
       processMcapRecord as never,
       "MCAP streamed",
@@ -85,6 +89,7 @@ describe("processMcapRecord", () => {
     );
 
     expect(reader.append).toHaveBeenCalledTimes(1);
+    expect(file.slice).toHaveBeenCalledWith(0, 1024 * 1024);
     expect(progress).toHaveBeenLastCalledWith(1);
     expect(result).toMatchObject({ fileType: "MCAP streamed", totalMessages: 1n });
     expect(result.topics.map((topic) => topic.topic)).toEqual(["/a", "/z"]);
