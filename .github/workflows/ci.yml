@@ -31,7 +31,7 @@ jobs:
           - name: build benchmark
             command: yarn run benchmark:build:prod
           - name: test
-            command: yarn run test --maxWorkers=100%
+            command: yarn run test --maxWorkers=50%
     name: ${{ matrix.config.name }} (${{ matrix.os }})
 
     steps:
