@@ -117,7 +117,7 @@
     "babel-plugin-transform-import-meta": "3.0.0",
     "cross-env": "7.0.3",
     "depcheck": "1.4.7",
-    "electron": "43.1.0",
+    "electron": "43.2.0",
     "electron-builder": "26.15.3",
     "eslint": "8.57.1",
     "eslint-config-prettier": "9.1.2",
