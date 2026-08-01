@@ -28,7 +28,7 @@
     "react-refresh": "0.17.0",
     "storybook": "10.5.0",
     "tss-react": "4.9.20",
-    "webpack": "5.108.4",
+    "webpack": "5.109.2",
     "webpack-dev-server": "6.0.0"
   }
 }
