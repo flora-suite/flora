@@ -1,0 +1,9 @@
+{
+  "testMatch": ["<rootDir>/src/**/*.test.ts(x)?"],
+  "transform": {
+    "\\.[jt]sx?$": ["babel-jest", { "rootMode": "upward" }]
+  },
+  "testEnvironment": "jsdom",
+  "setupFiles": ["<rootDir>/src/test/setup.ts"],
+  "haste": { "forceNodeFilesystemAPI": true }
+}
