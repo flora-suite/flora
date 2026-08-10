@@ -35,7 +35,7 @@
     "builder-util": "26.15.3",
     "clean-webpack-plugin": "4.0.0",
     "dmg-builder": "26.0.20",
-    "electron": "43.1.0",
+    "electron": "43.2.0",
     "electron-builder": "26.15.3",
     "electron-builder-squirrel-windows": "26.15.3",
     "electron-devtools-installer": "4.0.0",
