@@ -20,7 +20,7 @@
     "@lichtblick/tsconfig": "1.0.2",
     "@mui/icons-material": "7.3.7",
     "@mui/lab": "7.0.1-beta.21",
-    "@mui/material": "7.3.7",
+    "@mui/material": "9.3.1",
     "@mui/system": "7.3.7",
     "@mui/x-data-grid": "8.25.0",
     "@storybook/react": "^10.5.5",

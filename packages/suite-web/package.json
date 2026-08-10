@@ -14,7 +14,7 @@
     "@lichtblick/log": "workspace:*",
     "@lichtblick/theme": "workspace:*",
     "@lichtblick/tsconfig": "1.0.2",
-    "@mui/material": "7.3.7",
+    "@mui/material": "9.3.1",
     "@pmmmwh/react-refresh-webpack-plugin": "0.6.2",
     "@storybook/react": "^10.5.5",
     "@types/copy-webpack-plugin": "10.1.3",
