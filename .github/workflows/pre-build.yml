@@ -17,7 +17,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 16.17
+          node-version: 22
           package-manager-cache: false
 
       - name: Enable corepack
