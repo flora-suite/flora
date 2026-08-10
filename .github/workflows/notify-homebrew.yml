@@ -19,7 +19,7 @@ jobs:
           LINUX_ASSET="flora-${VERSION}-linux-x64.tar.gz"
           RELEASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}"
 
-          curl --fail --location --retry 3 \
+          curl --fail --location --proto '=https' --proto-redir '=https' --retry 3 \
             --output "/tmp/${LINUX_ASSET}" \
             "${RELEASE_URL}/${LINUX_ASSET}"
           tar -tzf "/tmp/${LINUX_ASSET}" | awk -F/ '$NF == "flora" { found = 1 } END { exit !found }'
