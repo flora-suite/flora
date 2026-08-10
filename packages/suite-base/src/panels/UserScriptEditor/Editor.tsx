@@ -12,13 +12,7 @@
 //   You may not use this file except in compliance with the License.
 
 import { useTheme } from "@mui/material";
-// @ts-expect-error ICodeEditorService does not have type information in the monaco-editor package
-import { ICodeEditorService } from "monaco-editor/esm/vs/editor/browser/services/codeEditorService";
-import * as monacoApi from "monaco-editor/esm/vs/editor/editor.api";
-// @ts-expect-error monaco.contribution exports these values at runtime but ships an empty d.ts
-import { javascriptDefaults, typescriptDefaults } from "monaco-editor/esm/vs/language/typescript/monaco.contribution";
-// @ts-expect-error StandaloneService does not have type information in the monaco-editor package
-import { StandaloneServices } from "monaco-editor/esm/vs/editor/standalone/browser/standaloneServices";
+import * as monacoApi from "monaco-editor";
 import * as path from "path";
 import React, { Suspense, ReactElement, useCallback, useEffect, useRef } from "react";
 import MonacoEditor, { EditorDidMount, EditorWillMount } from "react-monaco-editor";
@@ -36,7 +30,7 @@ import { mightActuallyBePartial } from "@lichtblick/suite-base/util/mightActuall
 
 import { themes } from "./theme";
 
-const codeEditorService = StandaloneServices.get(ICodeEditorService);
+const { javascriptDefaults, typescriptDefaults } = monacoApi.typescript;
 
 type CodeEditor = monacoApi.editor.ICodeEditor;
 
@@ -53,7 +47,10 @@ type Props = {
 
 // Taken from:
 // https://github.com/microsoft/vscode/blob/master/src/vs/editor/standalone/browser/standaloneCodeServiceImpl.ts
-const gotoSelection = (editor: monacoApi.editor.IEditor, selection?: monacoApi.IRange) => {
+const gotoSelection = (
+  editor: monacoApi.editor.IEditor,
+  selection?: monacoApi.IRange | monacoApi.IPosition,
+) => {
   if (selection) {
     const maybeSelection = mightActuallyBePartial(selection);
     if (maybeSelection.endLineNumber != undefined && maybeSelection.endColumn != undefined) {
@@ -66,13 +63,9 @@ const gotoSelection = (editor: monacoApi.editor.IEditor, selection?: monacoApi.I
       );
     } else {
       // Otherwise it's just a position
-      const pos = {
-        lineNumber: selection.startLineNumber,
-        column: selection.startColumn,
-      };
-      editor.setPosition(pos);
+      editor.setPosition(selection);
       editor.revealPositionInCenter(
-        pos,
+        selection,
         1,
         /* Immediate */
       );
@@ -124,18 +117,11 @@ const Editor = ({
   selection to move to the correct line.
   */
   useEffect(() => {
-    const disposable = codeEditorService.registerCodeEditorOpenHandler(
-      async (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        input: any,
-        // eslint-disable-next-line no-restricted-syntax
-        editor: monacoApi.editor.ICodeEditor | null,
-        // eslint-disable-next-line no-restricted-syntax
-      ): Promise<monacoApi.editor.ICodeEditor | null> => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        const requestedModel = monacoApi.editor.getModel(input.resource);
+    const disposable = monacoApi.editor.registerEditorOpener({
+      openCodeEditor: async (editor, resource, selection) => {
+        const requestedModel = monacoApi.editor.getModel(resource);
         if (!requestedModel) {
-          return editor;
+          return false;
         }
 
         // If we are jumping to a definition within the user node, don't push
@@ -144,23 +130,22 @@ const Editor = ({
           editor &&
           script &&
           requestedModel.uri.path ===
-          `${DEFAULT_STUDIO_SCRIPT_PREFIX}${path.basename(script.filePath)}`
+            `${DEFAULT_STUDIO_SCRIPT_PREFIX}${path.basename(script.filePath)}`
         ) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          gotoSelection(editor, input.options.selection);
-          // eslint-disable-next-line no-restricted-syntax
-          return null;
+          gotoSelection(editor, selection);
+          return true;
         }
 
         setScriptOverride({
           filePath: requestedModel.uri.path,
           code: requestedModel.getValue(),
           readOnly: true,
-          selection: input.options?.selection,
+          selection,
         });
-        return editor;
+        return true;
       },
-    );
+    });
     return () => disposable.dispose();
   }, [script, setScriptOverride]);
 
@@ -248,10 +233,7 @@ const Editor = ({
       // typescript language service does not expose such a method.
       projectConfig.declarations.forEach((lib) => {
         if (lib.fileName.startsWith("@foxglove/schemas")) {
-          typescriptDefaults.addExtraLib(
-            lib.sourceCode,
-            `file:///node_modules/${lib.fileName}`,
-          );
+          typescriptDefaults.addExtraLib(lib.sourceCode, `file:///node_modules/${lib.fileName}`);
         } else {
           typescriptDefaults.addExtraLib(
             lib.sourceCode,

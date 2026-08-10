@@ -11,11 +11,11 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
-import { IRange } from "monaco-editor/esm/vs/editor/editor.api";
+import type { IPosition, IRange } from "monaco-editor";
 
 export type Script = {
   filePath: string;
   code: string;
   readOnly: boolean;
-  selection?: IRange;
+  selection?: IRange | IPosition;
 };
