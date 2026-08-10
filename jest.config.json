@@ -6,5 +6,6 @@
     "<rootDir>/packages/*/jest.config.json"
   ],
   "coverageDirectory": "coverage",
-  "testEnvironment": "jsdom"
+  "testEnvironment": "jsdom",
+  "workerIdleMemoryLimit": "1GB"
 }
