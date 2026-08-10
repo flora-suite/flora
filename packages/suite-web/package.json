@@ -21,13 +21,13 @@
     "@types/react": "^18.3.27",
     "@types/react-refresh": "^0.14.7",
     "clean-webpack-plugin": "4.0.0",
-    "copy-webpack-plugin": "12.0.2",
+    "copy-webpack-plugin": "14.0.0",
     "html-webpack-plugin": "5.6.6",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-refresh": "0.17.0",
     "storybook": "10.5.5",
-    "tss-react": "4.9.20",
+    "tss-react": "4.9.21",
     "webpack": "5.108.4",
     "webpack-dev-server": "6.0.0"
   }
