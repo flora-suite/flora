@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/flora-suite",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12.0"
   },
   "scripts": {
     "clean": "bash ci/clean-build.sh",
