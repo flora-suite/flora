@@ -4139,7 +4139,7 @@ __metadata:
     cytoscape-dagre: "npm:2.5.0"
     date-fns: "npm:^3.6.0"
     dompurify: "npm:3.3.1"
-    electron: "npm:43.1.0"
+    electron: "npm:43.2.0"
     esbuild-loader: "npm:2.21.0"
     eventemitter3: "npm:5.0.4"
     fake-indexeddb: "npm:4.0.2"
@@ -4258,7 +4258,7 @@ __metadata:
     builder-util: "npm:26.15.3"
     clean-webpack-plugin: "npm:4.0.0"
     dmg-builder: "npm:26.0.20"
-    electron: "npm:43.1.0"
+    electron: "npm:43.2.0"
     electron-builder: "npm:26.15.3"
     electron-builder-squirrel-windows: "npm:26.15.3"
     electron-devtools-installer: "npm:4.0.0"
@@ -11360,7 +11360,7 @@ __metadata:
     "@lichtblick/suite-desktop": "workspace:*"
     "@lichtblick/tsconfig": "npm:1.0.2"
     "@types/ws": "npm:^8.18.1"
-    electron: "npm:43.1.0"
+    electron: "npm:43.2.0"
     playwright: "npm:1.61.1"
     ws: "npm:8.18.3"
   languageName: unknown
@@ -11901,9 +11901,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:43.1.0":
-  version: 43.1.0
-  resolution: "electron@npm:43.1.0"
+"electron@npm:43.2.0":
+  version: 43.2.0
+  resolution: "electron@npm:43.2.0"
   dependencies:
     "@electron-internal/extract-zip": "npm:^1.0.1"
     "@electron/get": "npm:^5.0.0"
@@ -11911,7 +11911,7 @@ __metadata:
   bin:
     electron: cli.js
     install-electron: install.js
-  checksum: 10c0/f5543ce1114ddf84f4872f4c214fb4f0a3990bc2634bbdb60ebbc49b155c46cfde71efb7852863da27ed0592cac1db074424868009495de07ea07f12a8dcfd9d
+  checksum: 10c0/91b72eb60960e9dc24e684f8dfc8dd2a965e444a23174e6e470cbb747e782c1e449cd2a4d57dc4edf47df1cca8b8988050ebfbc1c44913f37afe11fb207faaa6
   languageName: node
   linkType: hard
 
@@ -13508,7 +13508,7 @@ __metadata:
     babel-plugin-transform-import-meta: "npm:3.0.0"
     cross-env: "npm:7.0.3"
     depcheck: "npm:1.4.7"
-    electron: "npm:43.1.0"
+    electron: "npm:43.2.0"
     electron-builder: "npm:26.15.3"
     eslint: "npm:8.57.1"
     eslint-config-prettier: "npm:9.1.2"
