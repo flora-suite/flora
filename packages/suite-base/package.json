@@ -195,6 +195,6 @@
     "uuid": "14.0.0",
     "vm-browserify": "1.1.2",
     "webpack": "5.108.4",
-    "zustand": "4.5.7"
+    "zustand": "5.0.15"
   }
 }
