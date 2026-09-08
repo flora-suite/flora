@@ -82,7 +82,7 @@
     "@svgr/plugin-jsx@npm:8.1.0": "patch:@svgr/plugin-jsx@npm%3A8.1.0#~/patches/@svgr-plugin-jsx-npm-8.1.0-e2710753df.patch"
   },
   "devDependencies": {
-    "@actions/core": "1.11.1",
+    "@actions/core": "3.0.1",
     "@actions/exec": "1.1.1",
     "@actions/tool-cache": "2.0.2",
     "@babel/core": "8.0.1",
