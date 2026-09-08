@@ -1,6 +1,7 @@
 {
   "testMatch": ["<rootDir>/src/**/*.test.ts(x)?"],
   "setupFiles": ["<rootDir>/test/setup.ts"],
+  "testEnvironment": "jsdom",
   "transform": {
     "\\.[jt]sx?$": ["babel-jest", { "rootMode": "upward" }]
   },
