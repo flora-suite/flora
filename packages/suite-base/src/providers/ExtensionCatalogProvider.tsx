@@ -87,7 +87,13 @@ function createExtensionRegistryStore(
 
     const mergeState = (
       info: ExtensionInfo,
-      { messageConverters, panelSettings, panels, topicAliasFunctions }: ContributionPoints,
+      {
+        dataLoaders,
+        messageConverters,
+        panelSettings,
+        panels,
+        topicAliasFunctions,
+      }: ContributionPoints,
     ) => {
       set((state) => ({
         installedExtensions: _.uniqBy([...(state.installedExtensions ?? []), info], "id"),
@@ -95,6 +101,10 @@ function createExtensionRegistryStore(
         installedMessageConverters: _.uniqBy(
           [...state.installedMessageConverters!, ...messageConverters],
           "extensionId",
+        ),
+        installedDataLoaders: _.uniqBy(
+          [...state.installedDataLoaders!, ...dataLoaders],
+          (dataLoader) => `${dataLoader.extensionId}:${dataLoader.supportedFileType}`,
         ),
         installedTopicAliasFunctions: _.uniqBy(
           [...state.installedTopicAliasFunctions!, ...topicAliasFunctions],
@@ -120,7 +130,7 @@ function createExtensionRegistryStore(
           try {
             installedExtensions.push(extension);
 
-            const { messageConverters, panelSettings, panels, topicAliasFunctions } =
+            const { dataLoaders, messageConverters, panelSettings, panels, topicAliasFunctions } =
               contributionPoints;
             const unwrappedExtensionSource = await loader.loadExtension(extension.id);
             const newContributionPoints = buildContributionPoints(
@@ -131,6 +141,7 @@ function createExtensionRegistryStore(
             _.assign(panels, newContributionPoints.panels);
             _.merge(panelSettings, newContributionPoints.panelSettings);
             messageConverters.push(...newContributionPoints.messageConverters);
+            dataLoaders.push(...newContributionPoints.dataLoaders);
             topicAliasFunctions.push(...newContributionPoints.topicAliasFunctions);
 
             get().markExtensionAsInstalled(extension.id);
@@ -150,6 +161,7 @@ function createExtensionRegistryStore(
       const start = performance.now();
       const installedExtensions: ExtensionInfo[] = [];
       const contributionPoints: ContributionPoints = {
+        dataLoaders: [],
         messageConverters: [],
         panels: {},
         panelSettings: {},
@@ -182,6 +194,7 @@ function createExtensionRegistryStore(
         installedExtensions,
         installedPanels: contributionPoints.panels,
         installedMessageConverters: contributionPoints.messageConverters,
+        installedDataLoaders: contributionPoints.dataLoaders,
         installedTopicAliasFunctions: contributionPoints.topicAliasFunctions,
         panelSettings: contributionPoints.panelSettings,
       });
@@ -196,6 +209,7 @@ function createExtensionRegistryStore(
         ExtensionCatalog,
         | "installedExtensions"
         | "installedPanels"
+        | "installedDataLoaders"
         | "installedMessageConverters"
         | "installedTopicAliasFunctions"
       >;
@@ -203,6 +217,7 @@ function createExtensionRegistryStore(
       const {
         installedExtensions,
         installedPanels,
+        installedDataLoaders,
         installedMessageConverters,
         installedTopicAliasFunctions,
       } = state;
@@ -212,6 +227,7 @@ function createExtensionRegistryStore(
           ({ id: extensionId }) => extensionId !== id,
         ),
         installedPanels: _.pickBy(installedPanels, ({ extensionId }) => extensionId !== id),
+        installedDataLoaders: installedDataLoaders?.filter(({ extensionId }) => extensionId !== id),
         installedMessageConverters: installedMessageConverters?.filter(
           ({ extensionId }) => extensionId !== id,
         ),
@@ -248,6 +264,7 @@ function createExtensionRegistryStore(
       unMarkExtensionAsInstalled,
       installedExtensions: loaders.length === 0 ? [] : undefined,
       installedMessageConverters: mockMessageConverters ?? [],
+      installedDataLoaders: [],
       installedPanels: {},
       installedTopicAliasFunctions: [],
       loadedExtensions: new Set<string>(),
