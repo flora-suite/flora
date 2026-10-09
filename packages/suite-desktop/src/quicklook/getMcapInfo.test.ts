@@ -10,6 +10,12 @@ import { TempBuffer } from "@lichtblick/mcap-support";
 import { getMcapInfo } from "./getMcapInfo";
 
 describe("getMcapInfo", () => {
+  it("rejects files without the MCAP magic prefix", async () => {
+    await expect(getMcapInfo(new Blob(["not an mcap file"]) as globalThis.Blob)).rejects.toThrow(
+      "Not a valid MCAP file",
+    );
+  });
+
   it("returns correct values for an empty MCAP file", async () => {
     const tempBuffer = new TempBuffer();
 

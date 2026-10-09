@@ -4,3 +4,8 @@
 
 // React available everywhere (matches webpack config)
 global.React = require("react");
+
+Object.defineProperty(window.performance, "memory", {
+  configurable: true,
+  value: { jsHeapSizeLimit: 100, totalJSHeapSize: 50, usedJSHeapSize: 25 },
+});

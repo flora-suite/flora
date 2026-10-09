@@ -8,9 +8,13 @@ import { renderHook } from "@testing-library/react";
 
 import Logger from "@lichtblick/log";
 
-import { useMustNotChangeImpl } from "./useMustNotChange";
+import useMustNotChange, { useMustNotChangeImpl } from "./useMustNotChange";
 
 describe("useMustNotChange", () => {
+  it("is a no-op outside development mode", () => {
+    expect(() => renderHook(() => useMustNotChange("value"))).not.toThrow();
+  });
+
   it("should log an error when value changes", () => {
     const errorMock = jest.fn();
     Logger.channels().forEach((channel) => {
