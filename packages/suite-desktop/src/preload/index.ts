@@ -17,6 +17,7 @@ import { decodeRendererArg } from "../common/rendererArgs";
 import {
   CLIFlags,
   Desktop,
+  DesktopExtension,
   ForwardedMenuEvent,
   ForwardedWindowEvent,
   NativeMenuBridge,
@@ -30,7 +31,9 @@ import { FLORA_PRODUCT_NAME, FLORA_PRODUCT_VERSION } from "../common/webpackDefi
 const ignoreDeepLinks = document.cookie.includes("fox.ignoreDeepLinks=true");
 document.cookie = "fox.ignoreDeepLinks=;max-age=0;";
 
-const deepLinks = ignoreDeepLinks ? [] : decodeRendererArg("deepLinks", window.process.argv) ?? [];
+const deepLinks = ignoreDeepLinks
+  ? []
+  : (decodeRendererArg("deepLinks", window.process.argv) ?? []);
 
 export function main(): void {
   const log = Logger.getLogger(__filename);
@@ -67,6 +70,16 @@ export function main(): void {
   );
 
   const localFileStorage = new LocalFileStorage();
+
+  const extensionRoots = async (): Promise<string[]> => {
+    const homePath = (await ipcRenderer.invoke("getHomePath")) as string;
+    // Flora owns the new location. Keep the Lichtblick path readable so existing users do not
+    // lose manually installed extensions during the product rename.
+    return [
+      pathJoin(homePath, ".flora", "extensions"),
+      pathJoin(homePath, ".lichtblick-suite", "extensions"),
+    ];
+  };
 
   const ctx: OsContext = {
     platform: process.platform,
@@ -132,15 +145,22 @@ export function main(): void {
       window.location.reload();
     },
     async getExtensions() {
-      const homePath = (await ipcRenderer.invoke("getHomePath")) as string;
-      const userExtensionRoot = pathJoin(homePath, ".lichtblick-suite", "extensions");
-      const userExtensions = await getExtensions(userExtensionRoot);
-      return userExtensions;
+      const extensions = await Promise.all((await extensionRoots()).map(getExtensions));
+      const uniqueExtensions = new Map<string, DesktopExtension>();
+      for (const extension of extensions.flat()) {
+        // The Flora location is first and wins when an extension is installed in both roots.
+        uniqueExtensions.set(extension.id, uniqueExtensions.get(extension.id) ?? extension);
+      }
+      return [...uniqueExtensions.values()];
     },
     async loadExtension(id: string) {
-      const homePath = (await ipcRenderer.invoke("getHomePath")) as string;
-      const userExtensionRoot = pathJoin(homePath, ".lichtblick-suite", "extensions");
-      return await loadExtension(id, userExtensionRoot);
+      for (const root of await extensionRoots()) {
+        const source = await loadExtension(id, root);
+        if (source.length > 0) {
+          return source;
+        }
+      }
+      return "";
     },
     async fetchLayouts() {
       const homePath = (await ipcRenderer.invoke("getHomePath")) as string;
@@ -148,14 +168,14 @@ export function main(): void {
       return await fetchLayouts(userExtensionRoot);
     },
     async installExtension(foxeFileData: Uint8Array) {
-      const homePath = (await ipcRenderer.invoke("getHomePath")) as string;
-      const userExtensionRoot = pathJoin(homePath, ".lichtblick-suite", "extensions");
-      return await installExtension(foxeFileData, userExtensionRoot);
+      const [floraExtensionRoot] = await extensionRoots();
+      return await installExtension(foxeFileData, floraExtensionRoot!);
     },
     async uninstallExtension(id: string): Promise<boolean> {
-      const homePath = (await ipcRenderer.invoke("getHomePath")) as string;
-      const userExtensionRoot = pathJoin(homePath, ".lichtblick-suite", "extensions");
-      return await uninstallExtension(id, userExtensionRoot);
+      const results = await Promise.all(
+        (await extensionRoots()).map((root) => uninstallExtension(id, root)),
+      );
+      return results.some(Boolean);
     },
     handleTitleBarDoubleClick() {
       ipcRenderer.send("titleBarDoubleClicked");

@@ -23,6 +23,7 @@ describe("buildContributionPoints", () => {
     expect(result).toHaveProperty("panels", {});
     expect(result).toHaveProperty("messageConverters", []);
     expect(result).toHaveProperty("topicAliasFunctions", []);
+    expect(result).toHaveProperty("dataLoaders", []);
     expect(result).toHaveProperty("panelSettings", {});
     consoleErrorMock.mockRestore();
   });
@@ -190,5 +191,34 @@ describe("buildContributionPoints", () => {
     expect(result.topicAliasFunctions[0]!.extensionId).toBe(extensionInfo.id);
     expect(result.topicAliasFunctions[0]!.aliasFunction).toBe(aliasFunction);
     delete (globalThis as any).topicAliasFunction;
+  });
+
+  it("registers an inline WASM data loader", () => {
+    const extensionInfo = ExtensionBuilder.extensionInfo();
+    const extensionSource = `
+      module.exports = {
+        activate: (ctx) => {
+          ctx.registerDataLoader({
+            type: "file",
+            wasmUrl: "data:application/wasm;base64,AGFzbQ==",
+            supportedFileType: ".example",
+            supportsMultiFile: true,
+          });
+        }
+      };
+    `;
+
+    const result = buildContributionPoints(extensionInfo, extensionSource);
+
+    expect(result.dataLoaders).toEqual([
+      {
+        extensionId: extensionInfo.id,
+        extensionNamespace: extensionInfo.namespace,
+        supportedFileType: ".example",
+        supportsMultiFile: true,
+        type: "file",
+        wasmUrl: "data:application/wasm;base64,AGFzbQ==",
+      },
+    ]);
   });
 });
