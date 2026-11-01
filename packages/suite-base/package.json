@@ -129,7 +129,7 @@
     "i18next-browser-languagedetector": "7.2.2",
     "idb": "8.0.3",
     "idb-keyval": "6.2.2",
-    "immer": "10.2.0",
+    "immer": "11.2.9",
     "intervals-fn": "3.0.3",
     "jest-canvas-mock": "2.5.8",
     "jszip": "3.10.1",

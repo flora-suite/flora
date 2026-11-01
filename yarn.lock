@@ -4219,7 +4219,7 @@ __metadata:
     i18next-browser-languagedetector: "npm:7.2.2"
     idb: "npm:8.0.3"
     idb-keyval: "npm:6.2.2"
-    immer: "npm:10.2.0"
+    immer: "npm:11.2.9"
     intervals-fn: "npm:3.0.3"
     jest-canvas-mock: "npm:2.5.8"
     jszip: "npm:3.10.1"
@@ -15263,10 +15263,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:10.2.0":
-  version: 10.2.0
-  resolution: "immer@npm:10.2.0"
-  checksum: 10c0/35e66b0585b2aec4e85ae7a993f049405f170799ba89d79205bc3fdae2c5bdaa2b1d35f62803d8beee42b7e85c7f7315a6e93b6a5a510c5a46f03dbe63619e87
+"immer@npm:11.2.9":
+  version: 11.2.9
+  resolution: "immer@npm:11.2.9"
+  checksum: 10c0/fe64b10033aba3f89f778f0a28835c31f9ce28283f0b9a85245de3885442aea20ea8cf6bda7bca57f8159ff2c566ada6d9da9285461e120fe1587d335d648551
   languageName: node
   linkType: hard
 
